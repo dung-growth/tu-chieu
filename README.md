@@ -47,6 +47,8 @@ Mỗi lần đẩy code mới lên GitHub, Vercel tự deploy lại.
 
 ## Lưu ý
 
+- Không rõ giờ sinh: tick **Không rõ giờ sinh**. Biết canh giờ thì chọn thêm canh giờ, khi đó Bát tự và Tử vi tính đủ, còn cung Mọc chỉ là ước lượng. Không biết gì thì chỉ còn Thần số học, Bát tự 3 trụ và vị trí các sao (tính theo 12 giờ trưa).
+
 - Bộ đếm lượt theo IP chỉ tương đối, máy chủ khởi động lại là đếm lại. Mở rộng thì nên chuyển sang Upstash Redis.
 - Tử vi an sao theo âm lịch Trung Quốc (thư viện iztro). Vài ngày giáp ranh tháng âm có thể lệch với lịch Việt Nam.
 - Người sinh ở miền Nam trước 13/6/1975 được tự tính theo GMT+8.

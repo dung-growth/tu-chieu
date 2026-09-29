@@ -66,6 +66,9 @@ button{font:600 14px/1 var(--body);border-radius:8px;padding:11px 18px;border:1p
 .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
 .btn-ghost:hover{border-color:var(--ink-2)}
 button:disabled{opacity:.55;cursor:default}
+.check{display:flex;align-items:center;gap:8px;font-weight:500;color:var(--ink);font-size:13.5px;cursor:pointer}
+.check input{width:auto}
+.warn{border-left:3px solid var(--gold);background:var(--sheet);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;font-size:14px}
 .custom-geo{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px}
 
 /* tabs */
@@ -178,7 +181,10 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.03em}
           <label><input type="radio" name="gender" id="g-nu" value="nu"><span>Nữ</span></label>
         </div></div>
       <div class="field"><label for="date">Ngày sinh (dương lịch)</label><input id="date" type="date" value="1995-03-14" required></div>
-      <div class="field"><label for="time">Giờ sinh</label><input id="time" type="time" value="07:30" required></div>
+      <div class="field"><label for="time">Giờ sinh</label><input id="time" type="time" value="07:30">
+        <label class="check" for="noTime"><input type="checkbox" id="noTime"> Không rõ giờ sinh</label></div>
+      <div class="field" id="canhField" hidden><label for="canh">Biết khoảng giờ không?</label>
+        <select id="canh"><option value="">Không biết</option></select></div>
       <div class="field"><label for="place">Nơi sinh</label><select id="place"></select></div>
       <div class="custom-geo" id="geo" hidden>
         <div class="field"><label for="lat">Vĩ độ</label><input id="lat" type="number" step="0.001" value="10.776"></div>
@@ -273,11 +279,17 @@ function updateTzNote(){
     ? 'Sinh ở miền Nam trước 13/6/1975: tự động dùng múi giờ GMT+8 như thời đó.'
     : 'Giờ sinh tính theo giờ địa phương lúc sinh.';
 }
+const CANH = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
+const canhRange = k => { const a = (k*2+23)%24, b = (k*2+1)%24; return `${a}h–${b}h`; };
+CANH.forEach((c,k) => { const o = document.createElement('option'); o.value = k; o.textContent = `Giờ ${c} (${canhRange(k)})`; $('#canh').append(o); });
+function updateTimeUI(){ const off = $('#noTime').checked; $('#time').disabled = off; $('#canhField').hidden = !off; }
+$('#noTime').addEventListener('change', updateTimeUI);
 sel.addEventListener('change', updateTzNote); $('#date').addEventListener('change', updateTzNote);
 
 // nhớ lần nhập gần nhất (chỉ trong trình duyệt của người xem)
 const KEY = 'tuchieu:last';
-try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { ['name','date','time','lat','lon','tz','ctx'].forEach(k => { if (s[k] != null) $('#'+k).value = s[k]; }); if (s.place != null) sel.value = s.place; if (s.gender) $('#g-'+s.gender).checked = true; } } catch(e) {}
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { ['name','date','time','lat','lon','tz','ctx'].forEach(k => { if (s[k] != null) $('#'+k).value = s[k]; }); if (s.place != null) sel.value = s.place; if (s.gender) $('#g-'+s.gender).checked = true; if (s.noTime) $('#noTime').checked = true; if (s.canh != null) $('#canh').value = s.canh; } } catch(e) {}
+updateTimeUI();
 updateTzNote();
 
 // tabs
@@ -286,11 +298,17 @@ function show(id){ tabs.forEach(t => { const on = t.id === id; t.setAttribute('a
 tabs.forEach((t,i) => { t.addEventListener('click', () => show(t.id)); t.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowLeft'){ const n = tabs[(i + (e.key==='ArrowRight'?1:-1) + tabs.length) % tabs.length]; n.focus(); show(n.id);} }); });
 
 let R = null;
+function timeInfo(){
+  if (!$('#noTime').checked) return { time: $('#time').value || '12:00', timeMode: 'exact', timeLabel: $('#time').value || '12:00' };
+  const k = $('#canh').value;
+  if (k === '') return { time: '12:00', timeMode: 'unknown', timeLabel: 'không rõ giờ' };
+  return { time: String((+k*2)%24).padStart(2,'0') + ':00', timeMode: 'canh', canh: +k, timeLabel: `giờ ${CANH[+k]} (${canhRange(+k)})` };
+}
 function readInput(){
   const c = CITIES[+sel.value]; const custom = c[4]==='c';
   return {
     name: $('#name').value.trim() || 'Không tên', gender: $('#g-nu').checked ? 'nu' : 'nam',
-    date: $('#date').value, time: $('#time').value || '12:00',
+    date: $('#date').value, ...timeInfo(),
     place: custom ? `${$('#lat').value}, ${$('#lon').value}` : c[0],
     lat: custom ? +$('#lat').value : c[1], lon: custom ? +$('#lon').value : c[2], tz: effTz(c, $('#date').value),
     ctx: $('#ctx').value.trim()
@@ -302,34 +320,57 @@ function run(save){
   const inp = readInput();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(inp.date)) { $('#p-sum').innerHTML = '<p class="err">Nhập ngày sinh đầy đủ để lập lá số.</p>'; return; }
   const y = +inp.date.slice(0,4); if (y < 1900 || y > 2100) { $('#p-sum').innerHTML = '<p class="err">Ngày sinh cần nằm trong khoảng 1900–2100.</p>'; return; }
-  try { R = TC.all(inp); } catch(err) { console.error(err); $('#p-sum').innerHTML = '<p class="err">Không lập được lá số với thông tin này. Kiểm tra lại ngày giờ sinh.</p>'; return; }
-  if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, place:sel.value, gender:inp.gender })); } catch(e) {}
+  try { R = TC.all(inp); adjustForTime(R); } catch(err) { console.error(err); $('#p-sum').innerHTML = '<p class="err">Không lập được lá số với thông tin này. Kiểm tra lại ngày giờ sinh.</p>'; return; }
+  if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, place:sel.value, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value })); } catch(e) {}
   renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); resetAI();
   if (save) { show('t-sum'); $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'}); }
 }
 
+// Khi không có giờ chính xác: bỏ những gì phụ thuộc giờ
+function adjustForTime(R){
+  const mode = R.input.timeMode;
+  R.flags = { hasHour: mode !== 'unknown', hasHouses: mode === 'exact', approxHouses: mode === 'canh' };
+  if (!R.flags.hasHouses) {
+    R.astro.aspects = R.astro.aspects.filter(x => !['ASC','MC'].includes(x.ak) && !['ASC','MC'].includes(x.bk));
+    R.transits = R.transits.filter(t => !/Cung Mọc|Thiên Đỉnh/.test(t.target));
+  }
+  if (mode === 'unknown') {
+    // Mặt Trăng có thể ở cung khác trong ngày
+    const [y,mo,d] = R.input.date.split('-').map(Number);
+    const a0 = TC.natal(y,mo,d,0,0,R.input.tz,R.input.lat,R.input.lon).points[1], a1 = TC.natal(y,mo,d,23,59,R.input.tz,R.input.lat,R.input.lon).points[1];
+    R.flags.moonRange = { from: a0.text, to: a1.text, twoSigns: a0.signIdx !== a1.signIdx, signs: [a0.sign, a1.sign] };
+    const b = R.bazi; b.pillars[3] = null;
+    const CH = {'Giáp':'Mộc','Ất':'Mộc','Bính':'Hỏa','Đinh':'Hỏa','Mậu':'Thổ','Kỷ':'Thổ','Canh':'Kim','Tân':'Kim','Nhâm':'Thủy','Quý':'Thủy'};
+    const count = {Kim:0,'Mộc':0,'Thủy':0,'Hỏa':0,'Thổ':0}, full = {Kim:0,'Mộc':0,'Thủy':0,'Hỏa':0,'Thổ':0};
+    b.pillars.slice(0,3).forEach(p => { count[p.canHanh]++; count[p.chiHanh]++; full[p.canHanh]++; full[p.chiHanh]++; p.tangCan.forEach((g,i) => full[CH[g]] += i===0 ? 0.5 : 0.25); });
+    b.count = count; b.countFull = full;
+    R.tuvi = null;
+  }
+}
+const needHourMsg = what => `<div class="warn">${what} cần giờ sinh. Nếu biết khoảng giờ (ví dụ "sinh giờ Dần"), chọn canh giờ ở ô <b>Biết khoảng giờ không?</b> phía trên rồi bấm <b>Lập lá số</b> lại.</div>`;
 const EL_COLOR = {'Kim':'var(--metal)','Mộc':'var(--wood)','Thủy':'var(--water)','Hỏa':'var(--fire)','Thổ':'var(--earth)'};
 const fmtDate = s => s.split('-').reverse().join('/');
 
 function renderSummary(){
   const {input, bazi, astro, tuvi, numerology:n} = R;
   const sun = astro.points[0], moon = astro.points[1];
-  const menhP = tuvi.palaces.find(p => p.name === 'Mệnh');
+  const menhP = tuvi ? tuvi.palaces.find(p => p.name === 'Mệnh') : null; const F = R.flags;
   const cnt = bazi.count; const lack = Object.keys(cnt).filter(k => !cnt[k]); const strong = Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
   $('#p-sum').innerHTML = `
-  <div class="who"><h2>${esc(input.name)}</h2><span class="muted num">${input.gender==='nam'?'Nam':'Nữ'} · ${input.time}, ${fmtDate(input.date)} · ${esc(input.place)} (GMT+${input.tz}) · Âm lịch ${bazi.lunarDate.d}/${bazi.lunarDate.m} ${esc(bazi.lunarDate.yearGZ)}</span></div>
+  <div class="who"><h2>${esc(input.name)}</h2><span class="muted num">${input.gender==='nam'?'Nam':'Nữ'} · ${esc(input.timeLabel)}, ${fmtDate(input.date)} · ${esc(input.place)} (GMT+${input.tz}) · Âm lịch ${bazi.lunarDate.d}/${bazi.lunarDate.m} ${esc(bazi.lunarDate.yearGZ)}</span></div>
   <div class="lens-grid">
     <div class="lens"><span class="label">Bát tự</span><h3>Nhật chủ ${bazi.dayMaster} <span class="el-${bazi.dayMasterHanh}">${bazi.dayMasterHanh}</span></h3>
-      <span class="small muted">${bazi.pillars.map(p=>p.can+' '+p.chi).join(' · ')}</span>
+      <span class="small muted">${bazi.pillars.map(p=>p ? p.can+' '+p.chi : 'giờ ?').join(' · ')}</span>
       <dl class="kv"><dt>Hành mạnh</dt><dd class="el-${strong}">${strong}</dd><dt>Hành thiếu</dt><dd>${lack.length?lack.map(x=>`<span class="el-${x}">${x}</span>`).join(', '):'Không thiếu'}</dd><dt>Đại vận hiện tại</dt><dd>${curDV()}</dd></dl></div>
     <div class="lens"><span class="label">Bản đồ sao</span><h3>${sun.glyph} ${TC.SIGNS[sun.signIdx]} · ${moon.glyph} ${TC.SIGNS[moon.signIdx]}</h3>
-      <dl class="kv"><dt>Mặt Trời</dt><dd>${sun.sign}, nhà ${sun.house}</dd><dt>Mặt Trăng</dt><dd>${moon.sign}, nhà ${moon.house}</dd><dt>Cung Mọc</dt><dd>${astro.asc.sign}</dd><dt>Thiên Đỉnh</dt><dd>${astro.mc.sign}</dd></dl></div>
-    <div class="lens"><span class="label">Tử vi</span><h3>Mệnh tại ${tuvi.menh}</h3>
-      <dl class="kv"><dt>Chính tinh</dt><dd>${menhP && menhP.major.length ? menhP.major.map(s=>s.name).join(', ') : 'Vô chính diệu'}</dd><dt>Cục</dt><dd>${esc(tuvi.cuc)}</dd><dt>Thân cư</dt><dd>${tuvi.than}</dd><dt>Đại hạn</dt><dd>${tuvi.decadalNow ? tuvi.decadalNow.stem+' '+tuvi.decadalNow.branch : '—'}</dd></dl></div>
+      <dl class="kv"><dt>Mặt Trời</dt><dd>${sun.sign}${F.hasHouses?', nhà '+sun.house:''}</dd><dt>Mặt Trăng</dt><dd>${F.moonRange&&F.moonRange.twoSigns?F.moonRange.signs.join(' hoặc '):moon.sign}${F.hasHouses?', nhà '+moon.house:''}</dd><dt>Cung Mọc</dt><dd>${F.hasHouses?astro.asc.sign:F.approxHouses?astro.asc.sign+' (ước lượng)':'Cần giờ sinh'}</dd><dt>Thiên Đỉnh</dt><dd>${F.hasHouses?astro.mc.sign:F.approxHouses?astro.mc.sign+' (ước lượng)':'Cần giờ sinh'}</dd></dl></div>
+    <div class="lens"><span class="label">Tử vi</span>${!tuvi ? '<h3>Chưa lập được</h3><p class="small muted" style="margin:0">Tử vi cần ít nhất canh giờ sinh để an cung Mệnh.</p></div>' : `<h3>Mệnh tại ${tuvi.menh}</h3>
+      <dl class="kv"><dt>Chính tinh</dt><dd>${menhP && menhP.major.length ? menhP.major.map(s=>s.name).join(', ') : 'Vô chính diệu'}</dd><dt>Cục</dt><dd>${esc(tuvi.cuc)}</dd><dt>Thân cư</dt><dd>${tuvi.than}</dd><dt>Đại hạn</dt><dd>${tuvi.decadalNow ? tuvi.decadalNow.stem+' '+tuvi.decadalNow.branch : '—'}</dd></dl></div>`}
     <div class="lens"><span class="label">Thần số học</span><h3>Đường đời ${n.lifePath}</h3>
       <dl class="kv"><dt>Sứ mệnh</dt><dd>${n.expression}</dd><dt>Linh hồn</dt><dd>${n.soul}</dd><dt>Nhân cách</dt><dd>${n.personality}</dd><dt>Năm cá nhân ${n.personalYears[0].year}</dt><dd>${n.personalYears[0].n}</dd></dl></div>
   </div>
-  <div class="callout"><p>Bốn lá số đã sẵn sàng. Để AI đọc tất cả và viết bài luận đối chiếu giữa các trường phái.</p><button class="btn-primary" type="button" id="sumAi">Mở luận giải AI</button></div>`;
+  ${input.timeMode==='unknown' ? '<div class="warn">Không rõ giờ sinh: Thần số học đầy đủ; Bát tự còn 3 trụ (thiếu trụ giờ); Bản đồ sao tính theo 12 giờ trưa, không có cung Mọc và các nhà; Tử vi chưa lập được. Nếu biết khoảng giờ, chọn canh giờ để có thêm Tử vi và trụ giờ.</div>' : input.timeMode==='canh' ? '<div class="warn">Tính theo canh giờ: Bát tự và Tử vi đầy đủ. Bản đồ sao lấy giờ giữa canh nên cung Mọc và các nhà chỉ là ước lượng.</div>' : ''}
+  <div class="callout"><p>Các lá số đã sẵn sàng. Để AI đọc tất cả và viết bài luận đối chiếu giữa các trường phái.</p><button class="btn-primary" type="button" id="sumAi">Mở luận giải AI</button></div>`;
   $('#sumAi').onclick = () => { show('t-ai'); $('#t-ai').focus(); };
 }
 function curDV(){ const y = new Date().getFullYear(); const d = R.bazi.daiVan.find(v => y >= v.startYear && y <= v.endYear); return d ? `${d.gz} (${d.thapThan})` : '—'; }
@@ -339,7 +380,7 @@ function renderBazi(){
   const total = Object.values(b.countFull).reduce((a,c)=>a+c,0);
   const nowY = new Date().getFullYear();
   $('#p-bz').innerHTML = `
-  <div class="pillars">${b.pillars.map((p,i)=>`
+  <div class="pillars">${b.pillars.map((p,i)=> !p ? `<div class="pillar"><span class="label">Trụ Giờ</span><span class="gz muted">?<br>?</span><span class="god">Không rõ giờ sinh</span></div>` : `
     <div class="pillar ${i===2?'day':''}"><span class="label">Trụ ${names[i]}</span>
       <span class="god">${i===2?'Nhật chủ':p.thapThanCan}</span>
       <span class="gz"><span class="el-${p.canHanh}">${p.can}</span><br><span class="el-${p.chiHanh}">${p.chi}</span></span>
@@ -359,14 +400,14 @@ function renderBazi(){
 /* ---- vòng bản đồ sao ---- */
 function wheelSVG(a){
   const S = 560, C = S/2, rO = 262, rS = 226, rH = 206, rP = 180, rA = 128;
-  const asc = a.asc.lon;
+  const houses = R.flags.hasHour; const asc = houses ? a.asc.lon : 0;
   const ang = l => (180 - (l - asc)) * Math.PI/180;
   const pt = (l, r) => [C + r*Math.cos(ang(l)), C - r*Math.sin(ang(l))];
   const elc = ['var(--fire)','var(--earth)','var(--air)','var(--water)'];
   let g = `<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Vòng bản đồ sao"><circle cx="${C}" cy="${C}" r="${rO}" fill="var(--paper)" stroke="var(--line)"/><circle cx="${C}" cy="${C}" r="${rS}" fill="var(--sheet)" stroke="var(--line)"/><circle cx="${C}" cy="${C}" r="${rA}" fill="var(--paper)" stroke="var(--line)"/>`;
   for (let s=0;s<12;s++){ const [x1,y1]=pt(s*30,rO),[x2,y2]=pt(s*30,rS); g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--line)"/>`; const [tx,ty]=pt(s*30+15,(rO+rS)/2); g+=`<text x="${tx}" y="${ty}" font-size="19" text-anchor="middle" dominant-baseline="central" fill="${elc[s%4]}">${TC.SIGN_GLYPH[s]}︎</text>`; }
-  a.cusps.forEach((c,i)=>{ const strong=i%3===0; const [x1,y1]=pt(c.lon,rS),[x2,y2]=pt(c.lon,rA); g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${strong?'var(--ink-2)':'var(--line)'}" stroke-width="${strong?1.4:1}"/>`; const nx=a.cusps[(i+1)%12].lon; const mid=c.lon+((nx-c.lon+360)%360)/2; const [hx,hy]=pt(mid,rA+12); g+=`<text x="${hx}" y="${hy}" font-size="11" text-anchor="middle" dominant-baseline="central" fill="var(--ink-2)">${i+1}</text>`; });
-  [['ASC',a.asc.lon],['MC',a.mc.lon]].forEach(([n,l])=>{ const [x,y]=pt(l,rO+2),[x2,y2]=pt(l,rO-14); g+=`<text x="${pt(l,rO-30)[0]}" y="${pt(l,rO-30)[1]}" font-size="10" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="var(--seal)">${n}</text>`; });
+  if (houses) a.cusps.forEach((c,i)=>{ const strong=i%3===0; const [x1,y1]=pt(c.lon,rS),[x2,y2]=pt(c.lon,rA); g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${strong?'var(--ink-2)':'var(--line)'}" stroke-width="${strong?1.4:1}"/>`; const nx=a.cusps[(i+1)%12].lon; const mid=c.lon+((nx-c.lon+360)%360)/2; const [hx,hy]=pt(mid,rA+12); g+=`<text x="${hx}" y="${hy}" font-size="11" text-anchor="middle" dominant-baseline="central" fill="var(--ink-2)">${i+1}</text>`; });
+  (houses ? [['ASC',a.asc.lon],['MC',a.mc.lon]] : []).forEach(([n,l])=>{ const [x,y]=pt(l,rO+2),[x2,y2]=pt(l,rO-14); g+=`<text x="${pt(l,rO-30)[0]}" y="${pt(l,rO-30)[1]}" font-size="10" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="var(--seal)">${n}</text>`; });
   // tránh chồng glyph
   const pts = a.points.map(p=>({...p, d:p.lon})).sort((x,y)=>x.lon-y.lon);
   for (let k=0;k<4;k++) for (let i=0;i<pts.length;i++){ const j=(i+1)%pts.length; let diff=(pts[j].d-pts[i].d+360)%360; if (diff<7){ pts[i].d-= (7-diff)/2; pts[j].d+= (7-diff)/2; } }
@@ -377,13 +418,14 @@ function wheelSVG(a){
   return g + '</svg>';
 }
 function renderAstro(){
-  const a = R.astro; const nowStr = d => d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const a = R.astro; const F = R.flags; const nowStr = d => d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});
   $('#p-as').innerHTML = `
+  ${!F.hasHour ? needHourMsg('Cung Mọc, Thiên Đỉnh và 12 nhà') + (F.moonRange ? `<p class="small muted" style="margin:0">Tính theo 12 giờ trưa. Trong ngày sinh, Mặt Trăng đi từ ${F.moonRange.from} tới ${F.moonRange.to}${F.moonRange.twoSigns?', tức có thể ở một trong hai cung':''}.</p>` : '') : F.approxHouses ? '<div class="warn">Cung Mọc và các nhà tính theo giờ giữa canh, có thể lệch một cung. Các sao khác vẫn chính xác.</div>' : ''}
   <div class="two">
     <div class="wheel-box">${wheelSVG(a)}</div>
     <div class="panel"><h3 style="margin-bottom:8px">Vị trí các sao</h3><div class="table-wrap"><table><thead><tr><th>Sao</th><th>Vị trí</th><th>Nhà</th></tr></thead><tbody>
-      <tr><td><b>Cung Mọc</b></td><td class="num">${a.asc.text}</td><td>1</td></tr><tr><td><b>Thiên Đỉnh (MC)</b></td><td class="num">${a.mc.text}</td><td>10</td></tr>
-      ${a.points.map(p=>`<tr><td>${p.glyph}︎ ${p.name}</td><td class="num">${p.text} ${p.retro&&p.key!=='Node'?'<span class="retro">R</span>':''}</td><td class="num">${p.house}</td></tr>`).join('')}</tbody></table></div>
+      ${F.hasHour ? `<tr><td><b>Cung Mọc</b></td><td class="num">${a.asc.text}${F.approxHouses?' <span class="muted">(ước lượng)</span>':''}</td><td>1</td></tr><tr><td><b>Thiên Đỉnh (MC)</b></td><td class="num">${a.mc.text}${F.approxHouses?' <span class="muted">(ước lượng)</span>':''}</td><td>10</td></tr>` : ''}
+      ${a.points.map(p=>`<tr><td>${p.glyph}︎ ${p.name}</td><td class="num">${p.key==='Moon'&&F.moonRange ? `${F.moonRange.from} → ${F.moonRange.to}` : p.text} ${p.retro&&p.key!=='Node'?'<span class="retro">R</span>':''}</td><td class="num">${F.hasHour ? p.house+(F.approxHouses?'?':'') : '—'}</td></tr>`).join('')}</tbody></table></div>
       <p class="small muted" style="margin:10px 0 0">Hoàng đạo nhiệt đới, hệ nhà Placidus. R là nghịch hành. La Hầu tính theo nút trung bình.</p></div>
   </div>
   <div class="two">
@@ -398,6 +440,7 @@ function renderAstro(){
 /* ---- tử vi ---- */
 const LAYOUT = ['Tỵ','Ngọ','Mùi','Thân','Thìn',null,null,'Dậu','Mão',null,null,'Tuất','Dần','Sửu','Tý','Hợi'];
 function renderTuvi(){
+  if (!R.tuvi) { $('#p-tv').innerHTML = needHourMsg('Lá số Tử vi'); return; }
   const t = R.tuvi; const dh = t.decadalNow ? t.decadalNow.branch : null;
   const byB = {}; t.palaces.forEach(p => byB[p.branch] = p);
   let cells = '';
@@ -442,15 +485,19 @@ function renderNum(){
 function brief(){
   const {input:i, bazi:b, astro:a, tuvi:t, numerology:n, transits:tr} = R;
   const L = [];
-  L.push(`NGƯỜI XEM: ${i.gender==='nam'?'Nam':'Nữ'} · Sinh ${i.time} ${fmtDate(i.date)} (GMT+${i.tz}) tại ${i.place} · Hôm nay: ${new Date().toLocaleDateString('vi-VN')}`);
-  L.push(`\n[BÁT TỰ] Tứ trụ: ${b.pillars.map((p,k)=>`${['Năm','Tháng','Ngày','Giờ'][k]} ${p.can} ${p.chi} (can: ${k===2?'Nhật chủ':p.thapThanCan}; tàng: ${p.tangCan.join('/')} = ${p.thapThanChi.join('/')}; nạp âm ${p.napAm})`).join(' | ')}`);
+  const F = R.flags;
+  L.push(`NGƯỜI XEM: ${i.gender==='nam'?'Nam':'Nữ'} · Sinh ${i.timeMode==='exact'?i.time:i.timeLabel} ${fmtDate(i.date)} (GMT+${i.tz}) tại ${i.place} · Hôm nay: ${new Date().toLocaleDateString('vi-VN')}`);
+  if (i.timeMode==='unknown') L.push('KHÔNG RÕ GIỜ SINH: không có trụ giờ, cung Mọc, các nhà chiêm tinh và lá số Tử vi. Không được luận hay suy đoán các phần này; nói rõ phần nào thiếu vì không có giờ sinh.');
+  if (i.timeMode==='canh') L.push('CHỈ BIẾT CANH GIỜ: cung Mọc và các nhà chiêm tinh chỉ là ước lượng, luận thận trọng hoặc bỏ qua.');
+  L.push(`\n[BÁT TỰ] Tứ trụ: ${b.pillars.filter(Boolean).map((p,k)=>`${['Năm','Tháng','Ngày','Giờ'][k]} ${p.can} ${p.chi} (can: ${k===2?'Nhật chủ':p.thapThanCan}; tàng: ${p.tangCan.join('/')} = ${p.thapThanChi.join('/')}; nạp âm ${p.napAm})`).join(' | ')}`);
   L.push(`Nhật chủ ${b.dayMaster} (${b.dayMasterHanh}). Ngũ hành đếm thô: ${Object.entries(b.count).map(([k,v])=>k+' '+v).join(', ')}. Có trọng số tàng can: ${Object.entries(b.countFull).map(([k,v])=>k+' '+v).join(', ')}.`);
   L.push(`Đại vận: ${b.daiVan.map(v=>`${v.startYear}-${v.endYear} ${v.gz} (${v.thapThan})`).join('; ')}. Lưu niên: ${b.years.map(y=>`${y.year} ${y.gz} (${y.thapThan})`).join('; ')}.`);
-  L.push(`\n[CHIÊM TINH, Placidus] Cung Mọc ${a.asc.text}; MC ${a.mc.text}. ${a.points.map(p=>`${p.name} ${p.text} nhà ${p.house}${p.retro&&p.key!=='Node'?' nghịch hành':''}`).join('; ')}.`);
+  L.push(`\n[CHIÊM TINH${F.hasHour?', Placidus':', theo 12 giờ trưa'}] ${F.hasHour?`Cung Mọc ${a.asc.text}; MC ${a.mc.text}${F.approxHouses?' (ước lượng)':''}. `:''}${a.points.map(p=>`${p.name} ${p.key==='Moon'&&F.moonRange?`${F.moonRange.from} đến ${F.moonRange.to} (không chắc)`:p.text}${F.hasHour?' nhà '+p.house:''}${p.retro&&p.key!=='Node'?' nghịch hành':''}`).join('; ')}.`);
   L.push(`Góc chiếu: ${a.aspects.slice(0,14).map(x=>`${x.a} ${x.type} ${x.b} (${x.orb}°)`).join('; ')}. Nguyên tố: ${Object.entries(a.elements).map(([k,v])=>k+' '+v).join(', ')}.`);
   L.push(`Quá cảnh 18 tháng tới: ${tr.length?tr.map(x=>`${x.mover} ${x.aspect} ${x.target} ${x.start.toISOString().slice(0,10)}→${x.end.toISOString().slice(0,10)}`).join('; '):'không có'}.`);
-  L.push(`\n[TỬ VI] Mệnh ${t.menh}, Thân ${t.than}, ${t.cuc}, Mệnh chủ ${t.soul}, Thân chủ ${t.body}. Đại hạn hiện tại: ${t.decadalNow?t.decadalNow.stem+' '+t.decadalNow.branch:'?'}; tiểu hạn năm nay: ${t.yearlyNow?t.yearlyNow.stem+' '+t.yearlyNow.branch:'?'}.`);
-  t.palaces.forEach(p => L.push(`- ${p.name} (${p.stem} ${p.branch}${p.isBody?', Thân cư':''}; đại hạn ${p.decadal?p.decadal.join('-'):'?'}): chính tinh ${p.major.length?p.major.map(s=>s.name+(s.bright?' '+s.bright:'')+(s.mut?' hóa '+s.mut:'')).join(', '):'vô chính diệu'}; phụ tinh ${p.minor.map(s=>s.name+(s.mut?' hóa '+s.mut:'')).join(', ')||'—'}; ${p.adj.slice(0,8).join(', ')}`));
+  if (!t) L.push('\n[TỬ VI] Chưa lập được vì không rõ giờ sinh.');
+  else { L.push(`\n[TỬ VI] Mệnh ${t.menh}, Thân ${t.than}, ${t.cuc}, Mệnh chủ ${t.soul}, Thân chủ ${t.body}. Đại hạn hiện tại: ${t.decadalNow?t.decadalNow.stem+' '+t.decadalNow.branch:'?'}; tiểu hạn năm nay: ${t.yearlyNow?t.yearlyNow.stem+' '+t.yearlyNow.branch:'?'}.`);
+  t.palaces.forEach(p => L.push(`- ${p.name} (${p.stem} ${p.branch}${p.isBody?', Thân cư':''}; đại hạn ${p.decadal?p.decadal.join('-'):'?'}): chính tinh ${p.major.length?p.major.map(s=>s.name+(s.bright?' '+s.bright:'')+(s.mut?' hóa '+s.mut:'')).join(', '):'vô chính diệu'}; phụ tinh ${p.minor.map(s=>s.name+(s.mut?' hóa '+s.mut:'')).join(', ')||'—'}; ${p.adj.slice(0,8).join(', ')}`)); }
   L.push(`\n[THẦN SỐ HỌC] Đường đời ${n.lifePath}, Sứ mệnh ${n.expression}, Linh hồn ${n.soul}, Nhân cách ${n.personality}, Trưởng thành ${n.maturity}, Ngày sinh ${n.birthday}, Thái độ ${n.attitude}. Năm cá nhân: ${n.personalYears.map(p=>p.year+'='+p.n).join(', ')}. Đỉnh cao: ${n.peaks.map(p=>`${p.age} tuổi (${p.year})=${p.n}`).join(', ')}. Số thiếu trong ngày sinh: ${Object.keys(n.grid).filter(k=>!n.grid[k]).join(', ')}.`);
   return L.join('\n');
 }

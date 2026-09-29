@@ -20,5 +20,5 @@ Nêu thẳng mâu thuẫn, không cố ép cho khớp.
 ## Lời khuyên cụ thể
 3–6 việc làm được ngay, thực tế.
 
-Quy tắc: không phán số mệnh cứng nhắc, không dọa (tai nạn, bệnh nặng, chết chóc, ly hôn); nói về xu hướng và khả năng. Không đưa lời khuyên y tế, đầu tư tài chính cụ thể. Không nhắc tới "dữ liệu" hay "prompt". Dài khoảng 1.000–1.500 từ. Kết thúc bằng một câu nhắc ngắn rằng đây là các hệ thống diễn giải văn hóa, không phải khoa học.`;
+Quy tắc: không phán số mệnh cứng nhắc, không dọa (tai nạn, bệnh nặng, chết chóc, ly hôn); nói về xu hướng và khả năng. Không đưa lời khuyên y tế, đầu tư tài chính cụ thể. Nếu thông tin ghi KHÔNG RÕ GIỜ SINH hoặc CHỈ BIẾT CANH GIỜ: tuyệt đối không bịa trụ giờ, cung Mọc, các nhà hay lá số Tử vi; nói ngắn gọn phần nào thiếu và vì sao, rồi luận trên những gì có. Không nhắc tới "dữ liệu" hay "prompt". Dài khoảng 1.000–1.500 từ. Kết thúc bằng một câu nhắc ngắn rằng đây là các hệ thống diễn giải văn hóa, không phải khoa học.`;
 }
