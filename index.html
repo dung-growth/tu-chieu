@@ -586,7 +586,7 @@ function queCard(q){
 const QUE_KEY = (q) => 'tuchieu:que:' + new Date().toISOString().slice(0,10) + ':' + q.toLowerCase().replace(/\s+/g,' ').replace(/[?.!,]+$/,'').trim();
 async function castAsk(){
   const q = $('#ask').value.trim();
-  if (!q) { $('#ask').focus(); $('#ask').placeholder = 'Nhập câu hỏi trước khi gieo quẻ, ví dụ: có nên nhận project mới không?'; return; }
+  if (!q) { $('#ask').focus(); $('#ask').placeholder = 'Nhập câu hỏi trước khi gieo quẻ, ví dụ:'; return; }
   if (!firstText) return;
   let saved = null; try { saved = JSON.parse(localStorage.getItem(QUE_KEY(q)) || 'null'); } catch(e) {}
   const box = document.createElement('div'); box.className = 'qa';
