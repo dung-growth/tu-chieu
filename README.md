@@ -7,6 +7,7 @@ Lập cùng lúc Bát tự, Bản đồ sao, Tử vi, Thần số học từ ng�
 ```
 index.html          giao diện + code trang
 compute.js          tính toán 4 trường phái (chạy trên trình duyệt người dùng)
+iching.js           gieo quẻ Kinh Dịch theo Mai Hoa Dịch Số (năm, tháng, ngày, giờ âm lịch)
 prompt.js           bộ hướng dẫn luận giải, dùng chung cho máy chủ và nút "Sao chép lời nhắc"
 lib/                thư viện: lunar-javascript, astronomy-engine, iztro, marked, DOMPurify
 api/luangiai.js     hàm máy chủ trên Vercel: giữ API key, gọi Gemini, trả bài luận về
@@ -46,6 +47,8 @@ Mỗi lần đẩy code mới lên GitHub, Vercel tự deploy lại.
 - Sau này muốn chuyển sang trả phí hoặc sang Claude: chỉ cần sửa `api/luangiai.js` và biến môi trường, giao diện giữ nguyên.
 
 ## Lưu ý
+
+- Gieo quẻ: nút **☯ Gieo quẻ cho câu này** trong khung hỏi thêm. Quẻ lập theo thời điểm bấm (Mai Hoa: quẻ trên = (năm+tháng+ngày) chia 8 lấy dư; quẻ dưới = cộng thêm giờ, chia 8; hào động = chia 6). Mỗi câu hỏi chỉ gieo một lần mỗi ngày trên một trình duyệt; hỏi lại thì hiện quẻ và bài luận cũ, không tốn lượt AI.
 
 - Không rõ giờ sinh: tick **Không rõ giờ sinh**. Biết canh giờ thì chọn thêm canh giờ, khi đó Bát tự và Tử vi tính đủ, còn cung Mọc chỉ là ước lượng. Không biết gì thì chỉ còn Thần số học, Bát tự 3 trụ và vị trí các sao (tính theo 12 giờ trưa).
 

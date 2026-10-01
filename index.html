@@ -155,6 +155,20 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.03em}
 .chat-row input{flex:1 1 260px}
 .qa{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
 .qa .q{font-weight:700;margin-bottom:6px}
+/* gieo quẻ */
+.hex-card{display:flex;flex-wrap:wrap;gap:18px 24px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:4px 0 12px}
+.hex-figs{display:flex;align-items:center;gap:14px}
+.hex{display:flex;flex-direction:column;gap:6px;width:76px}
+.hex .ln{display:flex;gap:10px;height:9px;position:relative}
+.hex .ln i{flex:1;background:var(--ink);border-radius:2px}
+.hex .ln.mv i{background:var(--seal)}
+.hex .ln.mv::after{content:"";position:absolute;right:-16px;top:0;width:9px;height:9px;border-radius:50%;background:var(--seal)}
+.hex-cap{font-size:12px;color:var(--ink-2);text-align:center;margin-top:6px}
+.hex-arrow{color:var(--ink-2);font-size:20px}
+.hex-info{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 240px;font-size:14px}
+.hex-info h4{margin:0;font:600 18px/1.25 var(--display)}
+.hex-meta{font-size:12.5px;color:var(--ink-2)}
+.btn-que{background:var(--jade);color:#fff}
 .note{font-size:12.5px;color:var(--ink-2);max-width:75ch}
 .err{color:var(--seal);font-weight:600}
 @media (max-width:560px){ .pillar .gz{font-size:20px} .masthead h1{font-size:28px} }
@@ -233,13 +247,14 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.03em}
       <div class="ai-out" id="aiOut"><p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p></div>
       <div id="chat" hidden>
         <div id="qaList"></div>
+        <p class="small muted" style="margin:10px 0 0">Gieo quẻ theo phép Mai Hoa Dịch Số, lấy năm, tháng, ngày, giờ âm lịch lúc bấm. Mỗi câu hỏi chỉ gieo một lần trong ngày.</p>
         <div class="chat-row" style="margin-top:12px">
           <input id="ask" placeholder="Hỏi thêm, ví dụ: năm 2027 có nên mở kinh doanh riêng không?">
           <button class="btn-ghost" id="askGo" type="button">Hỏi</button>
+          <button class="btn-que" id="castGo" type="button" title="Gieo một quẻ Kinh Dịch theo thời điểm bấm, rồi luận cho câu hỏi này">☯ Gieo quẻ cho câu này</button>
         </div>
       </div>
       <textarea id="promptBox" readonly hidden aria-label="Lời nhắc để dán vào AI khác" style="min-height:160px;font-size:12.5px"></textarea>
-    
       <p class="note">Bát tự, tử vi, chiêm tinh và thần số học là các hệ thống diễn giải văn hóa, không phải dự đoán khoa học. Dùng để tự soi lại mình, đừng dùng thay cho quyết định y tế, tài chính hay pháp lý.</p>
     </div>
   </section>
@@ -251,6 +266,7 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.03em}
 <script src="lib/marked.min.js"></script>
 <script src="lib/purify.min.js"></script>
 <script src="compute.js"></script>
+<script src="iching.js"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -507,7 +523,7 @@ const CODE_KEY = 'tuchieu:code';
 try { $('#code').value = localStorage.getItem(CODE_KEY) || ''; } catch(e) {}
 function resetAI(){ history = []; firstText = ''; lastText=''; $('#qaList').innerHTML=''; $('#chat').hidden = true; $('#aiCopy').hidden = true; $('#aiStatus').textContent='';
   $('#aiOut').innerHTML = `<p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số của <b>${esc(R.input.name)}</b> và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p>`; }
-function busy(on){ $('#aiGo').disabled = on; $('#askGo').disabled = on; $('#aiStop').hidden = !on; }
+function busy(on){ $('#aiGo').disabled = on; $('#askGo').disabled = on; $('#castGo').disabled = on; $('#aiStop').hidden = !on; }
 $('#aiStop').onclick = () => ctl && ctl.abort();
 
 // Gọi /api/luangiai, đọc chữ trả về dần dần
@@ -553,6 +569,45 @@ $('#copyPrompt').onclick = async () => {
   try { await navigator.clipboard.writeText(full); $('#aiStatus').textContent = 'Đã sao chép. Dán vào ChatGPT, Gemini hoặc Claude để được luận giải.'; $('#promptBox').hidden = true; }
   catch(e) { const t = $('#promptBox'); t.value = full; t.hidden = false; t.focus(); t.select(); $('#aiStatus').textContent = 'Bấm Ctrl/Cmd + C để sao chép đoạn đã chọn bên dưới.'; }
 };
+/* ---- gieo quẻ ---- */
+function hexHTML(h, mv, cap){
+  return `<div><div class="hex" aria-label="${esc(h.fullName)}">${h.lines.map((v,i)=>({v,i})).reverse().map(({v,i})=>`<div class="ln ${i===mv-1?'mv':''}">${v?'<i></i>':'<i></i><i></i>'}</div>`).join('')}</div><div class="hex-cap">${cap}</div></div>`;
+}
+function queCard(q){
+  return `<div class="hex-card">
+    <div class="hex-figs">${hexHTML(q.main, q.dong, 'Quẻ chủ')}<span class="hex-arrow" aria-hidden="true">→</span>${hexHTML(q.changed, 0, 'Quẻ biến')}</div>
+    <div class="hex-info">
+      <h4>${esc(q.main.fullName)} <span class="muted" style="font-size:14px">· quẻ ${q.main.n}</span></h4>
+      <div>${esc(q.main.key)}. Hào ${q.dong} động, biến thành <b>${esc(q.changed.fullName)}</b>: ${esc(q.changed.key.toLowerCase())}.</div>
+      <div class="hex-meta">Quẻ hỗ: ${esc(q.nuclear.fullName)} · Thể ${q.the.name} (${q.the.hanh}), Dụng ${q.dung.name} (${q.dung.hanh}): <b>${q.theDung.rel}</b></div>
+      <div class="hex-meta">Gieo lúc ${new Date(q.at).toLocaleString('vi-VN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'})} · âm lịch ngày ${q.lunar.day}/${q.lunar.month}${q.lunar.leap?' nhuận':''}, năm ${q.lunar.yearChi}, giờ ${q.lunar.hourChi}</div>
+    </div></div>`;
+}
+const QUE_KEY = (q) => 'tuchieu:que:' + new Date().toISOString().slice(0,10) + ':' + q.toLowerCase().replace(/\s+/g,' ').replace(/[?.!,]+$/,'').trim();
+async function castAsk(){
+  const q = $('#ask').value.trim();
+  if (!q) { $('#ask').focus(); $('#ask').placeholder = 'Nhập câu hỏi trước khi gieo quẻ, ví dụ: có nên nhận project mới không?'; return; }
+  if (!firstText) return;
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(QUE_KEY(q)) || 'null'); } catch(e) {}
+  const box = document.createElement('div'); box.className = 'qa';
+  $('#qaList').append(box); $('#ask').value = '';
+  if (saved && saved.answer) {
+    box.innerHTML = `<div class="q">☯ ${esc(q)}</div>${queCard(saved.que)}<p class="small muted">Câu này đã gieo hôm nay, theo lệ "một việc không hỏi hai lần" nên dùng lại quẻ cũ.</p><div class="a">${md(saved.answer)}</div>`;
+    return;
+  }
+  const que = saved ? saved.que : ICHING.cast(new Date());
+  try { localStorage.setItem(QUE_KEY(q), JSON.stringify({ que })); } catch(e) {}
+  box.innerHTML = `<div class="q">☯ ${esc(q)}</div>${queCard(que)}<div class="a"><p class="muted">Đang luận quẻ…</p></div>`;
+  const a = box.querySelector('.a');
+  ctl = new AbortController(); busy(true);
+  try {
+    const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, que: ICHING.brief(que, R.bazi.dayMasterHanh) }, t => { a.innerHTML = md(t); });
+    history.push({ q: '[Gieo quẻ ' + que.main.fullName + '] ' + q, a: text });
+    try { localStorage.setItem(QUE_KEY(q), JSON.stringify({ que, answer: text })); } catch(e) {}
+  } catch(e) { if (e.name !== 'AbortError') a.insertAdjacentHTML('beforeend', `<p class="err">${esc(e.message)}</p>`); }
+  finally { busy(false); }
+}
+$('#castGo').onclick = castAsk;
 $('#askGo').onclick = ask; $('#ask').addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
 
 
