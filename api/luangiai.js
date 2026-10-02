@@ -55,7 +55,7 @@ export default async function handler(req, res) {
   if (!upstream.ok) {
     const t = await upstream.text().catch(() => '');
     console.error('Gemini error', upstream.status, t);
-    const msg = upstream.status === 429 ? 'Đã hết lượt miễn phí của Gemini hôm nay. Dùng nút "Sao chép lời nhắc" để luận giải ở nơi khác.'
+    const msg = upstream.status === 429 ? 'Đã hết lượt miễn phí hôm nay. Dùng nút "Sao chép lời nhắc" để luận giải ở nơi khác.'
       : upstream.status === 404 ? 'Tên model không đúng, kiểm tra GEMINI_MODEL.'
       : (upstream.status === 400 || upstream.status === 403) ? 'API key không hợp lệ hoặc chưa được bật, kiểm tra GEMINI_API_KEY.'
       : 'AI đang bận hoặc lỗi, thử lại sau.';
