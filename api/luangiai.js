@@ -6,6 +6,7 @@
 //   GEMINI_MODEL        (tùy chọn) mặc định gemini-3-flash-preview
 //   ACCESS_CODE         (tùy chọn) mã truy cập; nếu đặt thì chỉ ai nhập đúng mã mới dùng được AI
 //   RATE_LIMIT_PER_HOUR (tùy chọn) số lượt tối đa mỗi IP mỗi giờ, mặc định 8
+//   OWNER_CODE          (tùy chọn) mã của chủ trang; nhập mã này vào ô "Mã truy cập" thì không bị giới hạn lượt
 
 import { rules, FOCUS } from '../prompt.js';
 
@@ -18,14 +19,20 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Chỉ nhận POST.' });
   if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: 'Chưa cài GEMINI_API_KEY trên Vercel.' });
 
-  if (process.env.ACCESS_CODE && req.headers['x-access-code'] !== process.env.ACCESS_CODE)
+  const code = String(req.headers['x-access-code'] || '');
+  const owner = !!process.env.OWNER_CODE && code === process.env.OWNER_CODE;
+  if (!owner && process.env.ACCESS_CODE && code !== process.env.ACCESS_CODE)
     return res.status(401).json({ error: 'Sai hoặc thiếu mã truy cập.' });
 
+  // Kiểm tra giới hạn trước, nhưng chỉ trừ lượt khi AI trả lời được (xem cuối hàm)
   const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '?').split(',')[0].trim();
   const now = Date.now();
   const list = (hits.get(ip) || []).filter(t => now - t < 3600e3);
-  if (list.length >= LIMIT) return res.status(429).json({ error: `Bạn đã dùng hết ${LIMIT} lượt trong giờ này. Dùng nút "Sao chép lời nhắc" để luận giải bằng ChatGPT hoặc Gemini của bạn.` });
-  list.push(now); hits.set(ip, list);
+  hits.set(ip, list);
+  if (!owner && list.length >= LIMIT) {
+    const mins = Math.max(1, Math.ceil((list[0] + 3600e3 - now) / 60e3));
+    return res.status(429).json({ error: `Bạn đã dùng hết ${LIMIT} lượt trong giờ này, khoảng ${mins} phút nữa sẽ có lại. Trong lúc chờ, dùng nút "Sao chép lời nhắc" để luận giải bằng ChatGPT hoặc Gemini của bạn.` });
+  }
 
   const b = req.body || {};
   const brief = clip(b.brief, 14000);
@@ -42,7 +49,11 @@ export default async function handler(req, res) {
       contents.push({ role: 'user', parts: [{ text: clip(h.q, 400) }] });
       contents.push({ role: 'model', parts: [{ text: clip(h.a, 6000) || '...' }] });
     });
-    contents.push({ role: 'user', parts: [{ text: clip(b.question, 400) + '\n\n(Trả lời ngắn gọn, dựa trên các lá số ở trên, ghi rõ trường phái. Không phán cứng nhắc. Chỉ trả lời câu hỏi liên quan tới lá số này.)' }] });
+    const que = clip(b.que, 2000);
+    const qText = que
+      ? `Câu hỏi: ${clip(b.question, 400)}\n\n[QUẺ VỪA GIEO]\n${que}\n\nHãy luận câu hỏi này bằng quẻ trên, kết hợp các lá số đã có. Dùng Markdown, ba phần ngắn:\n### Quẻ nói gì\nÝ của quẻ chủ, hào động, quẻ hỗ (diễn biến bên trong), quẻ biến (kết cục), quan hệ Thể và Dụng theo Mai Hoa, gắn vào đúng câu hỏi.\n### Kết hợp lá số\nĐối chiếu với vận hiện tại trong bát tự, tử vi, chiêm tinh, thần số. Nói rõ phần so Thể với Nhật chủ là cách ghép hiện đại, không có trong sách Mai Hoa gốc.\n### Gợi ý\n2–3 việc cụ thể nên cân nhắc.\nGiọng gợi mở, không phán chắc thành hay bại, không dọa. Không chép dài kinh văn. Khoảng 250–400 từ.`
+      : clip(b.question, 400) + '\n\n(Trả lời ngắn gọn, dựa trên các lá số ở trên, ghi rõ trường phái. Không phán cứng nhắc. Chỉ trả lời câu hỏi liên quan tới lá số này.)';
+    contents.push({ role: 'user', parts: [{ text: qText }] });
     maxTokens = 4096;
   }
 
@@ -65,7 +76,7 @@ export default async function handler(req, res) {
   res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no' });
   const reader = upstream.body.getReader();
   const dec = new TextDecoder();
-  let buf = '';
+  let buf = '', wrote = false;
   try {
     for (;;) {
       const { done, value } = await reader.read();
@@ -78,7 +89,7 @@ export default async function handler(req, res) {
           if (!line.startsWith('data:')) continue;
           let ev; try { ev = JSON.parse(line.slice(5)); } catch { continue; }
           const parts = ev.candidates?.[0]?.content?.parts || [];
-          for (const p of parts) if (p.text && !p.thought) res.write(p.text);
+          for (const p of parts) if (p.text && !p.thought) { res.write(p.text); wrote = true; }
           if (ev.error) res.write('\u0000ERR:AI bị gián đoạn, thử lại sau.');
         }
       }
@@ -86,5 +97,6 @@ export default async function handler(req, res) {
   } catch (e) {
     res.write('\u0000ERR:Kết nối tới AI bị ngắt.');
   }
+  if (wrote && !owner) list.push(now); // chỉ tính lượt khi đã có câu trả lời
   res.end();
 }
