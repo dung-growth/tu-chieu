@@ -253,6 +253,7 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.03em}
           <button class="btn-ghost" id="askGo" type="button">Hỏi</button>
           <button class="btn-que" id="castGo" type="button" title="Gieo một quẻ Kinh Dịch theo thời điểm bấm, rồi luận cho câu hỏi này">☯ Gieo quẻ cho câu này</button>
         </div>
+        <p id="askStatus" class="small" role="status" style="margin:8px 0 0"></p>
       </div>
       <textarea id="promptBox" readonly hidden aria-label="Lời nhắc để dán vào AI khác" style="min-height:160px;font-size:12.5px"></textarea>
       <p class="note">Bát tự, tử vi, chiêm tinh và thần số học là các hệ thống diễn giải văn hóa, không phải dự đoán khoa học. Dùng để tự soi lại mình, đừng dùng thay cho quyết định y tế, tài chính hay pháp lý.</p>
@@ -550,15 +551,21 @@ $('#aiGo').onclick = async () => {
   } finally { busy(false); }
 };
 $('#aiCopy').onclick = async () => { try { await navigator.clipboard.writeText(lastText); $('#aiStatus').textContent = 'Đã sao chép.'; } catch(e) { const r = document.createRange(); r.selectNodeContents($('#aiOut')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $('#aiStatus').textContent = 'Đã chọn sẵn bài luận, bấm Ctrl/Cmd + C để sao chép.'; } };
+// Câu hỏi lỗi mà chưa có chữ nào: gỡ khỏi khung chat, trả câu về ô nhập để bấm lại
+function failAsk(box, q, e, gotText){
+  if (gotText) { if (e.name !== 'AbortError') box.querySelector('.a').insertAdjacentHTML('beforeend', `<p class="err">${esc(e.message)}</p>`); return; }
+  box.remove(); $('#ask').value = q;
+  $('#askStatus').innerHTML = e.name === 'AbortError' ? 'Đã dừng.' : `<span class="err">${esc(e.message)}</span>`;
+}
 async function ask(){
   const q = $('#ask').value.trim(); if (!q || !firstText) return;
-  $('#ask').value=''; ctl = new AbortController(); busy(true);
+  $('#ask').value=''; $('#askStatus').textContent=''; ctl = new AbortController(); busy(true);
   const box = document.createElement('div'); box.className = 'qa'; box.innerHTML = `<div class="q">${esc(q)}</div><div class="a"><p class="muted">Đang suy nghĩ…</p></div>`; $('#qaList').append(box);
-  const a = box.querySelector('.a');
+  const a = box.querySelector('.a'); let got = false;
   try {
-    const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q }, t => { a.innerHTML = md(t); });
+    const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q }, t => { got = !!t; a.innerHTML = md(t); });
     history.push({ q, a: text });
-  } catch(e) { if (e.name !== 'AbortError') a.insertAdjacentHTML('beforeend', `<p class="err">${esc(e.message)}</p>`); }
+  } catch(e) { failAsk(box, q, e, got); }
   finally { busy(false); }
 }
 $('#copyPrompt').onclick = async () => {
@@ -590,7 +597,7 @@ async function castAsk(){
   if (!firstText) return;
   let saved = null; try { saved = JSON.parse(localStorage.getItem(QUE_KEY(q)) || 'null'); } catch(e) {}
   const box = document.createElement('div'); box.className = 'qa';
-  $('#qaList').append(box); $('#ask').value = '';
+  $('#qaList').append(box); $('#ask').value = ''; $('#askStatus').textContent = '';
   if (saved && saved.answer) {
     box.innerHTML = `<div class="q">☯ ${esc(q)}</div>${queCard(saved.que)}<p class="small muted">Câu này đã gieo hôm nay, theo lệ "một việc không hỏi hai lần" nên dùng lại quẻ cũ.</p><div class="a">${md(saved.answer)}</div>`;
     return;
@@ -598,13 +605,13 @@ async function castAsk(){
   const que = saved ? saved.que : ICHING.cast(new Date());
   try { localStorage.setItem(QUE_KEY(q), JSON.stringify({ que })); } catch(e) {}
   box.innerHTML = `<div class="q">☯ ${esc(q)}</div>${queCard(que)}<div class="a"><p class="muted">Đang luận quẻ…</p></div>`;
-  const a = box.querySelector('.a');
+  const a = box.querySelector('.a'); let got = false;
   ctl = new AbortController(); busy(true);
   try {
-    const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, que: ICHING.brief(que, R.bazi.dayMasterHanh) }, t => { a.innerHTML = md(t); });
+    const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, que: ICHING.brief(que, R.bazi.dayMasterHanh) }, t => { got = !!t; a.innerHTML = md(t); });
     history.push({ q: '[Gieo quẻ ' + que.main.fullName + '] ' + q, a: text });
     try { localStorage.setItem(QUE_KEY(q), JSON.stringify({ que, answer: text })); } catch(e) {}
-  } catch(e) { if (e.name !== 'AbortError') a.insertAdjacentHTML('beforeend', `<p class="err">${esc(e.message)}</p>`); }
+  } catch(e) { failAsk(box, q, e, got); }
   finally { busy(false); }
 }
 $('#castGo').onclick = castAsk;
