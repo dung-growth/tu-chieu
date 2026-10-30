@@ -146,7 +146,21 @@ button:focus-visible,[role=tab]:focus-visible,a:focus-visible,.seg label:has(inp
 .hint{font-size:12.5px;color:var(--ink-2)}
 .check{display:flex;align-items:center;gap:8px;font-weight:400;color:var(--ink-2);font-size:13.5px;cursor:pointer;margin-top:2px}
 .check input{width:16px;height:16px;min-height:0;accent-color:var(--seal);margin:0}
-.custom-geo{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px}
+.combo{position:relative}
+.combo-list{position:absolute;z-index:30;left:0;top:calc(100% + 6px);min-width:100%;width:max(100%,300px);max-height:320px;overflow-y:auto;margin:0;padding:6px;list-style:none;
+  background:var(--sheet);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow-lg);animation:fade .12s var(--ease)}
+.combo-list .grp{padding:8px 10px 4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.combo-list [role=option]{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:14px;line-height:1.35}
+.combo-list [role=option] small{display:block;color:var(--ink-2);font-size:12px}
+.combo-list [role=option][aria-selected=true]{font-weight:600}
+.combo-list [role=option].active{background:var(--sunken)}
+.combo-list .act{color:var(--seal);font-weight:500}
+.combo-list .info{padding:8px 10px;font-size:13px;color:var(--ink-2)}
+.combo-list .credit{padding:6px 10px 2px;font-size:11px;color:var(--ink-3)} .combo-list .credit a{color:inherit}
+.custom-geo{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px;align-items:start}
+.geo-help{grid-column:1/-1;font-size:13px;line-height:1.55;color:var(--ink-2);background:var(--sunken);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px}
+.geo-help b{color:var(--ink);font-weight:600} .geo-help a{color:var(--seal);font-weight:500}
+.geo-help code{font:500 12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--sheet);border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--ink)}
 .warn{border:1px solid var(--line);border-left:3px solid var(--seal);background:var(--sheet);padding:12px 16px;border-radius:var(--r-sm);font-size:14px;color:var(--ink)}
 
 /* ---------- kết quả ---------- */
@@ -210,19 +224,19 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .retro{color:var(--seal);font-size:12px;font-weight:700}
 
 /* tử vi */
-.tv-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,auto);gap:6px;min-width:640px}
+.tv-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,auto);gap:6px}
 .tv-cell{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px;font-size:12.5px;display:flex;flex-direction:column;gap:3px;min-height:150px}
 .tv-cell.menh{border-color:var(--seal);box-shadow:inset 0 0 0 1px var(--seal)}
 .tv-cell.dh{background:var(--jade-soft)}
 .tv-head{display:flex;justify-content:space-between;gap:6px;align-items:baseline}
 .tv-name{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
-.tv-major{font-weight:600;color:var(--seal)}
+.tv-major{display:flex;flex-direction:column}
 .tv-major .br{font-weight:400;color:var(--ink-2);font-size:11.5px}
-.mut{display:inline-block;font-size:10.5px;padding:0 5px;border-radius:4px;margin-left:3px;background:var(--jade);color:var(--on-jade);font-weight:600}
 .tv-minor{color:var(--ink)} .tv-adj{color:var(--ink-2);font-size:11.5px}
 .tv-foot{margin-top:auto;display:flex;justify-content:space-between;color:var(--ink-2);font-size:11.5px}
 .tv-center{grid-column:2/4;grid-row:2/4;background:var(--sunken);border:1px dashed var(--line);border-radius:var(--r-sm);padding:16px;display:flex;flex-direction:column;gap:6px;justify-content:center;text-align:center}
 .tv-center h3{font-size:20px}
+.tv-center{cursor:default}
 .tag{font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:4px;background:var(--seal);color:var(--on-seal)}
 .tag.alt{background:var(--jade);color:var(--on-jade)}
 
@@ -234,6 +248,93 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .lo-shu{display:grid;grid-template-columns:repeat(3,64px);gap:6px}
 .lo-shu div{height:64px;border:1px solid var(--line);border-radius:var(--r-sm);display:grid;place-items:center;font:600 17px var(--display);background:var(--sheet)}
 .lo-shu div.empty{color:var(--ink-3);background:var(--sunken);border-style:dashed}
+
+/* bát tự: thêm */
+.pkv{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;margin:6px 0 0;font-size:12px;text-align:left;padding-top:8px;border-top:1px solid var(--line-2)}
+.pkv dt{color:var(--ink-3)} .pkv dd{margin:0;color:var(--ink);text-align:right}
+.ss{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:6px;min-height:22px}
+.ss-chip{background:var(--jade-soft);border-color:color-mix(in srgb,var(--jade) 30%,var(--line));color:var(--ink);cursor:help;font-size:11.5px}
+.kv-chip{background:var(--sunken);color:var(--ink-2);border-style:dashed;font-size:11.5px;cursor:help}
+.strength{display:flex;align-items:baseline;gap:10px;margin-top:10px}.st-level{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.meter{position:relative;display:grid;grid-template-columns:44fr 12fr 44fr;height:26px;margin-top:10px;border-radius:8px;overflow:hidden;font-size:11px;font-weight:600}
+.meter .zone{display:grid;place-items:center;color:var(--ink-2)} .meter .weak{background:var(--sunken)} .meter .mid{background:var(--line-2)} .meter .strong{background:var(--seal-soft)}
+.meter i{position:absolute;top:-2px;bottom:-2px;width:3px;margin-left:-1.5px;border-radius:2px;background:var(--ink)}
+.rel-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.rel{display:inline-block;font-size:12.5px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);background:var(--sunken);margin:2px 0}
+.rel b{font-weight:600;margin-right:3px} .rel-good{background:var(--jade-soft)} .rel-bad{background:var(--seal-soft)}
+.dv-head{display:flex;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;align-items:baseline;margin-bottom:12px}
+.timeline button.tl{text-align:left;display:flex;flex-direction:column;gap:2px;font-weight:400;line-height:1.35;color:var(--ink);cursor:pointer}
+.timeline button.tl:hover{border-color:var(--ink-3)}
+.timeline button.tl[aria-pressed=true]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink)}
+.dv-title{margin:20px 0 8px;font-size:15px}
+.dv-table tr.cur td{background:var(--seal-soft)}
+/* bản đồ sao: thêm */
+.astro-top{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}
+.wheel-box{flex-direction:column;align-items:center}
+.wheel-box svg.wheel{max-width:640px}
+.wheel-legend{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;padding:6px 0 4px}
+.wheel-legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.asp-grid{border-collapse:separate;border-spacing:2px;width:auto;font-size:13px}
+.asp-grid td,.asp-grid th{width:34px;height:34px;padding:0;text-align:center;vertical-align:middle;border:0}
+.asp-grid td{background:var(--sunken);border-radius:5px;line-height:1}
+.asp-grid td:empty{background:var(--line-2)}
+.asp-grid td span{display:block;font-size:15px} .asp-grid td small{display:block;font-size:9px;color:var(--ink-3);margin-top:1px}
+.asp-grid th{font-weight:600;font-size:15px;color:var(--ink);text-align:left;padding-left:6px;width:auto}
+.ruler{margin-top:16px;padding-top:14px;border-top:1px solid var(--line-2)} .ruler p{margin:4px 0 0;font-size:14px}
+.matrix th,.matrix td{text-align:center} .matrix th[scope=row]{text-align:left}
+.matrix td{font-size:16px;letter-spacing:2px}
+/* tử vi: thêm */
+.tv-bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.tv-legend{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.tv-legend .lg{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px;border:1px solid var(--line)}
+.lg-menh{border:2px solid var(--seal)!important} .lg-dh{background:var(--jade-soft)} .lg-ln{background:var(--seal-soft)} .lg-th{border:2px dashed var(--ink-3)!important}
+.tv-grid{position:relative;min-width:780px}
+.tv-cell{position:relative;cursor:pointer;transition:box-shadow .15s var(--ease),opacity .2s var(--ease),border-color .15s var(--ease)}
+.tv-cell:hover{border-color:var(--ink-3)}
+.tv-cell.ln{background:var(--seal-soft)} .tv-cell.th{outline:2px dashed var(--ink-3);outline-offset:-4px}
+.tv-cell.dh.ln{background:linear-gradient(135deg,var(--jade-soft) 50%,var(--seal-soft) 50%)}
+.tv-gz{font-size:11.5px;color:var(--ink-2);white-space:nowrap}
+.tv-flags{display:flex;flex-wrap:wrap;gap:3px}
+.tf{font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;border:1px solid var(--line);background:var(--sheet)}
+.tf-dh{color:var(--jade)} .tf-ln{color:var(--seal)} .tf-th{color:var(--ink-2);border-style:dashed}
+.tv-st{font-weight:600;font-size:13px;line-height:1.35}
+.tv-st sup{font-size:9.5px;font-weight:600;color:var(--ink-2);margin-left:2px}
+.mut{display:inline-block;font-size:10px;padding:0 4px;border-radius:4px;margin-left:3px;background:var(--jade);color:var(--on-jade);font-weight:600;vertical-align:1px}
+.mut-Kỵ{background:var(--ink);color:var(--paper)} .mut-Quyền{background:var(--seal);color:var(--on-seal)}
+.mut-luu{display:inline-block;font-size:9.5px;padding:0 4px;border-radius:4px;margin-left:3px;border:1px solid var(--air);color:var(--air);font-weight:600;vertical-align:1px}
+.tv-cols{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11.5px;line-height:1.45}
+.tv-good{color:var(--ink)} .tv-bad{color:var(--fire);text-align:right}
+.tv-luu{font-size:11px;color:var(--air);font-style:italic}
+.tv-center .tv-year{margin-top:6px;padding-top:8px;border-top:1px solid var(--line);font-size:13px}
+.tt{position:absolute;z-index:3;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--ink);color:var(--paper);white-space:nowrap;pointer-events:none}
+.tt-bottom{left:50%;bottom:0;transform:translate(-50%,calc(50% + 3px))}
+.tt-right{top:50%;right:0;transform:translate(calc(50% + 3px),-50%)}
+.tv-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.tv-grid:has(.tp-sel) .tv-cell:not(.tp-sel):not(.tp-rel){opacity:.45}
+.tv-cell.tp-sel{border-color:var(--seal);box-shadow:0 0 0 2px var(--seal)} .tv-cell.tp-rel{border-color:var(--seal)}
+/* thần số: thêm */
+.num-core{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.num-sub{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ncard.big .n{font-size:44px}
+.ncard .d{display:block}
+.loshu-wrap{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;margin-top:12px}
+.loshu{width:236px;max-width:100%;flex:none}
+.arrow-list{flex:1 1 180px;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.arw.full b{color:var(--seal)}
+.chal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.chal>div{display:flex;flex-direction:column;gap:2px;padding:10px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--sunken)}
+.chal b{font-size:24px;color:var(--seal)}
+.debts{margin-top:12px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.cycle{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;margin-top:12px}
+.cycle div{display:flex;flex-direction:column;align-items:center;padding:8px 0;border-radius:6px;background:var(--sunken);font-size:11px;color:var(--ink-2)}
+.cycle b{font-size:16px;color:var(--ink)}
+.cycle div.cur{background:var(--seal);color:var(--on-seal)} .cycle div.cur b{color:var(--on-seal)}
+tr.cur td{background:var(--seal-soft)}
+@media (max-width:960px){ .astro-top{grid-template-columns:1fr} }
+@media (max-width:560px){ .pillars{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dv-table thead{display:none} .dv-table tr{display:grid;grid-template-columns:auto auto 1fr auto;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--line-2)}
+  .dv-table td{border:0;padding:0 4px} .dv-table td:last-child{grid-column:1/-1;padding-top:4px} .dv-table tr.cur{background:var(--seal-soft);border-radius:8px}
+  .num-core,.num-sub{grid-template-columns:repeat(2,minmax(0,1fr))} .chal{grid-template-columns:repeat(2,minmax(0,1fr))} .ncard.big .n{font-size:36px} }
 
 /* ---------- luận giải AI ---------- */
 .ai-shell{border:1px solid color-mix(in srgb,var(--seal) 30%,var(--line));border-radius:16px;background:var(--sheet);box-shadow:var(--shadow-lg);overflow:hidden}
@@ -376,11 +477,21 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
             <label class="check" for="noTime"><input type="checkbox" id="noTime"> Không rõ giờ sinh</label></div>
           <div class="field" id="canhField" hidden><label for="canh">Biết khoảng giờ không?</label>
             <select id="canh"><option value="">Không biết</option></select></div>
-          <div class="field"><label for="place">Nơi sinh</label><select id="place"></select></div>
+          <div class="field"><label for="placeInput">Nơi sinh</label>
+            <div class="combo">
+              <input id="placeInput" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="placeList" autocomplete="off" spellcheck="false" placeholder="Gõ tên nơi sinh, ví dụ Mỹ Tho">
+              <ul id="placeList" class="combo-list" role="listbox" aria-label="Nơi sinh" hidden></ul>
+            </div>
+            <select id="place" hidden aria-hidden="true" tabindex="-1"></select></div>
           <div class="custom-geo" id="geo" hidden>
-            <div class="field"><label for="lat">Vĩ độ</label><input id="lat" type="number" step="0.001" value="10.776"></div>
-            <div class="field"><label for="lon">Kinh độ</label><input id="lon" type="number" step="0.001" value="106.700"></div>
-            <div class="field"><label for="tz">Múi giờ (GMT+)</label><input id="tz" type="number" step="0.5" value="7"></div>
+            <div class="geo-help">
+              <b>Cách lấy tọa độ:</b> mở <a href="https://www.google.com/maps" target="_blank" rel="noopener">Google Maps</a>, tìm nơi sinh (ví dụ "Bệnh viện Từ Dũ"), <b>nhấn chuột phải</b> vào điểm đó (trên điện thoại: <b>nhấn giữ</b>). Dòng số hiện ra là tọa độ, ví dụ <code>10.7686, 106.6866</code>. Bấm vào để sao chép rồi dán cả dòng vào ô Vĩ độ, trang sẽ tự tách.
+            </div>
+            <div class="field"><label for="lat">Vĩ độ</label><input id="lat" type="text" inputmode="decimal" placeholder="Ví dụ: 10.7686" value="10.776" autocomplete="off"></div>
+            <div class="field"><label for="lon">Kinh độ</label><input id="lon" type="text" inputmode="decimal" placeholder="Ví dụ: 106.6866" value="106.700" autocomplete="off"></div>
+            <div class="field"><label for="tz">Múi giờ (GMT+)</label><input id="tz" type="number" step="0.5" value="7">
+              <span class="hint">Việt Nam: 7. Nước ngoài: múi giờ lúc sinh, gồm cả giờ mùa hè nếu có (ví dụ California mùa hè là -7).</span></div>
+            <p class="err" id="geoErr" role="alert" hidden style="grid-column:1/-1;margin:0"></p>
           </div>
           <div class="field wide"><label for="ctx">Bối cảnh hoặc câu hỏi cho AI <span class="muted" style="font-weight:400">(không bắt buộc)</span></label>
             <textarea id="ctx" placeholder="Ví dụ:"></textarea></div>
@@ -485,28 +596,82 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 (() => {
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const CITIES = [
-  ['TP. Hồ Chí Minh',10.776,106.700,7,'s'],['Hà Nội',21.028,105.854,7,'n'],['Đà Nẵng',16.054,108.202,7,'s'],['Hải Phòng',20.845,106.688,7,'n'],
-  ['Cần Thơ',10.045,105.747,7,'s'],['Huế',16.463,107.590,7,'s'],['Nha Trang',12.238,109.196,7,'s'],['Đà Lạt',11.940,108.458,7,'s'],
-  ['Biên Hòa',10.957,106.843,7,'s'],['Vũng Tàu',10.346,107.084,7,'s'],['Buôn Ma Thuột',12.667,108.038,7,'s'],['Quy Nhơn',13.782,109.219,7,'s'],
-  ['Long Xuyên',10.386,105.435,7,'s'],['Rạch Giá',10.012,105.080,7,'s'],['Mỹ Tho',10.360,106.360,7,'s'],['Pleiku',13.983,108.000,7,'s'],
-  ['Vinh',18.679,105.681,7,'n'],['Thanh Hóa',19.807,105.776,7,'n'],['Nam Định',20.420,106.168,7,'n'],['Thái Nguyên',21.594,105.848,7,'n'],
-  ['Singapore',1.352,103.820,8,'x'],['Tokyo',35.680,139.690,9,'x'],['Seoul',37.566,126.978,9,'x'],['Sydney',-33.869,151.209,10,'x'],
-  ['Khác (tự nhập tọa độ)',null,null,null,'c']
-];
+// Nơi sinh: 63 tỉnh, thành theo địa giới trước tháng 7/2025 (người ta vẫn nhớ nơi sinh theo tên cũ).
+// Tọa độ lấy theo trung tâm tỉnh lỵ, đủ chính xác cho lá số. Cột 5: 's' miền Nam (trước 13/6/1975 dùng GMT+8), 'n' miền Bắc, 'x' nước ngoài, 'c' tự nhập.
+const PROVINCES = {
+  'Miền Bắc': [
+    ['Hà Nội',21.028,105.854,'n'],['Hải Phòng',20.845,106.688,'n'],['Hà Giang',22.823,104.984,'n'],['Cao Bằng',22.666,106.258,'n'],
+    ['Bắc Kạn',22.147,105.835,'n'],['Tuyên Quang',21.823,105.214,'n'],['Lào Cai',22.486,103.971,'n'],['Điện Biên',21.386,103.017,'n'],
+    ['Lai Châu',22.396,103.458,'n'],['Sơn La',21.328,103.914,'n'],['Yên Bái',21.722,104.911,'n'],['Hòa Bình',20.817,105.338,'n'],
+    ['Thái Nguyên',21.594,105.848,'n'],['Lạng Sơn',21.853,106.761,'n'],['Quảng Ninh (Hạ Long)',20.951,107.080,'n'],['Bắc Giang',21.273,106.195,'n'],
+    ['Phú Thọ (Việt Trì)',21.322,105.402,'n'],['Vĩnh Phúc (Vĩnh Yên)',21.309,105.604,'n'],['Bắc Ninh',21.186,106.076,'n'],['Hải Dương',20.938,106.315,'n'],
+    ['Hưng Yên',20.646,106.051,'n'],['Thái Bình',20.450,106.340,'n'],['Hà Nam (Phủ Lý)',20.541,105.914,'n'],['Nam Định',20.420,106.168,'n'],
+    ['Ninh Bình',20.251,105.975,'n']
+  ],
+  'Miền Trung': [
+    ['Thanh Hóa',19.807,105.776,'n'],['Nghệ An (Vinh)',18.679,105.681,'n'],['Hà Tĩnh',18.343,105.906,'n'],['Quảng Bình (Đồng Hới)',17.468,106.622,'n'],
+    ['Quảng Trị (Đông Hà)',16.816,107.100,'s'],['Thừa Thiên Huế (Huế)',16.463,107.590,'s'],['Đà Nẵng',16.054,108.202,'s'],['Quảng Nam (Tam Kỳ)',15.573,108.474,'s'],
+    ['Quảng Ngãi',15.120,108.792,'s'],['Bình Định (Quy Nhơn)',13.782,109.219,'s'],['Phú Yên (Tuy Hòa)',13.096,109.321,'s'],['Khánh Hòa (Nha Trang)',12.238,109.196,'s'],
+    ['Ninh Thuận (Phan Rang)',11.565,108.988,'s'],['Bình Thuận (Phan Thiết)',10.928,108.102,'s']
+  ],
+  'Tây Nguyên': [
+    ['Kon Tum',14.350,108.000,'s'],['Gia Lai (Pleiku)',13.983,108.000,'s'],['Đắk Lắk (Buôn Ma Thuột)',12.667,108.038,'s'],
+    ['Đắk Nông (Gia Nghĩa)',12.004,107.691,'s'],['Lâm Đồng (Đà Lạt)',11.940,108.458,'s']
+  ],
+  'Miền Nam': [
+    ['TP. Hồ Chí Minh',10.776,106.700,'s'],['Bình Phước (Đồng Xoài)',11.535,106.883,'s'],['Tây Ninh',11.310,106.098,'s'],['Bình Dương (Thủ Dầu Một)',10.980,106.651,'s'],
+    ['Đồng Nai (Biên Hòa)',10.957,106.843,'s'],['Bà Rịa – Vũng Tàu',10.346,107.084,'s'],['Long An (Tân An)',10.535,106.413,'s'],['Tiền Giang (Mỹ Tho)',10.360,106.360,'s'],
+    ['Bến Tre',10.243,106.376,'s'],['Trà Vinh',9.935,106.345,'s'],['Vĩnh Long',10.254,105.972,'s'],['Đồng Tháp (Cao Lãnh)',10.460,105.633,'s'],
+    ['An Giang (Long Xuyên)',10.386,105.435,'s'],['Kiên Giang (Rạch Giá)',10.012,105.080,'s'],['Cần Thơ',10.045,105.747,'s'],['Hậu Giang (Vị Thanh)',9.784,105.470,'s'],
+    ['Sóc Trăng',9.603,105.980,'s'],['Bạc Liêu',9.294,105.727,'s'],['Cà Mau',9.177,105.150,'s']
+  ]
+};
+// Nước ngoài: múi giờ tính theo vùng giờ IANA tại đúng ngày giờ sinh (gồm cả giờ mùa hè)
+const ABROAD = [['Singapore',1.352,103.820,8,'Asia/Singapore'],['Kuala Lumpur',3.139,101.687,8,'Asia/Kuala_Lumpur'],['Bangkok',13.756,100.502,7,'Asia/Bangkok'],
+  ['Phnom Penh',11.556,104.928,7,'Asia/Phnom_Penh'],['Viêng Chăn',17.975,102.633,7,'Asia/Vientiane'],['Đài Bắc',25.033,121.565,8,'Asia/Taipei'],
+  ['Tokyo',35.680,139.690,9,'Asia/Tokyo'],['Seoul',37.566,126.978,9,'Asia/Seoul'],['Sydney',-33.869,151.209,10,'Australia/Sydney']];
+const CITIES = [], GROUPS = [];
+const byVi = (a, b) => a[0].localeCompare(b[0], 'vi');
+Object.entries(PROVINCES).forEach(([g, list]) => {
+  // Hà Nội, TP. Hồ Chí Minh đứng đầu nhóm; còn lại xếp theo vần
+  const top = list.filter(c => /^(Hà Nội|TP\. Hồ Chí Minh)$/.test(c[0])), rest = list.filter(c => !top.includes(c)).sort(byVi);
+  GROUPS.push([g, [...top, ...rest].map(([n, la, lo, f]) => CITIES.push([n, la, lo, 7, f]) - 1)]);
+});
+GROUPS.push(['Nước ngoài', ABROAD.slice().sort(byVi).map(([n, la, lo, tz, zone]) => CITIES.push([n, la, lo, tz, 'z', zone]) - 1)]);
+const MANUAL = CITIES.push(['Khác (tự nhập tọa độ)', null, null, null, 'c']) - 1;
+// Tên cũ (bản trước chỉ có 20 thành phố) → tên mới, để khôi phục lựa chọn đã lưu
+const OLD_PLACES = ['TP. Hồ Chí Minh','Hà Nội','Đà Nẵng','Hải Phòng','Cần Thơ','Huế','Nha Trang','Đà Lạt','Biên Hòa','Vũng Tàu','Buôn Ma Thuột','Quy Nhơn','Long Xuyên','Rạch Giá','Mỹ Tho','Pleiku','Vinh','Thanh Hóa','Nam Định','Thái Nguyên','Singapore','Tokyo','Seoul','Sydney','Khác (tự nhập tọa độ)'];
+const placeIndex = name => { if (!name) return -1; let i = CITIES.findIndex(c => c[0] === name); if (i < 0) i = CITIES.findIndex(c => c[0].includes('(' + name + ')') || (name === 'Vũng Tàu' && c[0] === 'Bà Rịa – Vũng Tàu')); return i; };
 const sel = $('#place');
-CITIES.forEach((c,i) => { const o = document.createElement('option'); o.value = i; o.textContent = c[0]; sel.append(o); });
+const addOption = i => { const o = document.createElement('option'); o.value = i; o.textContent = CITIES[i][0]; sel.append(o); };
+CITIES.forEach((c, i) => addOption(i));
+sel.value = placeIndex('TP. Hồ Chí Minh');
 
-function effTz(city, date){
+// Độ lệch giờ (giờ) của vùng giờ IANA tại một giờ địa phương, lấy từ lịch múi giờ có sẵn trong trình duyệt
+function zoneOffset(zone, t){
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: zone, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    .formatToParts(new Date(t)).map(x => [x.type, x.value]));
+  return (Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - t) / 36e5;
+}
+function offsetAt(zone, date, time){
+  const [y, m, d] = date.split('-').map(Number), [h, mi] = (time || '12:00').split(':').map(Number);
+  const t = Date.UTC(y, m - 1, d, h, mi), o = zoneOffset(zone, t);
+  return zoneOffset(zone, t - o * 36e5);
+}
+function effTz(city, date, time){
   if (!city || city[4]==='c') return +$('#tz').value;
   if (city[4]==='s' && date < '1975-06-13') return 8; // Miền Nam dùng GMT+8 trước 13/6/1975
+  if (city[4]==='z' && city[5] && /^\d{4}-\d{2}-\d{2}$/.test(date)) { try { return offsetAt(city[5], date, time); } catch(e) {} }
   return city[3];
 }
+const gmt = tz => 'GMT' + (tz < 0 ? '−' : '+') + Math.abs(tz);
 function updateTzNote(){
   const c = CITIES[+sel.value]; $('#geo').hidden = c[4] !== 'c';
   const d = $('#date').value;
   $('#tzNote').textContent = (c[4]==='s' && d && d < '1975-06-13')
     ? 'Sinh ở miền Nam trước 13/6/1975: tự động dùng múi giờ GMT+8 như thời đó.'
+    : (c[4]==='z' && /^\d{4}-\d{2}-\d{2}$/.test(d))
+    ? `Múi giờ tự tính theo nơi sinh vào ngày đó: ${gmt(effTz(c, d, timeInfo().time))} (đã gồm giờ mùa hè nếu có).`
     : 'Giờ sinh tính theo giờ địa phương lúc sinh.';
 }
 const CANH = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
@@ -514,13 +679,125 @@ const canhRange = k => { const a = (k*2+23)%24, b = (k*2+1)%24; return `${a}h–
 CANH.forEach((c,k) => { const o = document.createElement('option'); o.value = k; o.textContent = `Giờ ${c} (${canhRange(k)})`; $('#canh').append(o); });
 function updateTimeUI(){ const off = $('#noTime').checked; $('#time').disabled = off; $('#canhField').hidden = !off; }
 $('#noTime').addEventListener('change', updateTimeUI);
-sel.addEventListener('change', updateTzNote); $('#date').addEventListener('change', updateTzNote);
+sel.addEventListener('change', updateTzNote); $('#date').addEventListener('change', updateTzNote); $('#time').addEventListener('change', updateTzNote); $('#noTime').addEventListener('change', updateTzNote); $('#canh').addEventListener('change', updateTzNote);
+// Dán cả dòng "10.7686, 106.6866" từ Google Maps vào ô Vĩ độ hoặc Kinh độ thì tự tách làm hai
+const PAIR = /(-?\d{1,3}(?:\.\d+)?)\s*[,;]\s*(-?\d{1,3}(?:\.\d+)?)/;
+['#lat','#lon'].forEach(id => $(id).addEventListener('input', () => { const m = $(id).value.match(PAIR); if (m) { $('#lat').value = m[1]; $('#lon').value = m[2]; } }));
+['#lat','#lon','#tz'].forEach(id => $(id).addEventListener('input', () => { $('#geoErr').hidden = true; }));
+// Kiểm tra tọa độ tự nhập; trả về câu báo lỗi hoặc rỗng
+function geoError(){
+  if (CITIES[+sel.value][4] !== 'c') return '';
+  const t = v => v.trim().replace(',', '.'), la = t($('#lat').value), lo = t($('#lon').value), tz = $('#tz').value.trim();
+  if (!la || !lo || isNaN(+la) || isNaN(+lo)) return 'Nhập vĩ độ và kinh độ dạng số, ví dụ 10.7686 và 106.6866.';
+  if (Math.abs(+la) > 90 || Math.abs(+lo) > 180) return 'Tọa độ không hợp lệ: vĩ độ từ -90 đến 90, kinh độ từ -180 đến 180.';
+  if (tz === '' || isNaN(+tz) || Math.abs(+tz) > 14) return 'Nhập múi giờ, ví dụ 7 cho Việt Nam.';
+  $('#lat').value = la; $('#lon').value = lo; return '';
+}
+
+/* ---- ô tìm nơi sinh: khớp 63 tỉnh ngay trên máy, không có thì tìm trên bản đồ (OpenStreetMap) ---- */
+const fold = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const ALIAS = { 'TP. Hồ Chí Minh': 'sai gon saigon hcm tphcm tp hcm', 'Hà Nội': 'ha tay ha dong son tay hanoi', 'Bà Rịa – Vũng Tàu': 'brvt',
+  'Đắk Lắk (Buôn Ma Thuột)': 'daklak buon me thuot bmt', 'Thừa Thiên Huế (Huế)': 'hue', 'Đài Bắc': 'taipei dai loan', 'Viêng Chăn': 'vientiane lao',
+  'Bangkok': 'thai lan', 'Phnom Penh': 'campuchia nam vang', 'Tokyo': 'nhat ban', 'Seoul': 'han quoc', 'Sydney': 'uc australia', 'Kuala Lumpur': 'malaysia' };
+const hay = i => fold(CITIES[i][0] + ' ' + (ALIAS[CITIES[i][0]] || ''));
+// Thêm một nơi tìm được trên bản đồ vào danh sách; trả về chỉ số
+function addPlace(g){
+  const i = CITIES.push([g.name, g.lat, g.lon, g.flag === 'z' ? 0 : 7, g.flag, g.zone || null, true]) - 1; addOption(i); return i;
+}
+const placeGeoOf = c => ({ name: c[0], lat: c[1], lon: c[2], flag: c[4], zone: c[5] });
+const pin = $('#placeInput'), plist = $('#placeList');
+let pItems = [], pActive = -1, mapHits = null, mapState = '', lastMapQ = '', lastMapAt = 0;
+function pickPlace(i){
+  sel.value = i; pin.value = CITIES[i][0]; closePlaces(); sel.dispatchEvent(new Event('change'));
+  if (CITIES[i][4] === 'c') setTimeout(() => $('#lat').focus(), 0);
+}
+function closePlaces(){ plist.hidden = true; pin.setAttribute('aria-expanded', 'false'); pin.removeAttribute('aria-activedescendant'); pActive = -1; }
+function renderPlaces(){
+  const q = fold(pin.value), cur = +sel.value; let html = ''; pItems = [];
+  const opt = (label, sub, act, extra = '') => { const k = pItems.length; pItems.push(act);
+    return `<li role="option" id="po-${k}" data-k="${k}" ${extra}>${label}${sub ? `<small>${sub}</small>` : ''}</li>`; };
+  if (mapHits) {
+    html += `<li class="grp" role="presentation">Trên bản đồ</li>`;
+    if (mapState === 'loading') html += `<li class="info" role="presentation">Đang tìm…</li>`;
+    else if (mapState) html += `<li class="info" role="presentation">${esc(mapState)}</li>`;
+    mapHits.forEach(h => { html += opt(esc(h.name), esc(h.sub), () => pickPlace(addPlace(h))); });
+    html += `<li class="credit" role="presentation">Dữ liệu địa điểm © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></li>`;
+  } else {
+    const groups = [...GROUPS, ['Đã tìm', CITIES.map((c, i) => c[6] ? i : -1).filter(i => i >= 0)]];
+    if (!q) groups.forEach(([g, idx]) => {
+      if (!idx.length) return;
+      html += `<li class="grp" role="presentation">${g}</li>`;
+      idx.forEach(i => { html += opt(esc(CITIES[i][0]), '', () => pickPlace(i), i === cur ? 'aria-selected="true"' : ''); });
+    });
+    else {
+      // Có chữ gõ vào: xếp chung một danh sách, khớp đầu tên trước, khớp nguyên cụm sau, khớp rời từng chữ cuối cùng
+      const words = q.split(' '), name = i => fold(CITIES[i][0]);
+      const score = i => { const n = name(i), h = hay(i);
+        if (CITIES[i][0].split(/[()]/).map(fold).includes(q)) return 6;
+        if (n.startsWith(q)) return 5; if (new RegExp('(^| )' + q).test(n)) return 4; if (n.includes(q)) return 3; if (h.includes(q)) return 2; return words.every(w => h.includes(w)) ? 1 : 0; };
+      groups.flatMap(([g, idx]) => idx.map(i => ({ i, g, sc: score(i) }))).filter(x => x.sc).sort((a, b) => b.sc - a.sc).slice(0, 12)
+        .forEach(({ i, g }) => { html += opt(esc(CITIES[i][0]), g, () => pickPlace(i), i === cur ? 'aria-selected="true"' : ''); });
+    }
+    if (q.length >= 2) html += opt(`<span class="act">Tìm “${esc(pin.value.trim())}” trên bản đồ…</span>`, 'Huyện, xã hoặc thành phố ở nước ngoài', () => searchMap(pin.value.trim()));
+    html += opt(`<span class="act">Tự nhập tọa độ</span>`, '', () => pickPlace(MANUAL));
+  }
+  plist.innerHTML = html; plist.hidden = false; pin.setAttribute('aria-expanded', 'true');
+  setActive(q && !mapHits ? 0 : -1);
+}
+function setActive(k){
+  pActive = k; plist.querySelectorAll('[role=option]').forEach(li => li.classList.toggle('active', +li.dataset.k === k));
+  const li = $('#po-' + k); if (li) { pin.setAttribute('aria-activedescendant', li.id); li.scrollIntoView({ block: 'nearest' }); } else pin.removeAttribute('aria-activedescendant');
+}
+let tzReady = null;
+const loadTz = () => tzReady || (tzReady = new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'lib/tz.js'; sc.onload = ok; sc.onerror = () => { tzReady = null; no(); }; document.head.append(sc); }));
+async function searchMap(text){
+  if (!text) return;
+  mapHits = []; mapState = 'loading'; renderPlaces();
+  try {
+    // OpenStreetMap chỉ cho tìm khi người dùng bấm, tối đa 1 lượt mỗi giây
+    const wait = 1100 - (Date.now() - lastMapAt); if (wait > 0) await new Promise(r => setTimeout(r, wait));
+    lastMapAt = Date.now(); lastMapQ = text;
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&accept-language=vi&q=' + encodeURIComponent(text);
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error(res.status);
+    const data = await res.json();
+    if (lastMapQ !== text || !mapHits) return;
+    const abroad = data.some(d => (d.address?.country_code || '') !== 'vn');
+    if (abroad) await loadTz();
+    mapHits = data.map(d => {
+      const a = d.address || {}, lat = +d.lat, lon = +d.lon, vn = a.country_code === 'vn';
+      const parts = String(d.display_name).split(',').map(x => x.trim()).filter(Boolean);
+      const first = d.name || parts[0], region = (a.state || a.province || a.city || '').replace(/^(Tỉnh|Thành phố|Thủ đô) /, '');
+      const name = [first, region !== first ? region : '', vn ? '' : (a.country || '')].filter(Boolean).join(', ');
+      const sub = parts.slice(1).join(', ');
+      // Việt Nam: giữ quy tắc múi giờ hai miền trước 1975 (ranh giới sông Bến Hải, khoảng vĩ độ 17)
+      const g = vn ? { flag: lat >= 17.05 ? 'n' : 's' } : { flag: 'z', zone: tzlookup(lat, lon) };
+      return { name, sub, lat: +lat.toFixed(4), lon: +lon.toFixed(4), ...g };
+    });
+    mapState = mapHits.length ? '' : 'Không tìm thấy. Thử gõ kèm tên tỉnh hoặc nước, hoặc tự nhập tọa độ.';
+  } catch(e) {
+    mapHits = mapHits || []; mapState = 'Không tìm được lúc này. Thử lại sau, hoặc chọn "Tự nhập tọa độ".';
+  }
+  renderPlaces(); pin.focus();
+}
+pin.addEventListener('focus', () => { mapHits = null; pin.select(); renderPlaces(); });
+pin.addEventListener('input', () => { mapHits = null; renderPlaces(); });
+pin.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (plist.hidden) renderPlaces(); const n = pItems.length; if (n) setActive(((pActive < 0 && e.key === 'ArrowUp' ? 0 : pActive) + (e.key === 'ArrowDown' ? 1 : -1) + n) % n); }
+  else if (e.key === 'Enter') { if (!plist.hidden) { e.preventDefault(); if (pActive >= 0) pItems[pActive](); else if (pin.value.trim().length >= 2) searchMap(pin.value.trim()); } }
+  else if (e.key === 'Escape') { if (mapHits) { mapHits = null; renderPlaces(); } else { closePlaces(); pin.value = CITIES[+sel.value][0]; } }
+});
+plist.addEventListener('mousedown', e => e.preventDefault()); // giữ focus ở ô nhập
+plist.addEventListener('click', e => { const li = e.target.closest('[role=option]'); if (li) pItems[+li.dataset.k](); });
+pin.addEventListener('blur', () => setTimeout(() => { if (document.activeElement !== pin) { closePlaces(); mapHits = null; pin.value = CITIES[+sel.value][0]; } }, 120));
+sel.addEventListener('change', () => { pin.value = CITIES[+sel.value][0]; });
 
 // nhớ lần nhập gần nhất (chỉ trong trình duyệt của người xem)
 const KEY = 'tuchieu:last';
-try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { ['name','date','time','lat','lon','tz','ctx'].forEach(k => { if (s[k] != null) $('#'+k).value = s[k]; }); if (s.place != null) sel.value = s.place; if (s.gender) $('#g-'+s.gender).checked = true; if (s.noTime) $('#noTime').checked = true; if (s.canh != null) $('#canh').value = s.canh; } } catch(e) {}
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { ['name','date','time','lat','lon','tz','ctx'].forEach(k => { if (s[k] != null) $('#'+k).value = s[k]; }); { const i = s.placeGeo ? addPlace(s.placeGeo) : placeIndex(s.placeName || OLD_PLACES[+s.place]); if (i >= 0) sel.value = i; } if (s.gender) $('#g-'+s.gender).checked = true; if (s.noTime) $('#noTime').checked = true; if (s.canh != null) $('#canh').value = s.canh; } } catch(e) {}
 updateTimeUI();
 updateTzNote();
+pin.value = CITIES[+sel.value][0];
 
 // tabs
 const tabs = [...document.querySelectorAll('[role=tab]')];
@@ -541,18 +818,20 @@ function readInput(){
     name: $('#name').value.trim() || 'Không tên', gender: $('#g-nu').checked ? 'nu' : 'nam',
     date: $('#date').value, ...timeInfo(),
     place: custom ? `${$('#lat').value}, ${$('#lon').value}` : c[0],
-    lat: custom ? +$('#lat').value : c[1], lon: custom ? +$('#lon').value : c[2], tz: effTz(c, $('#date').value),
+    lat: custom ? +$('#lat').value : c[1], lon: custom ? +$('#lon').value : c[2], tz: effTz(c, $('#date').value, timeInfo().time),
     ctx: $('#ctx').value.trim()
   };
 }
 $('#f').addEventListener('submit', e => { e.preventDefault(); run(true); });
 
 function run(save){
+  const ge = geoError(); $('#geoErr').hidden = !ge; $('#geoErr').textContent = ge;
+  if (ge) { if (save) $('#lat').focus(); return; }
   const inp = readInput();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(inp.date)) { $('#p-sum').innerHTML = '<p class="err">Nhập ngày sinh đầy đủ để lập lá số.</p>'; return; }
   const y = +inp.date.slice(0,4); if (y < 1900 || y > 2100) { $('#p-sum').innerHTML = '<p class="err">Ngày sinh cần nằm trong khoảng 1900–2100.</p>'; return; }
   try { R = TC.all(inp); adjustForTime(R); } catch(err) { console.error(err); $('#p-sum').innerHTML = '<p class="err">Không lập được lá số với thông tin này. Kiểm tra lại ngày giờ sinh.</p>'; return; }
-  if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, place:sel.value, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value })); } catch(e) {}
+  if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, placeName:CITIES[+sel.value][0], placeGeo:CITIES[+sel.value][6] ? placeGeoOf(CITIES[+sel.value]) : null, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value })); } catch(e) {}
   renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); resetAI();
   if (save) pulse(document.querySelector('.tabpanel:not([hidden])'));
   if (save) { show('t-sum'); $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'}); }
@@ -576,6 +855,10 @@ function adjustForTime(R){
     const count = {Kim:0,'Mộc':0,'Thủy':0,'Hỏa':0,'Thổ':0}, full = {Kim:0,'Mộc':0,'Thủy':0,'Hỏa':0,'Thổ':0};
     b.pillars.slice(0,3).forEach(p => { count[p.canHanh]++; count[p.chiHanh]++; full[p.canHanh]++; full[p.chiHanh]++; p.tangCan.forEach((g,i) => full[CH[g]] += i===0 ? 0.5 : 0.25); });
     b.count = count; b.countFull = full;
+    // tính lại các phần phụ thuộc trụ giờ, chỉ với 3 trụ còn lại
+    const three = b.pillars.slice(0,3);
+    b.strength = TC.strength([...three, null]); b.shensha = [...TC.shensha([...three, null]).slice(0,3), []];
+    b.relations = TC.relations(three.map((p,i) => ({ label: ['năm','tháng','ngày'][i], can: p.can, chi: p.chi })));
     R.tuvi = null;
   }
 }
@@ -589,12 +872,12 @@ function renderSummary(){
   const menhP = tuvi ? tuvi.palaces.find(p => p.name === 'Mệnh') : null; const F = R.flags;
   const cnt = bazi.count; const lack = Object.keys(cnt).filter(k => !cnt[k]); const strong = Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
   $('#p-sum').innerHTML = `
-  <div class="who"><h2>${esc(input.name)}</h2><span class="muted num">${input.gender==='nam'?'Nam':'Nữ'} · ${esc(input.timeLabel)}, ${fmtDate(input.date)} · ${esc(input.place)} (GMT+${input.tz}) · Âm lịch ${bazi.lunarDate.d}/${bazi.lunarDate.m} ${esc(bazi.lunarDate.yearGZ)}</span></div>
+  <div class="who"><h2>${esc(input.name)}</h2><span class="muted num">${input.gender==='nam'?'Nam':'Nữ'} · ${esc(input.timeLabel)}, ${fmtDate(input.date)} · ${esc(input.place)} (${gmt(input.tz)}) · Âm lịch ${bazi.lunarDate.d}/${bazi.lunarDate.m} ${esc(bazi.lunarDate.yearGZ)}</span></div>
   <div class="lens-grid">
     <div class="lens"><span class="label">Bát tự</span><h3>Nhật chủ ${bazi.dayMaster} <span class="el-${bazi.dayMasterHanh}">${bazi.dayMasterHanh}</span></h3>
       <span class="small muted">${bazi.pillars.map(p=>p ? p.can+' '+p.chi : 'giờ ?').join(' · ')}</span>
-      <dl class="kv"><dt>Hành mạnh</dt><dd class="el-${strong}">${strong}</dd><dt>Hành thiếu</dt><dd>${lack.length?lack.map(x=>`<span class="el-${x}">${x}</span>`).join(', '):'Không thiếu'}</dd><dt>Đại vận hiện tại</dt><dd>${curDV()}</dd></dl></div>
-    <div class="lens"><span class="label">Bản đồ sao</span><h3>${sun.glyph} ${TC.SIGNS[sun.signIdx]} · ${moon.glyph} ${TC.SIGNS[moon.signIdx]}</h3>
+      <dl class="kv"><dt>Hành mạnh</dt><dd class="el-${strong}">${strong}</dd><dt>Hành thiếu</dt><dd>${lack.length?lack.map(x=>`<span class="el-${x}">${x}</span>`).join(', '):'Không thiếu'}</dd><dt>Đại vận hiện tại</dt><dd>${curDV()}</dd><dt>Thân</dt><dd>${bazi.strength.level} (${bazi.strength.ratio}%)</dd></dl></div>
+    <div class="lens"><span class="label">Bản đồ sao</span><h3>${sun.signGlyph}︎ ${TC.SIGNS[sun.signIdx]} · ${moon.signGlyph}︎ ${TC.SIGNS[moon.signIdx]}</h3>
       <dl class="kv"><dt>Mặt Trời</dt><dd>${sun.sign}${F.hasHouses?', nhà '+sun.house:''}</dd><dt>Mặt Trăng</dt><dd>${F.moonRange&&F.moonRange.twoSigns?F.moonRange.signs.join(' hoặc '):moon.sign}${F.hasHouses?', nhà '+moon.house:''}</dd><dt>Cung Mọc</dt><dd>${F.hasHouses?astro.asc.sign:F.approxHouses?astro.asc.sign+' (ước lượng)':'Cần giờ sinh'}</dd><dt>Thiên Đỉnh</dt><dd>${F.hasHouses?astro.mc.sign:F.approxHouses?astro.mc.sign+' (ước lượng)':'Cần giờ sinh'}</dd></dl></div>
     <div class="lens"><span class="label">Tử vi</span>${!tuvi ? '<h3>Chưa lập được</h3><p class="small muted" style="margin:0">Tử vi cần ít nhất canh giờ sinh để an cung Mệnh.</p></div>' : `<h3>Mệnh tại ${tuvi.menh}</h3>
       <dl class="kv"><dt>Chính tinh</dt><dd>${menhP && menhP.major.length ? menhP.major.map(s=>s.name).join(', ') : 'Vô chính diệu'}</dd><dt>Cục</dt><dd>${esc(tuvi.cuc)}</dd><dt>Thân cư</dt><dd>${tuvi.than}</dd><dt>Đại hạn</dt><dd>${tuvi.decadalNow ? tuvi.decadalNow.stem+' '+tuvi.decadalNow.branch : '—'}</dd></dl></div>`}
@@ -610,106 +893,287 @@ function curDV(){ const y = new Date().getFullYear(); const d = R.bazi.daiVan.fi
 function renderBazi(){
   const b = R.bazi; const names = ['Năm','Tháng','Ngày','Giờ'];
   const total = Object.values(b.countFull).reduce((a,c)=>a+c,0);
-  const nowY = new Date().getFullYear();
-  $('#p-bz').innerHTML = `
-  <div class="pillars">${b.pillars.map((p,i)=> !p ? `<div class="pillar"><span class="label">Trụ Giờ</span><span class="gz muted">?<br>?</span><span class="god">Không rõ giờ sinh</span></div>` : `
+  const st = b.strength, dm = b.pillars[2];
+  const pillarHTML = (p, i) => !p ? `<div class="pillar"><span class="label">Trụ Giờ</span><span class="gz muted">?<br>?</span><span class="god">Không rõ giờ sinh</span></div>` : `
     <div class="pillar ${i===2?'day':''}"><span class="label">Trụ ${names[i]}</span>
       <span class="god">${i===2?'Nhật chủ':p.thapThanCan}</span>
       <span class="gz"><span class="el-${p.canHanh}">${p.can}</span><br><span class="el-${p.chiHanh}">${p.chi}</span></span>
-      <span class="god">Tàng: ${p.tangCan.join(', ')}</span>
-      <span class="god">${p.thapThanChi.join(', ')}</span>
-      <span class="chip">${p.napAm}</span></div>`).join('')}</div>
+      <dl class="pkv">
+        <dt>Tàng can</dt><dd>${p.tangCan.join(', ')}</dd>
+        <dt>Thập thần</dt><dd>${p.thapThanChi.join(', ')}</dd>
+        <dt>Trường sinh</dt><dd>${p.truongSinh || '—'}</dd>
+        <dt>Nạp âm</dt><dd>${p.napAm}</dd>
+      </dl>
+      <div class="ss">${(b.shensha[i]||[]).map(x=>`<span class="chip ss-chip" title="${esc(x.note)}">${x.name}</span>`).join('')}${b.khongVong.includes(p.chi) && i!==2 ? '<span class="chip kv-chip" title="Chi này rơi vào Không vong (tính theo trụ ngày): sức của trụ yếu đi">Không vong</span>' : ''}</div>
+    </div>`;
+  const helpTxt = st.help.length ? `Hướng cân bằng thường dùng: ${st.help.map(h=>`<b class="el-${h}">${h}</b>`).join(', ')}.` : 'Các hành khá cân bằng, nên xét thêm theo đại vận và lưu niên.';
+  const rel = b.relations;
+  $('#p-bz').innerHTML = `
+  <div class="pillars">${b.pillars.map(pillarHTML).join('')}</div>
+  <p class="small muted" style="margin:-6px 0 0">Thần sát tra theo can ngày (Quý Nhân, Văn Xương, Lộc Thần, Dương Nhận), theo chi năm và chi ngày (Đào Hoa, Dịch Mã, Hoa Cái, Kiếp Sát), theo chi tháng (Nguyệt Đức). Không vong theo trụ ngày: ${b.khongVong.join(', ')}. Rê chuột vào thần sát để xem nghĩa.</p>
   <div class="two">
-    <div class="panel"><h3 style="margin-bottom:12px">Ngũ hành</h3><div class="bars">${Object.entries(b.countFull).map(([k,v])=>`
+    <div class="panel">
+      <h3>Thân vượng hay nhược</h3>
+      <div class="strength"><span class="st-level">${st.level}</span><span class="muted num">${st.ratio}% phe trợ</span></div>
+      <div class="meter" role="img" aria-label="Phe trợ ${st.ratio}%"><span class="zone weak">Nhược</span><span class="zone mid">Trung hòa</span><span class="zone strong">Vượng</span><i style="left:${Math.min(98,Math.max(2,st.ratio))}%"></i></div>
+      <p class="small" style="margin:12px 0 0">Nhật chủ <b>${dm.can} <span class="el-${dm.canHanh}">${dm.canHanh}</span></b>, sinh tháng ${b.pillars[1].chi} (<span class="el-${st.monthH}">${st.monthH}</span>): <b>${st.deLenh?'đắc lệnh':'thất lệnh'}</b>. Phe trợ (cùng hành và hành sinh ra Nhật chủ) được ${st.support}/${st.total} điểm. ${helpTxt}</p>
+      <p class="small muted" style="margin:8px 0 0">Cách tính đơn giản: thiên can 1 điểm, tàng can 0,6/0,3/0,1, chi tháng nhân đôi. Thầy có thể kết luận khác khi xét cách cục.</p>
+    </div>
+    <div class="panel"><h3>Ngũ hành</h3><div class="bars" style="margin-top:12px">${Object.entries(b.countFull).map(([k,v])=>`
       <div class="bar"><span class="el-${k}" style="font-weight:600">${k}</span><div class="track"><div class="fill" style="width:${(v/total*100).toFixed(0)}%;background:${EL_COLOR[k]}"></div></div><span class="num muted">${(v/total*100).toFixed(0)}%</span></div>`).join('')}</div>
       <p class="small muted" style="margin:12px 0 0">Tính cả thiên can, địa chi và tàng can (tàng can chính 0,5, phụ 0,25). Đếm thô: ${Object.entries(b.count).map(([k,v])=>k+' '+v).join(' · ')}.</p></div>
-    <div class="panel"><h3 style="margin-bottom:12px">Lưu niên</h3><div class="table-wrap"><table><thead><tr><th>Năm</th><th>Can chi</th><th>Thập thần (theo can)</th></tr></thead><tbody>${b.years.map(y=>`<tr><td class="num">${y.year}</td><td>${y.gz}</td><td>${y.thapThan}</td></tr>`).join('')}</tbody></table></div>
-      <p class="small muted" style="margin:12px 0 0">Khởi vận sau khoảng ${b.startYun.y} năm ${b.startYun.m} tháng kể từ khi sinh.</p></div>
   </div>
-  <div><h3 style="margin-bottom:10px">Đại vận</h3><div class="timeline">${b.daiVan.map(v=>`<div class="tl ${nowY>=v.startYear&&nowY<=v.endYear?'now':''}"><b>${v.gz}</b><span class="num">${v.startYear}–${v.endYear}</span><br><span class="muted">${v.thapThan}</span></div>`).join('')}</div></div>`;
+  <div class="panel"><h3>Hợp, xung, hình, hại trong lá số</h3>
+    ${rel.length ? `<div class="rel-list">${rel.map(r=>`<span class="rel rel-${relClass(r.kind)}"><b>${r.kind}</b> ${r.text}</span>`).join('')}</div>` : '<p class="muted small" style="margin:8px 0 0">Bốn trụ không có cặp hợp, xung, hình, hại nào đáng kể.</p>'}
+  </div>
+  <div class="panel">
+    <div class="dv-head"><h3>Đại vận</h3><span class="small muted">Khởi vận sau khoảng ${b.startYun.y} năm ${b.startYun.m} tháng. Bấm một đại vận để xem từng năm.</span></div>
+    <div class="timeline" id="dvList">${b.daiVan.map((v,k)=>`<button type="button" class="tl ${dvNow(v)?'now':''}" data-k="${k}" aria-pressed="false"><b>${v.gz}</b><span class="num">${v.startYear}–${v.endYear}</span><span class="muted">${v.thapThan}</span></button>`).join('')}</div>
+    <div id="dvYears"></div>
+  </div>`;
+  const pick = k => { document.querySelectorAll('#dvList .tl').forEach(x => x.setAttribute('aria-pressed', +x.dataset.k === k)); renderDvYears(b.daiVan[k]); };
+  document.querySelectorAll('#dvList .tl').forEach(x => x.addEventListener('click', () => pick(+x.dataset.k)));
+  const ki = b.daiVan.findIndex(dvNow); pick(ki >= 0 ? ki : 0);
+}
+const dvNow = v => { const y = new Date().getFullYear(); return y >= v.startYear && y <= v.endYear; };
+const relClass = k => /hợp/i.test(k) ? 'good' : /xung|hình|hại/i.test(k) ? 'bad' : 'mid';
+function renderDvYears(v){
+  const b = R.bazi, by = +R.input.date.slice(0,4), nowY = new Date().getFullYear();
+  const items = b.pillars.map((p,i) => p && ({ label: ['năm','tháng','ngày','giờ'][i], can: p.can, chi: p.chi })).filter(Boolean);
+  const rows = []; for (let y = v.startYear; y <= v.endYear; y++) {
+    const g = TC.yearGZ(y), tt = TC.tenGodOf(b.dayMaster, g.can);
+    const rel = TC.relations([{ label: 'năm ' + y, ...g }, ...items]).filter(r => r.text.includes('năm ' + y));
+    rows.push(`<tr class="${y===nowY?'cur':''}"><td class="num">${y}</td><td class="num muted">${y-by+1}</td><td><b>${g.can} ${g.chi}</b></td><td>${tt}</td><td>${rel.length ? rel.map(r=>`<span class="rel rel-${relClass(r.kind)}"><b>${r.kind}</b> ${r.text.replace(/ \(năm \d+\)/,'')}</span>`).join(' ') : '<span class="muted">—</span>'}</td></tr>`);
+  }
+  $('#dvYears').innerHTML = `<h4 class="dv-title">Đại vận ${v.gz} (${v.thapThan}), ${v.startYear}–${v.endYear}</h4>
+    <div class="table-wrap"><table class="dv-table"><thead><tr><th>Năm</th><th>Tuổi âm</th><th>Can chi</th><th>Thập thần</th><th>Tác động lên lá số</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
 }
 
 /* ---- vòng bản đồ sao ---- */
+const ASP_STYLE = { 'Trùng tụ':['var(--gold)',''], 'Lục hợp':['var(--air)','4 3'], 'Vuông góc':['var(--fire)',''], 'Tam hợp':['var(--wood)',''], 'Đối đỉnh':['var(--fire)','6 3'] };
+const SIGN_COL = ['var(--fire)','var(--earth)','var(--air)','var(--water)'];
 function wheelSVG(a){
-  const S = 560, C = S/2, rO = 262, rS = 226, rH = 206, rP = 180, rA = 128;
+  const S = 680, C = S/2, rO = 300, rZ = 258, rP = 226, rD = 200, rH = 176, rA = 150;
   const houses = R.flags.hasHour; const asc = houses ? a.asc.lon : 0;
-  const ang = l => (180 - (l - asc)) * Math.PI/180;
+  // Cung Mọc ở bên trái, độ hoàng đạo tăng ngược chiều kim đồng hồ: nhà 1 ngay dưới AC, MC ở phía trên
+  const ang = l => (180 + (l - asc)) * Math.PI/180;
   const pt = (l, r) => [C + r*Math.cos(ang(l)), C - r*Math.sin(ang(l))];
-  const elc = ['var(--fire)','var(--earth)','var(--air)','var(--water)'];
-  let g = `<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Vòng bản đồ sao"><circle cx="${C}" cy="${C}" r="${rO}" fill="var(--paper)" stroke="var(--line)"/><circle cx="${C}" cy="${C}" r="${rS}" fill="var(--sheet)" stroke="var(--line)"/><circle cx="${C}" cy="${C}" r="${rA}" fill="var(--paper)" stroke="var(--line)"/>`;
-  for (let s=0;s<12;s++){ const [x1,y1]=pt(s*30,rO),[x2,y2]=pt(s*30,rS); g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--line)"/>`; const [tx,ty]=pt(s*30+15,(rO+rS)/2); g+=`<text x="${tx}" y="${ty}" font-size="19" text-anchor="middle" dominant-baseline="central" fill="${elc[s%4]}">${TC.SIGN_GLYPH[s]}︎</text>`; }
-  if (houses) a.cusps.forEach((c,i)=>{ const strong=i%3===0; const [x1,y1]=pt(c.lon,rS),[x2,y2]=pt(c.lon,rA); g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${strong?'var(--ink-2)':'var(--line)'}" stroke-width="${strong?1.4:1}"/>`; const nx=a.cusps[(i+1)%12].lon; const mid=c.lon+((nx-c.lon+360)%360)/2; const [hx,hy]=pt(mid,rA+12); g+=`<text x="${hx}" y="${hy}" font-size="11" text-anchor="middle" dominant-baseline="central" fill="var(--ink-2)">${i+1}</text>`; });
-  (houses ? [['ASC',a.asc.lon],['MC',a.mc.lon]] : []).forEach(([n,l])=>{ const [x,y]=pt(l,rO+2),[x2,y2]=pt(l,rO-14); g+=`<text x="${pt(l,rO-30)[0]}" y="${pt(l,rO-30)[1]}" font-size="10" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="var(--seal)">${n}</text>`; });
-  // tránh chồng glyph
-  const pts = a.points.map(p=>({...p, d:p.lon})).sort((x,y)=>x.lon-y.lon);
-  for (let k=0;k<4;k++) for (let i=0;i<pts.length;i++){ const j=(i+1)%pts.length; let diff=(pts[j].d-pts[i].d+360)%360; if (diff<7){ pts[i].d-= (7-diff)/2; pts[j].d+= (7-diff)/2; } }
-  const col = {Trùng:'var(--gold)','Vuông':'var(--seal)','Đối':'var(--seal)','Tam':'var(--jade)','Lục':'var(--air)'};
+  const f = n => n.toFixed(1);
+  const arc = (l1, l2, r1, r2) => { const [a1,b1]=pt(l1,r2),[a2,b2]=pt(l2,r2),[a3,b3]=pt(l2,r1),[a4,b4]=pt(l1,r1); return `M${f(a1)} ${f(b1)} A${r2} ${r2} 0 0 0 ${f(a2)} ${f(b2)} L${f(a3)} ${f(b3)} A${r1} ${r1} 0 0 1 ${f(a4)} ${f(b4)}Z`; };
+  let g = `<svg viewBox="0 0 ${S} ${S}" role="img" aria-label="Vòng bản đồ sao" class="wheel">`;
+  g += `<circle cx="${C}" cy="${C}" r="${rO}" fill="var(--sheet)" stroke="var(--line)"/>`;
+  // dải 12 cung, tô nhạt theo nguyên tố
+  for (let s=0;s<12;s++){ g += `<path d="${arc(s*30,(s+1)*30,rZ,rO)}" fill="${SIGN_COL[s%4]}" fill-opacity=".09" stroke="var(--line)"/>`;
+    const [tx,ty]=pt(s*30+15,(rO+rZ)/2+4); g+=`<text x="${f(tx)}" y="${f(ty)}" font-size="22" text-anchor="middle" dominant-baseline="central" fill="${SIGN_COL[s%4]}">${TC.SIGN_GLYPH[s]}︎</text>`; }
+  // vạch chia độ: 1°, 5°, 10°
+  for (let d=0; d<360; d++){ const len = d%10===0 ? 10 : d%5===0 ? 7 : 3.5; const [x1,y1]=pt(d,rZ),[x2,y2]=pt(d,rZ+len); g+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="var(--ink-3)" stroke-width="${d%10===0?1:.6}"/>`; }
+  g += `<circle cx="${C}" cy="${C}" r="${rZ}" fill="none" stroke="var(--ink-3)" stroke-width=".8"/><circle cx="${C}" cy="${C}" r="${rH}" fill="none" stroke="var(--line)"/><circle cx="${C}" cy="${C}" r="${rA}" fill="var(--paper)" stroke="var(--line)"/>`;
+  // 12 nhà: đường đầu nhà, số nhà, độ đầu nhà ghi ngoài vòng
+  if (houses) a.cusps.forEach((c,i)=>{ const axis=i%3===0; const [x1,y1]=pt(c.lon,rZ),[x2,y2]=pt(c.lon,rA);
+    g+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${axis?'var(--ink)':'var(--ink-3)'}" stroke-width="${axis?1.6:.8}"/>`;
+    const nx=a.cusps[(i+1)%12].lon; const mid=c.lon+((nx-c.lon+360)%360)/2; const [hx,hy]=pt(mid,(rH+rA)/2);
+    g+=`<text x="${f(hx)}" y="${f(hy)}" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central" fill="var(--ink-3)">${i+1}</text>`;
+    if (!axis) { const [lx,ly]=pt(c.lon,rO+16); g+=`<text x="${f(lx)}" y="${f(ly)}" font-size="10.5" text-anchor="middle" dominant-baseline="central" fill="var(--ink-2)">${Math.floor(c.lon%30)}°${TC.SIGN_GLYPH[Math.floor(c.lon/30)]}︎</text>`; } });
+  // bốn trục: AC, DC, MC, IC
+  if (houses) [['AC',a.asc.lon],['DC',(a.asc.lon+180)%360],['MC',a.mc.lon],['IC',(a.mc.lon+180)%360]].forEach(([n,l])=>{ const [x1,y1]=pt(l,rO),[x2,y2]=pt(l,rO+8),[tx,ty]=pt(l,rO+22);
+    g+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="var(--seal)" stroke-width="2"/><text x="${f(tx)}" y="${f(ty)}" font-size="12" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="var(--seal)">${n} ${Math.floor(l%30)}°</text>`; });
+  // góc chiếu
   const pos = {}; a.points.forEach(p=>pos[p.key]=p.lon); pos.ASC=a.asc.lon; pos.MC=a.mc.lon;
-  a.aspects.filter(x=>x.angle!==0).forEach(x=>{ const [x1,y1]=pt(pos[x.ak],rA-2),[x2,y2]=pt(pos[x.bk],rA-2); g+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${col[x.type.split(' ')[0]]}" stroke-width="1" opacity=".75"/>`; });
-  pts.forEach(p=>{ const [tx,ty]=pt(p.d,rP),[mx,my]=pt(p.lon,rS),[mx2,my2]=pt(p.lon,rS-8); g+=`<line x1="${mx}" y1="${my}" x2="${mx2}" y2="${my2}" stroke="var(--ink)"/><text x="${tx}" y="${ty}" font-size="18" text-anchor="middle" dominant-baseline="central" fill="var(--ink)">${p.glyph}︎</text>`; const [dx,dy]=pt(p.d,rP-20); g+=`<text x="${dx}" y="${dy}" font-size="9.5" text-anchor="middle" dominant-baseline="central" fill="var(--ink-2)">${Math.floor(p.lon%30)}°${p.retro&&p.key!=='Node'?'R':''}</text>`; });
+  a.aspects.filter(x=>x.angle!==0 && (houses || (x.ak!=='ASC'&&x.bk!=='ASC'&&x.ak!=='MC'&&x.bk!=='MC'))).forEach(x=>{ const [col,dash]=ASP_STYLE[x.type]; const [x1,y1]=pt(pos[x.ak],rA-3),[x2,y2]=pt(pos[x.bk],rA-3);
+    g+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${col}" stroke-width="${x.orb<2?1.6:1}" ${dash?`stroke-dasharray="${dash}"`:''} opacity=".8"><title>${x.a} ${x.type} ${x.b}, lệch ${x.orb}°</title></line>`; });
+  // sao: giãn các sao đứng sát nhau
+  const all = [...a.points, ...(houses ? a.extra : a.extra.filter(e=>e.key!=='PoF'))];
+  const pts = all.map(p=>({...p, d:p.lon})).sort((x,y)=>x.lon-y.lon);
+  for (let k=0;k<40;k++) for (let i=0;i<pts.length;i++){ const j=(i+1)%pts.length; const diff=(pts[j].d-pts[i].d+360)%360; if (diff<8.5){ const m=(8.5-diff)/2; pts[i].d-=m; pts[j].d+=m; } }
+  pts.forEach(p=>{ const minor = p.key==='Lilith'||p.key==='PoF'||p.key==='Node';
+    const col = minor ? 'var(--ink-2)' : SIGN_COL[p.signIdx%4];
+    const [mx,my]=pt(p.lon,rZ),[mx2,my2]=pt(p.lon,rZ-7),[lx,ly]=pt(p.d,rP+12);
+    const [tx,ty]=pt(p.d,rP),[dx,dy]=pt(p.d,rD);
+    g+=`<line x1="${f(mx)}" y1="${f(my)}" x2="${f(mx2)}" y2="${f(my2)}" stroke="${col}" stroke-width="2"/><line x1="${f(mx2)}" y1="${f(my2)}" x2="${f(lx)}" y2="${f(ly)}" stroke="var(--line)" stroke-width=".8"/>`;
+    g+=`<g><title>${p.name}: ${p.text}${p.retro&&p.key!=='Node'?' (nghịch hành)':''}${houses&&p.house?', nhà '+p.house:''}</title><text x="${f(tx)}" y="${f(ty)}" font-size="${minor?16:21}" text-anchor="middle" dominant-baseline="central" fill="${col}">${p.glyph}︎</text>`;
+    g+=`<text x="${f(dx)}" y="${f(dy)}" font-size="10" text-anchor="middle" dominant-baseline="central" fill="var(--ink-2)">${Math.floor(p.lon%30)}°${p.retro&&p.key!=='Node'&&!minor?'℞':''}</text></g>`; });
   return g + '</svg>';
+}
+function aspectGrid(a){
+  const houses = R.flags.hasHour;
+  const keys = [...a.points.filter(p=>p.key!=='Node').map(p=>[p.key,p.glyph,p.name]), ...(houses?[['ASC','AC','Cung Mọc'],['MC','MC','Thiên Đỉnh']]:[])];
+  const find = (x,y) => a.aspects.find(s=>(s.ak===x&&s.bk===y)||(s.ak===y&&s.bk===x));
+  let h = '<table class="asp-grid" aria-label="Bảng góc chiếu"><tbody>';
+  keys.forEach(([k,gl,nm],i)=>{ h += '<tr>';
+    for (let j=0;j<i;j++){ const s=find(k,keys[j][0]); h += s ? `<td title="${nm} ${s.type} ${keys[j][2]}, lệch ${s.orb}°" style="color:${ASP_STYLE[s.type][0]}"><span>${s.glyph}</span><small>${s.orb}</small></td>` : '<td></td>'; }
+    h += `<th scope="row" title="${nm}">${gl}︎</th></tr>`; });
+  return h + '</tbody></table>';
 }
 function renderAstro(){
   const a = R.astro; const F = R.flags; const nowStr = d => d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const ruler = F.hasHouses || F.approxHouses ? a.rulers[0] : null;
+  const MODES = TC.MODES, ELS = ['Lửa','Đất','Khí','Nước'];
+  const elCol = {'Lửa':'var(--fire)','Đất':'var(--earth)','Khí':'var(--air)','Nước':'var(--water)'};
   $('#p-as').innerHTML = `
   ${!F.hasHour ? needHourMsg('Cung Mọc, Thiên Đỉnh và 12 nhà') + (F.moonRange ? `<p class="small muted" style="margin:0">Tính theo 12 giờ trưa. Trong ngày sinh, Mặt Trăng đi từ ${F.moonRange.from} tới ${F.moonRange.to}${F.moonRange.twoSigns?', tức có thể ở một trong hai cung':''}.</p>` : '') : F.approxHouses ? '<div class="warn">Cung Mọc và các nhà tính theo giờ giữa canh, có thể lệch một cung. Các sao khác vẫn chính xác.</div>' : ''}
+  <div class="astro-top">
+    <div class="wheel-box">${wheelSVG(a)}
+      <div class="wheel-legend small muted"><span><i style="background:var(--wood)"></i>Tam hợp</span><span><i style="background:var(--air)"></i>Lục hợp</span><span><i style="background:var(--fire)"></i>Vuông góc, đối đỉnh</span><span>℞ nghịch hành</span></div></div>
+    <div class="panel"><h3>Bảng góc chiếu</h3><p class="small muted" style="margin:4px 0 10px">Ô giao giữa hai sao: ký hiệu góc chiếu và độ lệch. ☌ trùng tụ, ⚹ lục hợp, □ vuông góc, △ tam hợp, ☍ đối đỉnh.</p><div class="table-wrap">${aspectGrid(a)}</div>
+      ${ruler ? `<div class="ruler"><span class="label">Sao chủ lá số</span><p><b>${ruler.rulerName}</b>, chủ của cung Mọc ${ruler.sign}, nằm ở ${ruler.inSign}${ruler.inHouse?', nhà '+ruler.inHouse:''}.</p></div>` : ''}</div>
+  </div>
   <div class="two">
-    <div class="wheel-box">${wheelSVG(a)}</div>
-    <div class="panel"><h3 style="margin-bottom:8px">Vị trí các sao</h3><div class="table-wrap"><table><thead><tr><th>Sao</th><th>Vị trí</th><th>Nhà</th></tr></thead><tbody>
+    <div class="panel"><h3>Vị trí các sao</h3><div class="table-wrap"><table><thead><tr><th>Sao</th><th>Vị trí</th><th>Nhà</th></tr></thead><tbody>
       ${F.hasHour ? `<tr><td><b>Cung Mọc</b></td><td class="num">${a.asc.text}${F.approxHouses?' <span class="muted">(ước lượng)</span>':''}</td><td>1</td></tr><tr><td><b>Thiên Đỉnh (MC)</b></td><td class="num">${a.mc.text}${F.approxHouses?' <span class="muted">(ước lượng)</span>':''}</td><td>10</td></tr>` : ''}
-      ${a.points.map(p=>`<tr><td>${p.glyph}︎ ${p.name}</td><td class="num">${p.key==='Moon'&&F.moonRange ? `${F.moonRange.from} → ${F.moonRange.to}` : p.text} ${p.retro&&p.key!=='Node'?'<span class="retro">R</span>':''}</td><td class="num">${F.hasHour ? p.house+(F.approxHouses?'?':'') : '—'}</td></tr>`).join('')}</tbody></table></div>
-      <p class="small muted" style="margin:10px 0 0">Hoàng đạo nhiệt đới, hệ nhà Placidus. R là nghịch hành. La Hầu tính theo nút trung bình.</p></div>
+      ${a.points.map(p=>`<tr><td><span style="color:${SIGN_COL[p.signIdx%4]}">${p.glyph}︎</span> ${p.name}</td><td class="num">${p.key==='Moon'&&F.moonRange ? `${F.moonRange.from} → ${F.moonRange.to}` : p.text} ${p.retro&&p.key!=='Node'?'<span class="retro">℞</span>':''}</td><td class="num">${F.hasHour ? p.house+(F.approxHouses?'?':'') : '—'}</td></tr>`).join('')}
+      ${a.extra.filter(e=>F.hasHour||e.key!=='PoF').map(p=>`<tr><td class="muted">${p.glyph}︎ ${p.name}</td><td class="num">${p.text}</td><td class="num">${F.hasHour ? p.house : '—'}</td></tr>`).join('')}
+      </tbody></table></div>
+      <p class="small muted" style="margin:10px 0 0">Hoàng đạo nhiệt đới, hệ nhà Placidus. ℞ là nghịch hành. La Hầu và Lilith tính theo vị trí trung bình.${F.hasHour?` Điểm may mắn tính theo công thức sinh ${a.extra[1].dayBirth?'ban ngày':'ban đêm'}.`:''}</p></div>
+    ${F.hasHour ? `<div class="panel"><h3>12 nhà và chủ tinh</h3><div class="table-wrap"><table><thead><tr><th>Nhà</th><th>Cung đầu nhà</th><th>Chủ tinh</th><th>Chủ tinh nằm ở</th></tr></thead><tbody>
+      ${a.rulers.map(r=>`<tr><td class="num"><b>${r.house}</b></td><td>${r.sign}</td><td>${r.rulerName}${r.trad?` <span class="muted">(cổ điển: ${r.trad})</span>`:''}</td><td>${r.inSign}, nhà ${r.inHouse}</td></tr>`).join('')}
+      </tbody></table></div></div>` : `<div class="panel"><h3>12 nhà và chủ tinh</h3><p class="muted small">Cần giờ sinh để tính các nhà.</p></div>`}
   </div>
   <div class="two">
-    <div class="panel"><h3 style="margin-bottom:8px">Góc chiếu chính</h3><div class="asp-list">${a.aspects.slice(0,16).map(x=>`<div><span>${x.a} <b>${x.type}</b> ${x.b}</span><span class="num muted">lệch ${x.orb}°</span></div>`).join('')}</div></div>
-    <div class="panel"><h3 style="margin-bottom:8px">Sao Mộc, Sao Thổ quá cảnh (18 tháng tới)</h3>
+    <div class="panel"><h3>Nguyên tố và tính chất</h3><div class="table-wrap"><table class="matrix"><thead><tr><th></th>${MODES.map(m=>`<th>${m}</th>`).join('')}<th>Tổng</th></tr></thead><tbody>
+      ${ELS.map(e=>`<tr><th scope="row" style="color:${elCol[e]}">${e}</th>${MODES.map(m=>`<td>${(a.matrix[e+'|'+m]||[]).map(gl=>gl+'︎').join(' ')}</td>`).join('')}<td class="num"><b>${a.elements[e]}</b></td></tr>`).join('')}
+      <tr><th scope="row">Tổng</th>${MODES.map(m=>`<td class="num"><b>${a.modes[m]}</b></td>`).join('')}<td></td></tr></tbody></table></div>
+      <p class="small muted" style="margin:10px 0 0">Mặt Trời và Mặt Trăng tính 2 điểm, các sao khác 1 điểm. Khởi phát: Bạch Dương, Cự Giải, Thiên Bình, Ma Kết. Kiên định: Kim Ngưu, Sư Tử, Bọ Cạp, Bảo Bình. Linh hoạt: Song Tử, Xử Nữ, Nhân Mã, Song Ngư.</p></div>
+    <div class="panel"><h3>Quá cảnh 18 tháng tới</h3>
       ${R.transits.length ? `<div class="asp-list">${R.transits.map(t=>`<div><span>${t.mover} <b>${t.aspect}</b> ${t.target}</span><span class="num muted">${nowStr(t.start)} – ${nowStr(t.end)}</span></div>`).join('')}</div>` : '<p class="muted">Không có quá cảnh lớn nào chạm các điểm chính trong 18 tháng tới.</p>'}
-      <p class="small muted" style="margin:10px 0 0">Tính khi lệch trong 1°. Một góc có thể lặp lại vài lần do nghịch hành.</p></div>
-  </div>
-  <div class="panel"><h3 style="margin-bottom:10px">Cân bằng nguyên tố</h3><div class="bars">${Object.entries(a.elements).map(([k,v])=>{const c={'Lửa':'var(--fire)','Đất':'var(--earth)','Khí':'var(--air)','Nước':'var(--water)'}[k];return `<div class="bar"><span style="font-weight:600;color:${c}">${k}</span><div class="track"><div class="fill" style="width:${v/14*100}%;background:${c}"></div></div><span class="num muted">${v}</span></div>`}).join('')}</div><p class="small muted" style="margin:10px 0 0">Mặt Trời và Mặt Trăng tính 2 điểm, các sao khác 1 điểm.</p></div>`;
+      <p class="small muted" style="margin:10px 0 0">Sao Mộc, Sao Thổ, Thiên Vương, Hải Vương, Diêm Vương chạm Mặt Trời, Mặt Trăng, Sao Kim, Cung Mọc, Thiên Đỉnh, lệch trong 1°. Một góc có thể lặp lại vài lần do nghịch hành.</p></div>
+  </div>`;
 }
 
 /* ---- tử vi ---- */
 const LAYOUT = ['Tỵ','Ngọ','Mùi','Thân','Thìn',null,null,'Dậu','Mão',null,null,'Tuất','Dần','Sửu','Tý','Hợi'];
+const BRANCHES = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
+const MAJOR_EL = {'Tử Vi':'Thổ','Thiên Cơ':'Mộc','Thái Dương':'Hỏa','Vũ Khúc':'Kim','Thiên Đồng':'Thủy','Liêm Trinh':'Hỏa','Thiên Phủ':'Thổ','Thái Âm':'Thủy','Tham Lang':'Thủy','Cự Môn':'Thủy','Thiên Tướng':'Thủy','Thiên Lương':'Mộc','Thất Sát':'Kim','Phá Quân':'Thủy'};
+const BRIGHT = {'Miếu':'M','Vượng':'V','Đắc':'Đ','Lợi':'L','Bình':'B','Hạn':'H','Hãm':'H'};
+const HUNG = ['Thiên Hình','Thiên Khốc','Thiên Hư','Thiên Không','Cô Thần','Quả Tú','Phá Toái','Âm Sát','Kiếp Sát','Thiên Thương','Thiên Sứ','Không Vong','Phi Liêm','Đại Hao','Tiểu Hao'];
+const MUT_LIST = ['Lộc','Quyền','Khoa','Kỵ'];
+let tvYear = null, tvSel = null, tvFor = null;
 function renderTuvi(){
+  if (tvFor !== R) { tvFor = R; tvYear = null; }
   if (!R.tuvi) { $('#p-tv').innerHTML = needHourMsg('Lá số Tử vi'); return; }
-  const t = R.tuvi; const dh = t.decadalNow ? t.decadalNow.branch : null;
+  const t = R.tuvi, by = +R.input.date.slice(0,4), nowY = new Date().getFullYear();
+  if (tvYear === null || tvYear < by || tvYear > by + 99) tvYear = Math.max(by, nowY);
+  tvSel = null;
+  const years = []; for (let y = by; y <= by + 99; y++) years.push(`<option value="${y}" ${y===tvYear?'selected':''}>${y}</option>`);
+  $('#p-tv').innerHTML = `
+  <div class="tv-bar">
+    <label class="small" for="tvYear" style="font-weight:500">Xem năm</label>
+    <select id="tvYear" style="width:auto">${years.join('')}</select>
+    <div class="tv-legend small muted"><span><i class="lg lg-menh"></i>Cung Mệnh</span><span><i class="lg lg-dh"></i>Đại hạn</span><span><i class="lg lg-ln"></i>Lưu niên</span><span><i class="lg lg-th"></i>Tiểu hạn</span><span>Bấm vào một cung để xem tam phương tứ chính</span></div>
+  </div>
+  <div class="table-wrap"><div class="tv-grid" id="tvGrid"></div></div>
+  <p class="small muted">An sao theo thư viện iztro (Tử vi Đẩu số, âm lịch chuẩn Trung Quốc; có thể lệch với lịch Việt Nam ở một số ngày giáp ranh tháng). Độ sáng: M miếu, V vượng, Đ đắc, L lợi, B bình, H hãm. Cột trái là cát tinh, cột phải là sát tinh và sao xấu. Chữ xanh là lưu tinh của năm đang xem. Góc dưới mỗi ô: vòng Trường sinh, vòng Bác sĩ và tuổi đại hạn.</p>`;
+  $('#tvYear').onchange = e => { tvYear = +e.target.value; drawTuvi(); };
+  drawTuvi();
+}
+function elOfNapAm(s){ return ['Kim','Mộc','Thủy','Hỏa','Thổ'].find(h => s.endsWith(h)); }
+function menhCuc(m, c){ if (!m || !c) return ''; const SINH={'Mộc':'Hỏa','Hỏa':'Thổ','Thổ':'Kim','Kim':'Thủy','Thủy':'Mộc'}, KHAC={'Mộc':'Thổ','Thổ':'Thủy','Thủy':'Hỏa','Hỏa':'Kim','Kim':'Mộc'};
+  if (m === c) return 'Mệnh Cục bình hòa'; if (SINH[c] === m) return 'Cục sinh Mệnh (tốt)'; if (SINH[m] === c) return 'Mệnh sinh Cục'; if (KHAC[c] === m) return 'Cục khắc Mệnh'; return 'Mệnh khắc Cục'; }
+function drawTuvi(){
+  const t = R.tuvi, H = t.horo(tvYear), grid = $('#tvGrid');
   const byB = {}; t.palaces.forEach(p => byB[p.branch] = p);
+  const mutOf = (name, list) => { const k = (list||[]).indexOf(name); return k >= 0 ? MUT_LIST[k] : ''; };
+  const starLine = s => { const el = MAJOR_EL[s.name]; const lm = mutOf(s.name, H.yearlyMut);
+    return `<div class="tv-st"><span class="el-${el}">${s.name}</span>${s.bright?`<sup title="${s.bright==='Hạn'?'Hãm':s.bright}">${BRIGHT[s.bright]||s.bright}</sup>`:''}${s.mut?`<span class="mut mut-${s.mut}" title="Hóa ${s.mut} gốc">${s.mut}</span>`:''}${lm?`<span class="mut-luu" title="Lưu niên hóa ${lm}">L.${lm}</span>`:''}</div>`; };
+  const minorName = s => { const lm = mutOf(s.name, H.yearlyMut); return `${s.name}${s.mut?`<span class="mut mut-${s.mut}">${s.mut}</span>`:''}${lm?`<span class="mut-luu">L.${lm}</span>`:''}`; };
+  const tt = {}; // Tuần/Triệt: đặt nhãn ở cạnh chung của hai cung
+  const mark = (pair, label) => { const [a, b] = pair; const ia = LAYOUT.indexOf(a), ib = LAYOUT.indexOf(b); const first = Math.min(ia, ib), second = Math.max(ia, ib);
+    const side = Math.floor(first/4) === Math.floor(second/4) ? 'right' : 'bottom'; const key = LAYOUT[first] + side; tt[key] = { b: LAYOUT[first], side, label: tt[key] ? tt[key].label + ' · ' + label : label }; };
+  mark(t.tuan, 'Tuần'); mark(t.triet, 'Triệt');
   let cells = '';
   LAYOUT.forEach((b,i) => {
-    if (b === null) { if (i===5) cells += `<div class="tv-center"><span class="label">Lá số Tử vi</span><h3>${esc(R.input.name)}</h3>
-      <div class="small">${R.input.gender==='nam'?'Nam':'Nữ'} · ${esc(t.chineseDate)}</div>
-      <div class="small">Âm lịch: ${esc(t.lunar)} · ${esc(t.time)}</div>
-      <div class="small">Mệnh tại <b>${t.menh}</b> · Thân tại <b>${t.than}</b></div>
-      <div class="small">${esc(t.cuc)} · Mệnh chủ ${esc(t.soul)} · Thân chủ ${esc(t.body)}</div>
-      <div class="small muted">Ô viền đỏ: cung Mệnh. Ô nền xanh: đại hạn hiện tại.</div></div>`; return; }
+    if (b === null) { if (i===5) {
+      const m = elOfNapAm(t.napAmNam), c = (t.cuc||'').split(' ')[0];
+      cells += `<div class="tv-center"><span class="label">Lá số Tử vi</span><h3>${esc(R.input.name)}</h3>
+      <div class="small">${t.amDuong} · Dương lịch ${fmtDate(R.input.date)}, ${esc(R.input.timeLabel)}</div>
+      <div class="small">Âm lịch ${esc(t.lunar)} · ${esc(t.time.split(' ').slice(0,2).join(' '))}</div>
+      <div class="small">Bản mệnh <b class="el-${m}">${t.napAmNam}</b> · <b>${esc(t.cuc)}</b> · ${menhCuc(m, c)}</div>
+      <div class="small">Mệnh tại <b>${t.menh}</b> · Thân tại <b>${t.than}</b> · Mệnh chủ ${esc(t.soul)} · Thân chủ ${esc(t.body)}</div>
+      <div class="tv-year"><b>Năm ${H.year} ${H.gz}</b>, ${H.age} tuổi âm · Đại hạn ${H.decadalGZ}<br><span class="small">Lưu tứ hóa: ${H.yearlyMut.map((s,k)=>`${MUT_LIST[k]} ${s}`).join(', ')}</span></div></div>`; } return; }
     const p = byB[b]; if (!p) { cells += '<div class="tv-cell"></div>'; return; }
-    cells += `<div class="tv-cell ${p.name==='Mệnh'?'menh':''} ${b===dh?'dh':''}">
-      <div class="tv-head"><span class="tv-name">${p.name}</span><span class="small muted">${p.stem} ${p.branch}</span></div>
-      ${p.isBody?'<span><span class="tag alt">Thân</span></span>':''}
-      <div class="tv-major">${p.major.length?p.major.map(s=>`${s.name}${s.bright?` <span class="br">(${s.bright})</span>`:''}${s.mut?`<span class="mut">${s.mut}</span>`:''}`).join('<br>'):'<span class="muted" style="font-weight:500">Vô chính diệu</span>'}</div>
-      <div class="tv-minor">${p.minor.map(s=>s.name+(s.mut?`<span class="mut">${s.mut}</span>`:'')).join(', ')}</div>
-      <div class="tv-adj">${p.adj.join(', ')}</div>
-      <div class="tv-foot"><span>${p.changsheng||''}</span><span class="num">${p.decadal?p.decadal[0]+'–'+p.decadal[1]:''}</span></div></div>`;
+    const minors = [...p.minor.map(s=>({...s,adj:false})), ...p.adj.map(n=>({name:n,adj:true}))].filter(s=>s.name!=='Tuần Không'&&s.name!=='Triệt Lộ');
+    const bad = s => s.type === 'tough' || (s.adj && HUNG.includes(s.name));
+    const good = minors.filter(s=>!bad(s)), badS = minors.filter(bad);
+    const luu = H.stars[b] || [];
+    const flags = [b===H.decadal?'<span class="tf tf-dh">Đại hạn</span>':'', b===H.yearly?'<span class="tf tf-ln">Lưu niên</span>':'', b===H.tieuHan?'<span class="tf tf-th">Tiểu hạn</span>':''].join('');
+    const ttHere = Object.values(tt).filter(x=>x.b===b).map(x=>`<span class="tt tt-${x.side}">${x.label}</span>`).join('');
+    cells += `<div class="tv-cell ${p.name==='Mệnh'?'menh':''} ${b===H.decadal?'dh':''} ${b===H.yearly?'ln':''} ${b===H.tieuHan?'th':''}" data-b="${b}" tabindex="0" role="button" aria-label="Cung ${p.name} tại ${b}">
+      ${ttHere}
+      <div class="tv-head"><span class="tv-name">${p.name}${p.isBody?' <span class="tag alt">Thân</span>':''}</span><span class="tv-gz">${p.stem} ${p.branch}</span></div>
+      ${flags?`<div class="tv-flags">${flags}</div>`:''}
+      <div class="tv-major">${p.major.length?p.major.map(starLine).join(''):'<span class="muted" style="font-weight:500">Vô chính diệu</span>'}</div>
+      <div class="tv-cols"><div class="tv-good">${good.map(minorName).join('<br>')}</div><div class="tv-bad">${badS.map(minorName).join('<br>')}</div></div>
+      ${luu.length?`<div class="tv-luu">${luu.map(s=>s.name).join(' · ')}</div>`:''}
+      <div class="tv-foot"><span>${p.changsheng||''}${p.boshi?' · '+p.boshi:''}</span><span class="num">${p.decadal?p.decadal[0]+'–'+p.decadal[1]:''}</span></div></div>`;
   });
-  $('#p-tv').innerHTML = `<div class="table-wrap"><div class="tv-grid">${cells}</div></div>
-  <p class="small muted">An sao theo thư viện iztro (Tử vi Đẩu số, âm lịch chuẩn Trung Quốc; có thể lệch với lịch Việt Nam ở một số ngày giáp ranh tháng). Góc dưới mỗi ô là tuổi đại hạn.</p>`;
+  grid.innerHTML = cells + '<svg class="tv-lines" aria-hidden="true"></svg>';
+  grid.querySelectorAll('.tv-cell[data-b]').forEach(c => { const go = () => selectPalace(c.dataset.b === tvSel ? null : c.dataset.b); c.addEventListener('click', go); c.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); go(); } }); });
+  selectPalace(tvSel);
 }
+// Tam phương tứ chính: cung đang chọn, hai cung tam hợp (cách 4) và cung xung chiếu (cách 6)
+function selectPalace(b){
+  tvSel = b; const grid = $('#tvGrid'), svg = grid.querySelector('.tv-lines');
+  grid.querySelectorAll('.tv-cell').forEach(c => c.classList.remove('tp-sel','tp-rel'));
+  svg.innerHTML = ''; if (!b) return;
+  const i = BRANCHES.indexOf(b), rel = [4,8,6].map(k => BRANCHES[(i+k)%12]);
+  const cell = x => grid.querySelector(`.tv-cell[data-b="${x}"]`);
+  cell(b).classList.add('tp-sel'); rel.forEach(x => cell(x).classList.add('tp-rel'));
+  const gr = grid.getBoundingClientRect(); svg.setAttribute('viewBox', `0 0 ${gr.width} ${gr.height}`);
+  const ctr = x => { const r = cell(x).getBoundingClientRect(); return [r.left - gr.left + r.width/2, r.top - gr.top + r.height/2]; };
+  const [s, a1, a2, o] = [b, ...rel].map(ctr);
+  svg.innerHTML = `<polygon points="${[s,a1,a2].map(p=>p.join(',')).join(' ')}" fill="var(--seal)" fill-opacity=".05" stroke="var(--seal)" stroke-width="1.5"/><line x1="${s[0]}" y1="${s[1]}" x2="${o[0]}" y2="${o[1]}" stroke="var(--seal)" stroke-width="1.5" stroke-dasharray="6 4"/>`;
+}
+addEventListener('resize', () => { if (tvSel && $('#tvGrid')) selectPalace(tvSel); });
 
 /* ---- thần số ---- */
-const NUM_TEXT = {1:'Độc lập, khởi xướng',2:'Hợp tác, tinh tế',3:'Sáng tạo, biểu đạt',4:'Kỷ luật, xây nền',5:'Tự do, thay đổi',6:'Trách nhiệm, chăm lo',7:'Chiêm nghiệm, chiều sâu',8:'Quản trị, vật chất',9:'Nhân văn, bao dung',10:'Tiên phong, tự lập',11:'Trực giác, truyền cảm hứng',22:'Kiến tạo lớn',33:'Chữa lành, cống hiến'};
+const NUM_TEXT = {0:'Không có thử thách lớn ở chặng này',1:'Độc lập, khởi xướng',2:'Hợp tác, tinh tế',3:'Sáng tạo, biểu đạt',4:'Kỷ luật, xây nền',5:'Tự do, thay đổi',6:'Trách nhiệm, chăm lo',7:'Chiêm nghiệm, chiều sâu',8:'Quản trị, vật chất',9:'Nhân văn, bao dung',10:'Tiên phong, tự lập',11:'Trực giác, truyền cảm hứng',22:'Kiến tạo lớn',33:'Chữa lành, cống hiến'};
+const DEBT_TEXT = {13:'Bài học về chăm chỉ, kiên trì, không đi đường tắt',14:'Bài học về tiết chế, giữ chừng mực trong tự do',16:'Bài học về buông cái tôi, xây lại sau đổ vỡ',19:'Bài học về tự lập nhưng biết nhận giúp đỡ'};
+const ARROW_TEXT = {'Kế hoạch':'Giỏi sắp xếp, lên kế hoạch','Ý chí':'Bền bỉ, theo việc tới cùng','Hoạt động':'Thích bắt tay vào làm','Trí tuệ':'Trí nhớ tốt, tư duy sắc','Cân bằng cảm xúc':'Cảm xúc vững, dễ đồng cảm','Thực tế':'Thực tế, khéo tay','Quyết tâm':'Kiên định khi đã chọn mục tiêu','Tâm linh':'Trực giác, nhạy với điều vô hình',
+  'Uất giận':'Dễ dồn nén thất vọng, cần nói ra sớm','Thụ động':'Dễ chần chừ, cần động lực từ ngoài','Trí nhớ ngắn hạn':'Hay quên chi tiết, nên ghi chép','Nhạy cảm':'Dễ tổn thương, cần không gian an toàn','Thiếu trật tự':'Khó giữ nề nếp, cần thói quen nhỏ','Trì hoãn':'Hay để việc sang mai','Hoài nghi':'Cần bằng chứng trước khi tin'};
+function loShuSVG(g, arrows, label){
+  const order = [3,6,9,2,5,8,1,4,7], S = 64, G = 10, W = S*3 + G*2;
+  const pos = k => { const i = order.indexOf(k); return [(i%3)*(S+G)+S/2, Math.floor(i/3)*(S+G)+S/2]; };
+  let s = `<svg viewBox="-14 -14 ${W+28} ${W+28}" class="loshu" role="img" aria-label="${label}">`;
+  order.forEach((k,i)=>{ const x=(i%3)*(S+G), y=Math.floor(i/3)*(S+G), on=g[k];
+    s += `<rect x="${x}" y="${y}" width="${S}" height="${S}" rx="10" fill="${on?'var(--sheet)':'var(--sunken)'}" stroke="var(--line)" ${on?'':'stroke-dasharray="4 3"'}/>`;
+    s += `<text x="${x+S/2}" y="${y+S/2}" text-anchor="middle" dominant-baseline="central" font-size="${on && on>2?15:18}" font-weight="600" fill="${on?'var(--ink)':'var(--ink-3)'}">${on?String(k).repeat(on):k}</text>`; });
+  (arrows||[]).forEach(a=>{ const [x1,y1]=pos(a.nums[0]),[x2,y2]=pos(a.nums[2]); const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy), ux=dx/L, uy=dy/L, e=S*0.62;
+    const ax=x1-ux*e, ay=y1-uy*e, bx=x2+ux*e, by=y2+uy*e, full=a.kind==='full', col=full?'var(--seal)':'var(--ink-3)';
+    s += `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="${col}" stroke-width="3" stroke-linecap="round" ${full?'':'stroke-dasharray="7 6"'} opacity=".75"/>`;
+    s += `<polygon points="${bx},${by} ${bx-ux*12-uy*6},${by-uy*12+ux*6} ${bx-ux*12+uy*6},${by-uy*12-ux*6}" fill="${col}" opacity=".75"/>`; });
+  return s + '</svg>';
+}
 function renderNum(){
   const n = R.numerology;
-  const cards = [['Đường đời',n.lifePath,'Con đường và bài học chính'],['Sứ mệnh',n.expression,'Từ họ tên: cách đạt mục tiêu'],['Linh hồn',n.soul,'Nguyên âm: khao khát bên trong'],['Nhân cách',n.personality,'Phụ âm: người khác thấy bạn'],['Trưởng thành',n.maturity,'Đường đời cộng Sứ mệnh, rõ từ khoảng 40 tuổi'],['Ngày sinh',n.birthday,'Năng lực tự nhiên'],['Thái độ',n.attitude,'Ngày cộng tháng: phản ứng đầu tiên']];
-  const order = [3,6,9,2,5,8,1,4,7];
+  const core = [['Đường đời',n.lifePath,'Con đường và bài học chính'],['Sứ mệnh',n.expression,'Từ họ tên: cách đạt mục tiêu'],['Linh hồn',n.soul,'Nguyên âm: khao khát bên trong'],['Nhân cách',n.personality,'Phụ âm: người khác thấy bạn']];
+  const sub = [['Trưởng thành',n.maturity,'Rõ dần từ khoảng 40 tuổi'],['Ngày sinh',n.birthday,'Năng lực tự nhiên'],['Thái độ',n.attitude,'Phản ứng đầu tiên'],[`Tháng cá nhân ${n.personalMonth.month}`,n.personalMonth.n,'Nhịp của tháng này']];
+  const card = ([t,v,d], big) => `<div class="ncard ${big?'big':''}"><span class="n num">${v}</span><span class="t">${t}</span><span class="d">${NUM_TEXT[v]||''}</span><span class="d muted">${d}</span></div>`;
+  const by = +R.input.date.slice(0,4), nowY = new Date().getFullYear();
+  const cyc = n.yearCycle;
   $('#p-nm').innerHTML = `
-  <div class="num-grid">${cards.map(([t,v,d])=>`<div class="ncard"><span class="n num">${v}</span><span class="t">${t}</span><span class="d">${NUM_TEXT[v]||''} · ${d}</span></div>`).join('')}</div>
+  <div class="num-core">${core.map(c=>card(c,true)).join('')}</div>
+  <div class="num-sub">${sub.map(c=>card(c,false)).join('')}</div>
   <div class="two">
-    <div class="panel"><h3 style="margin-bottom:10px">Biểu đồ ngày sinh</h3><div class="lo-shu">${order.map(k=>`<div class="${n.grid[k]?'':'empty'}">${n.grid[k]?String(k).repeat(n.grid[k]):k}</div>`).join('')}</div><p class="small muted" style="margin:10px 0 0">Ô mờ là con số không có trong ngày sinh.</p></div>
-    <div class="panel"><h3 style="margin-bottom:8px">Năm cá nhân và đỉnh cao</h3><div class="table-wrap"><table><tbody>
+    <div class="panel"><h3>Biểu đồ ngày sinh</h3>
+      <div class="loshu-wrap">${loShuSVG(n.grid, n.arrows, 'Biểu đồ ngày sinh')}
+        <div class="arrow-list">${n.arrows.length ? n.arrows.map(a=>`<div class="arw ${a.kind}"><b>${a.kind==='full'?'Mũi tên':'Mũi tên trống'} ${a.name}</b> <span class="num muted">${a.nums.join('-')}</span><br><span class="small muted">${ARROW_TEXT[a.name]||''}</span></div>`).join('') : '<p class="small muted">Không có mũi tên nào: không hàng, cột hay đường chéo nào đủ hoặc trống cả ba số.</p>'}</div></div>
+      <p class="small muted" style="margin:10px 0 0">Ô viền đứt là con số không có trong ngày sinh. Đường liền: mũi tên có đủ 3 số. Đường đứt: mũi tên trống, thiếu cả 3 số.</p></div>
+    <div class="panel"><h3>Biểu đồ tên</h3>
+      <div class="loshu-wrap">${loShuSVG(n.nameGrid, [], 'Biểu đồ tên')}
+        <div class="arrow-list"><div class="arw"><b>Đam mê ẩn: ${n.passion.join(', ') || '—'}</b><br><span class="small muted">Con số xuất hiện nhiều nhất trong tên: điều bạn làm tự nhiên và hay quay lại.</span></div>
+        <div class="arw"><b>Số thiếu trong tên: ${Object.keys(n.nameGrid).filter(k=>!n.nameGrid[k]).join(', ') || 'không có'}</b><br><span class="small muted">Bài học cần bồi đắp thêm.</span></div></div></div>
+      <p class="small muted" style="margin:10px 0 0">Họ tên được bỏ dấu, đổi chữ thành số theo bảng Pythagoras (A=1 … I=9, J=1 …).</p></div>
+  </div>
+  <div class="two">
+    <div class="panel"><h3>Thử thách và nợ nghiệp</h3>
+      <div class="chal">${n.challenges.map((c,i)=>`<div><span class="label">Thử thách ${i+1}</span><b class="num">${c}</b><span class="small muted">${NUM_TEXT[c]||''}</span></div>`).join('')}</div>
+      <div class="debts">${n.debts.length ? n.debts.map(d=>`<div><b>Nợ nghiệp ${d.n}</b> <span class="muted small">(ở ${d.where})</span><br><span class="small muted">${DEBT_TEXT[d.n]}</span></div>`).join('') : '<p class="small muted">Không có số nợ nghiệp (13, 14, 16, 19) trong ngày sinh và họ tên.</p>'}</div>
+      <p class="small muted" style="margin:10px 0 0">Thử thách 1, 2 ứng với nửa đầu đời, thử thách 3 là thử thách chính, thử thách 4 ứng với nửa sau.</p></div>
+    <div class="panel"><h3>Chu kỳ 9 năm và đỉnh cao</h3>
+      <div class="cycle" role="img" aria-label="Năm ${nowY} là năm cá nhân số ${cyc}">${[1,2,3,4,5,6,7,8,9].map(k=>`<div class="${k===cyc?'cur':''}"><b>${k}</b><span>${nowY-cyc+k}</span></div>`).join('')}</div>
+      <div class="table-wrap" style="margin-top:12px"><table><tbody>
       ${n.personalYears.map(p=>`<tr><td class="num">${p.year}</td><td>Năm cá nhân <b>${p.n}</b></td><td class="muted">${NUM_TEXT[p.n]||''}</td></tr>`).join('')}
-      ${n.peaks.map((p,i)=>`<tr><td class="num">${p.year}</td><td>Đỉnh ${i+1} (${p.age} tuổi): <b>${p.n}</b></td><td class="muted">${NUM_TEXT[p.n]||''}</td></tr>`).join('')}
-    </tbody></table></div><p class="small muted" style="margin:10px 0 0">Theo quy ước phổ biến tại Việt Nam: đường đời giữ số 10 và 11, 22, 33; tên được bỏ dấu trước khi quy đổi.</p></div>
+      ${n.peaks.map((p,i)=>`<tr class="${nowY>=p.year&&(i===3||nowY<n.peaks[i+1].year)?'cur':''}"><td class="num">${p.year}</td><td>Đỉnh ${i+1} (${p.age} tuổi): <b>${p.n}</b></td><td class="muted">${NUM_TEXT[p.n]||''}</td></tr>`).join('')}
+      </tbody></table></div><p class="small muted" style="margin:10px 0 0">Theo quy ước phổ biến tại Việt Nam: đường đời giữ số 10 và 11, 22, 33; tên được bỏ dấu trước khi quy đổi.</p></div>
   </div>`;
 }
 
@@ -718,19 +1182,21 @@ function brief(){
   const {input:i, bazi:b, astro:a, tuvi:t, numerology:n, transits:tr} = R;
   const L = [];
   const F = R.flags;
-  L.push(`NGƯỜI XEM: ${i.gender==='nam'?'Nam':'Nữ'} · Sinh ${i.timeMode==='exact'?i.time:i.timeLabel} ${fmtDate(i.date)} (GMT+${i.tz}) tại ${i.place} · Hôm nay: ${new Date().toLocaleDateString('vi-VN')}`);
+  L.push(`NGƯỜI XEM: ${i.gender==='nam'?'Nam':'Nữ'} · Sinh ${i.timeMode==='exact'?i.time:i.timeLabel} ${fmtDate(i.date)} (${gmt(i.tz)}) tại ${i.place} · Hôm nay: ${new Date().toLocaleDateString('vi-VN')}`);
   if (i.timeMode==='unknown') L.push('KHÔNG RÕ GIỜ SINH: không có trụ giờ, cung Mọc, các nhà chiêm tinh và lá số Tử vi. Không được luận hay suy đoán các phần này; nói rõ phần nào thiếu vì không có giờ sinh.');
   if (i.timeMode==='canh') L.push('CHỈ BIẾT CANH GIỜ: cung Mọc và các nhà chiêm tinh chỉ là ước lượng, luận thận trọng hoặc bỏ qua.');
   L.push(`\n[BÁT TỰ] Tứ trụ: ${b.pillars.filter(Boolean).map((p,k)=>`${['Năm','Tháng','Ngày','Giờ'][k]} ${p.can} ${p.chi} (can: ${k===2?'Nhật chủ':p.thapThanCan}; tàng: ${p.tangCan.join('/')} = ${p.thapThanChi.join('/')}; nạp âm ${p.napAm})`).join(' | ')}`);
   L.push(`Nhật chủ ${b.dayMaster} (${b.dayMasterHanh}). Ngũ hành đếm thô: ${Object.entries(b.count).map(([k,v])=>k+' '+v).join(', ')}. Có trọng số tàng can: ${Object.entries(b.countFull).map(([k,v])=>k+' '+v).join(', ')}.`);
+  L.push(`Trường sinh từng trụ: ${b.pillars.map((p,k)=>p?['Năm','Tháng','Ngày','Giờ'][k]+' '+p.truongSinh:'').filter(Boolean).join(', ')}. Không vong (theo ngày): ${b.khongVong.join(', ')}. Thần sát: ${b.shensha.map((x,k)=>x.length?['năm','tháng','ngày','giờ'][k]+': '+x.map(y=>y.name).join(', '):'').filter(Boolean).join('; ')||'không có'}. ${b.strength.level} (phe trợ ${b.strength.ratio}%, ${b.strength.deLenh?'đắc lệnh':'thất lệnh'}; cách đếm đơn giản). Hợp xung hình hại: ${b.relations.map(r=>r.kind+' '+r.text).join('; ')||'không có'}.`);
   L.push(`Đại vận: ${b.daiVan.map(v=>`${v.startYear}-${v.endYear} ${v.gz} (${v.thapThan})`).join('; ')}. Lưu niên: ${b.years.map(y=>`${y.year} ${y.gz} (${y.thapThan})`).join('; ')}.`);
   L.push(`\n[CHIÊM TINH${F.hasHour?', Placidus':', theo 12 giờ trưa'}] ${F.hasHour?`Cung Mọc ${a.asc.text}; MC ${a.mc.text}${F.approxHouses?' (ước lượng)':''}. `:''}${a.points.map(p=>`${p.name} ${p.key==='Moon'&&F.moonRange?`${F.moonRange.from} đến ${F.moonRange.to} (không chắc)`:p.text}${F.hasHour?' nhà '+p.house:''}${p.retro&&p.key!=='Node'?' nghịch hành':''}`).join('; ')}.`);
   L.push(`Góc chiếu: ${a.aspects.slice(0,14).map(x=>`${x.a} ${x.type} ${x.b} (${x.orb}°)`).join('; ')}. Nguyên tố: ${Object.entries(a.elements).map(([k,v])=>k+' '+v).join(', ')}.`);
+  L.push(`Tính chất: ${Object.entries(a.modes).map(([k,v])=>k+' '+v).join(', ')}. Lilith ${a.extra[0].text}${F.hasHour?` nhà ${a.extra[0].house}; Điểm may mắn ${a.extra[1].text} nhà ${a.extra[1].house}; Sao chủ lá số ${a.rulers[0].rulerName} ở ${a.rulers[0].inSign} nhà ${a.rulers[0].inHouse}`:''}.`);
   L.push(`Quá cảnh 18 tháng tới: ${tr.length?tr.map(x=>`${x.mover} ${x.aspect} ${x.target} ${x.start.toISOString().slice(0,10)}→${x.end.toISOString().slice(0,10)}`).join('; '):'không có'}.`);
   if (!t) L.push('\n[TỬ VI] Chưa lập được vì không rõ giờ sinh.');
-  else { L.push(`\n[TỬ VI] Mệnh ${t.menh}, Thân ${t.than}, ${t.cuc}, Mệnh chủ ${t.soul}, Thân chủ ${t.body}. Đại hạn hiện tại: ${t.decadalNow?t.decadalNow.stem+' '+t.decadalNow.branch:'?'}; tiểu hạn năm nay: ${t.yearlyNow?t.yearlyNow.stem+' '+t.yearlyNow.branch:'?'}.`);
+  else { L.push(`\n[TỬ VI] ${t.amDuong}, bản mệnh ${t.napAmNam}, ${t.cuc}. Tuần tại ${t.tuan.join('-')}, Triệt tại ${t.triet.join('-')}. Mệnh ${t.menh}, Thân ${t.than}, Mệnh chủ ${t.soul}, Thân chủ ${t.body}. Đại hạn hiện tại: ${t.decadalNow?t.decadalNow.stem+' '+t.decadalNow.branch:'?'}; tiểu hạn năm nay: ${t.yearlyNow?t.yearlyNow.stem+' '+t.yearlyNow.branch:'?'}.`);
   t.palaces.forEach(p => L.push(`- ${p.name} (${p.stem} ${p.branch}${p.isBody?', Thân cư':''}; đại hạn ${p.decadal?p.decadal.join('-'):'?'}): chính tinh ${p.major.length?p.major.map(s=>s.name+(s.bright?' '+s.bright:'')+(s.mut?' hóa '+s.mut:'')).join(', '):'vô chính diệu'}; phụ tinh ${p.minor.map(s=>s.name+(s.mut?' hóa '+s.mut:'')).join(', ')||'—'}; ${p.adj.slice(0,8).join(', ')}`)); }
-  L.push(`\n[THẦN SỐ HỌC] Đường đời ${n.lifePath}, Sứ mệnh ${n.expression}, Linh hồn ${n.soul}, Nhân cách ${n.personality}, Trưởng thành ${n.maturity}, Ngày sinh ${n.birthday}, Thái độ ${n.attitude}. Năm cá nhân: ${n.personalYears.map(p=>p.year+'='+p.n).join(', ')}. Đỉnh cao: ${n.peaks.map(p=>`${p.age} tuổi (${p.year})=${p.n}`).join(', ')}. Số thiếu trong ngày sinh: ${Object.keys(n.grid).filter(k=>!n.grid[k]).join(', ')}.`);
+  L.push(`\n[THẦN SỐ HỌC] Đường đời ${n.lifePath}, Sứ mệnh ${n.expression}, Linh hồn ${n.soul}, Nhân cách ${n.personality}, Trưởng thành ${n.maturity}, Ngày sinh ${n.birthday}, Thái độ ${n.attitude}. Năm cá nhân: ${n.personalYears.map(p=>p.year+'='+p.n).join(', ')}. Đỉnh cao: ${n.peaks.map(p=>`${p.age} tuổi (${p.year})=${p.n}`).join(', ')}. Số thiếu trong ngày sinh: ${Object.keys(n.grid).filter(k=>!n.grid[k]).join(', ')}. Mũi tên: ${n.arrows.map(a=>(a.kind==='full'?'mũi tên ':'mũi tên trống ')+a.name+' ('+a.nums.join('-')+')').join(', ')||'không có'}. Thử thách: ${n.challenges.join(', ')}. Nợ nghiệp: ${n.debts.map(d=>d.n+' ở '+d.where).join(', ')||'không có'}. Đam mê ẩn: ${n.passion.join(', ')}. Tháng cá nhân ${n.personalMonth.month}: ${n.personalMonth.n}.`);
   return L.join('\n');
 }
 let ctl = null, history = [], firstText = '', lastText = '';

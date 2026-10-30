@@ -9,7 +9,7 @@ index.html          giao diện + code trang
 compute.js          tính toán 4 trường phái (chạy trên trình duyệt người dùng)
 iching.js           gieo quẻ Kinh Dịch theo Mai Hoa Dịch Số (năm, tháng, ngày, giờ âm lịch)
 prompt.js           bộ hướng dẫn luận giải, dùng chung cho máy chủ và nút "Sao chép lời nhắc"
-lib/                thư viện: lunar-javascript, astronomy-engine, iztro, marked, DOMPurify
+lib/                thư viện: lunar-javascript, astronomy-engine, iztro, marked, DOMPurify, tz-lookup (tz.js, chỉ tải khi cần)
 api/luangiai.js     hàm máy chủ trên Vercel: giữ API key, gọi Gemini, trả bài luận về
 package.json
 ```
@@ -56,4 +56,5 @@ Mỗi lần đẩy code mới lên GitHub, Vercel tự deploy lại.
 - Bộ đếm lượt theo IP chỉ tương đối, máy chủ khởi động lại là đếm lại. Chỉ câu AI trả lời được mới bị tính lượt; câu bị từ chối được gỡ khỏi khung chat và trả lại ô nhập. Mở rộng thì nên chuyển sang Upstash Redis.
 - Tử vi an sao theo âm lịch Trung Quốc (thư viện iztro). Vài ngày giáp ranh tháng âm có thể lệch với lịch Việt Nam.
 - Người sinh ở miền Nam trước 13/6/1975 được tự tính theo GMT+8.
+- Nơi sinh: ô tìm kiếm khớp sẵn 63 tỉnh, thành (tên cũ, trước sáp nhập 7/2025) và vài thành phố nước ngoài. Không có trong danh sách thì bấm "Tìm … trên bản đồ": trang hỏi OpenStreetMap (Nominatim, miễn phí, chỉ gọi khi người dùng bấm, tối đa 1 lượt/giây, có ghi nguồn). Nơi ở nước ngoài được tự tính múi giờ đúng ngày giờ sinh, gồm cả giờ mùa hè (tz-lookup + lịch múi giờ của trình duyệt). Nơi ở Việt Nam vẫn theo quy tắc GMT+7 / GMT+8 hai miền.
 - Chạy thử trên máy: `npx vercel dev`, với file `.env` chứa `GEMINI_API_KEY=...`. File `.env` đã nằm trong `.gitignore`.
