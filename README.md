@@ -10,7 +10,7 @@ compute.js          tính toán 4 trường phái (chạy trên trình duyệt n
 iching.js           gieo quẻ Kinh Dịch theo Mai Hoa Dịch Số (năm, tháng, ngày, giờ âm lịch)
 prompt.js           bộ hướng dẫn luận giải, dùng chung cho máy chủ và nút "Sao chép lời nhắc"
 lib/                thư viện: lunar-javascript, astronomy-engine, iztro, marked, DOMPurify, tz-lookup (tz.js, chỉ tải khi cần)
-api/luangiai.js     hàm máy chủ trên Vercel: giữ API key, gọi Gemini, trả bài luận về
+api/luangiai.js     hàm máy chủ trên Vercel: giữ API key, gọi Gemini (dự phòng: model miễn phí trên OpenRouter), trả bài luận về
 package.json
 ```
 
@@ -35,12 +35,17 @@ Phần lập lá số chạy hoàn toàn trên trình duyệt. Chỉ phần AI �
    | `ACCESS_CODE` | một mã tự đặt | nên đặt khi mới thử, để chỉ bạn bè có mã mới dùng AI |
    | `RATE_LIMIT_PER_HOUR` | `8` | số lượt mỗi IP mỗi giờ |
 | `OWNER_CODE` | một mã riêng của chủ trang | nhập vào ô Mã truy cập thì không bị giới hạn lượt; đừng đưa mã này cho ai |
+| `OPENROUTER_API_KEY` | khóa tạo ở openrouter.ai → Keys | dự phòng miễn phí khi Gemini hết lượt hoặc lỗi |
+| `OPENROUTER_MODELS` | `google/gemma-4-31b-it:free,nvidia/nemotron-3-super-120b-a12b:free` | không cần đặt; thứ tự model dự phòng, model nào bị gỡ thì sửa ở đây |
+| `AI_ORDER` | `gemini` | đặt `openrouter` nếu muốn dùng OpenRouter trước Gemini |
 
 5. **Deploy lại:** vào **Deployments** và bấm **Redeploy**.
 
 Mỗi lần đẩy code mới lên GitHub, Vercel tự deploy lại.
 
 ## Giới hạn gói miễn phí
+
+- Thứ tự gọi AI: Gemini → Gemma 4 31B → Nemotron 3 Super. Nguồn trước hết lượt, lỗi hoặc 25 giây chưa có chữ thì tự chuyển. Câu trả lời từ model dự phòng có dòng nhỏ "Trả lời bởi …". Danh sách model miễn phí trên OpenRouter thay đổi thường xuyên.
 
 - Gemini 3 Flash khoảng 10 lượt/phút, 1.500 lượt/ngày (tháng 9/2026, Google có thể đổi).
 - Ở gói miễn phí, Google có thể dùng nội dung gửi lên để cải thiện model. Trang đã ghi rõ điều này cho người dùng và không gửi họ tên.

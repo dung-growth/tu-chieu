@@ -375,6 +375,7 @@ tr.cur td{background:var(--seal-soft)}
 .hex-info h4{margin:0;font:600 17px/1.25 var(--display)}
 .hex-meta{font-size:12.5px;color:var(--ink-2)}
 .note{font-size:12.5px;color:var(--ink-2);max-width:75ch;margin:0}
+.ai-by{font-size:12px;color:var(--ink-3);margin:14px 0 0}
 .err{color:var(--seal);font-weight:600}
 #promptBox{font-size:12.5px;min-height:160px}
 
@@ -1199,7 +1200,9 @@ function brief(){
   L.push(`\n[THẦN SỐ HỌC] Đường đời ${n.lifePath}, Sứ mệnh ${n.expression}, Linh hồn ${n.soul}, Nhân cách ${n.personality}, Trưởng thành ${n.maturity}, Ngày sinh ${n.birthday}, Thái độ ${n.attitude}. Năm cá nhân: ${n.personalYears.map(p=>p.year+'='+p.n).join(', ')}. Đỉnh cao: ${n.peaks.map(p=>`${p.age} tuổi (${p.year})=${p.n}`).join(', ')}. Số thiếu trong ngày sinh: ${Object.keys(n.grid).filter(k=>!n.grid[k]).join(', ')}. Mũi tên: ${n.arrows.map(a=>(a.kind==='full'?'mũi tên ':'mũi tên trống ')+a.name+' ('+a.nums.join('-')+')').join(', ')||'không có'}. Thử thách: ${n.challenges.join(', ')}. Nợ nghiệp: ${n.debts.map(d=>d.n+' ở '+d.where).join(', ')||'không có'}. Đam mê ẩn: ${n.passion.join(', ')}. Tháng cá nhân ${n.personalMonth.month}: ${n.personalMonth.n}.`);
   return L.join('\n');
 }
-let ctl = null, history = [], firstText = '', lastText = '';
+let ctl = null, history = [], firstText = '', lastText = '', lastModel = '';
+// Ghi chú nhỏ khi câu trả lời đến từ model dự phòng (không phải Gemini)
+const byNote = () => lastModel && lastModel !== 'Gemini' ? `<p class="ai-by">Trả lời bởi ${esc(lastModel)}</p>` : '';
 const md = s => DOMPurify.sanitize(marked.parse(s || ''));
 const CODE_KEY = 'tuchieu:code';
 try { $('#code').value = localStorage.getItem(CODE_KEY) || ''; } catch(e) {}
@@ -1214,6 +1217,7 @@ async function callAI(payload, onText){
   try { localStorage.setItem(CODE_KEY, code); } catch(e) {}
   const res = await fetch('/api/luangiai', { method:'POST', headers:{ 'Content-Type':'application/json', 'x-access-code': code }, body: JSON.stringify(payload), signal: ctl.signal });
   if (!res.ok) { let m = 'Máy chủ báo lỗi (' + res.status + ').'; try { m = (await res.json()).error || m; } catch(e) {} throw new Error(m); }
+  try { lastModel = decodeURIComponent(res.headers.get('X-AI-Model') || ''); } catch(e) { lastModel = ''; }
   const reader = res.body.getReader(); const dec = new TextDecoder(); let text = '';
   for (;;) { const { done, value } = await reader.read(); if (done) break; text += dec.decode(value, { stream:true }); onText(text); }
   if (text.includes('\u0000ERR:')) { const [ok, err] = text.split('\u0000ERR:'); onText(ok); throw Object.assign(new Error(err || 'AI bị gián đoạn.'), { partial: ok }); }
@@ -1226,15 +1230,17 @@ $('#aiGo').onclick = async () => {
   try {
     const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx }, t => { $('#aiOut').innerHTML = md(t); });
     firstText = lastText = text; $('#chat').hidden = false; $('#aiCopy').hidden = false;
+    $('#aiOut').insertAdjacentHTML('beforeend', byNote());
   } catch(e) {
     if (e.name === 'AbortError') { $('#aiStatus').textContent = 'Đã dừng.'; }
-    else { if (e.partial) lastText = e.partial; $('#aiStatus').innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+    else { if (e.partial) lastText = e.partial; $('#aiStatus').innerHTML = `<span class="err">${esc(e.message)}</span>${e.partial ? ' Bấm <b>Viết luận giải</b> để viết lại.' : ''}`; }
   } finally { busy(false); }
 };
 $('#aiCopy').onclick = async () => { try { await navigator.clipboard.writeText(lastText); $('#aiStatus').textContent = 'Đã sao chép.'; } catch(e) { const r = document.createRange(); r.selectNodeContents($('#aiOut')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $('#aiStatus').textContent = 'Đã chọn sẵn bài luận, bấm Ctrl/Cmd + C để sao chép.'; } };
 // Câu hỏi lỗi mà chưa có chữ nào: gỡ khỏi khung chat, trả câu về ô nhập để bấm lại
-function failAsk(box, q, e, gotText){
-  if (gotText) { if (e.name !== 'AbortError') box.querySelector('.a').insertAdjacentHTML('beforeend', `<p class="err">${esc(e.message)}</p>`); return; }
+function failAsk(box, q, e, gotText, retry){
+  if (gotText) { if (e.name !== 'AbortError') { box.querySelector('.a').insertAdjacentHTML('beforeend', `<p class="err">${esc(e.message)} <button type="button" class="btn-ghost btn-sm redo">Viết lại</button></p>`);
+    box.querySelector('.redo').onclick = () => { box.remove(); $('#ask').value = q; retry(); }; } return; }
   box.remove(); $('#ask').value = q;
   $('#askStatus').innerHTML = e.name === 'AbortError' ? 'Đã dừng.' : `<span class="err">${esc(e.message)}</span>`;
 }
@@ -1245,8 +1251,8 @@ async function ask(){
   const a = box.querySelector('.a'); let got = false;
   try {
     const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q }, t => { got = !!t; a.innerHTML = md(t); });
-    history.push({ q, a: text });
-  } catch(e) { failAsk(box, q, e, got); }
+    history.push({ q, a: text }); a.insertAdjacentHTML('beforeend', byNote());
+  } catch(e) { failAsk(box, q, e, got, ask); }
   finally { busy(false); }
 }
 $('#copyPrompt').onclick = async () => {
@@ -1292,7 +1298,8 @@ async function castAsk(){
     const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, que: ICHING.brief(que, R.bazi.dayMasterHanh) }, t => { got = !!t; a.innerHTML = md(t); });
     history.push({ q: '[Gieo quẻ ' + que.main.fullName + '] ' + q, a: text });
     try { localStorage.setItem(QUE_KEY(q), JSON.stringify({ que, answer: text })); } catch(e) {}
-  } catch(e) { failAsk(box, q, e, got); }
+    a.insertAdjacentHTML('beforeend', byNote());
+  } catch(e) { failAsk(box, q, e, got, castAsk); }
   finally { busy(false); }
 }
 $('#castGo').onclick = castAsk;
