@@ -5,158 +5,263 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Lập cùng lúc Bát tự, Bản đồ sao, Tử vi, Thần số học và để AI đối chiếu các trường phái.">
 <title>Tứ Chiếu</title>
+<script>/* áp giao diện sáng/tối trước khi vẽ trang để không bị nháy */
+try { const t = localStorage.getItem('tuchieu:theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch(e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: một cột đọc, form ở trên, kết quả chia tab theo 4 trường phái; ấn triện đỏ làm điểm nhấn duy nhất */
+/* =========================================================
+   Tứ Chiếu — giao diện
+   Màu theo mệnh chủ trang: Hỏa (cam đỏ) làm điểm nhấn, Mộc (xanh lá) cho phần gieo quẻ,
+   nền trắng ấm thiên Thổ; tránh xanh dương và xám lạnh (Thủy, Kim).
+   Tên biến cũ (--paper, --sheet, --seal, --jade…) giữ nguyên vì code vẽ lá số đang dùng.
+   ========================================================= */
 :root{
-  --paper:#EDF0EA; --sheet:#F8FAF6; --ink:#1B2220; --ink-2:#4A5652; --line:#CDD5CE; --line-2:#DFE5DF;
-  --seal:#B2382C; --seal-soft:#F3DCD6; --jade:#2E6A5C; --jade-soft:#D9E9E3; --gold:#9A7418;
-  --fire:#C0503A; --earth:#8C6D2F; --air:#3F6FA3; --water:#2F7F87; --metal:#7A7F86; --wood:#3E8250;
-  --display:"Fraunces", "Noto Serif", Georgia, serif;
-  --body:"Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --r:10px;
+  --paper:#FAF8F6;   /* nền trang */
+  --sheet:#FFFFFF;   /* nền thẻ */
+  --sunken:#F5F2EF;  /* nền ô nhập, vùng lõm */
+  --ink:#1C1917; --ink-2:#6B635C; --ink-3:#958C84;
+  --line:#E7E2DD; --line-2:#F0ECE8;
+  --seal:#C8431B; --seal-hover:#B23A16; --seal-soft:#FCEBE4; --on-seal:#FFFFFF;
+  --jade:#2C7A4B; --jade-hover:#24683F; --jade-soft:#E6F2EA; --on-jade:#FFFFFF;
+  --gold:#B7791F;
+  --fire:#D9481F; --earth:#9A6B25; --air:#4E78A6; --water:#23838E; --metal:#857F79; --wood:#378553;
+  --shadow-sm:0 1px 2px rgba(28,25,23,.05);
+  --shadow:0 1px 2px rgba(28,25,23,.04), 0 4px 16px rgba(28,25,23,.06);
+  --shadow-lg:0 2px 4px rgba(28,25,23,.04), 0 12px 32px rgba(28,25,23,.08);
+  --topbar:rgba(250,248,246,.82);
+  --display:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --body:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r:12px; --r-sm:8px;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --paper:#101614; --sheet:#171F1C; --ink:#E4EAE5; --ink-2:#A3B0AB; --line:#2E3A36; --line-2:#24302C;
-  --seal:#E0685B; --seal-soft:#3A201C; --jade:#72B6A4; --jade-soft:#1D3530; --gold:#D6B25A;
-  --fire:#E2785F; --earth:#C9A45B; --air:#7FA8D8; --water:#6CC0C6; --metal:#A9AFB6; --wood:#78BD88;
+  --paper:#131110; --sheet:#1B1918; --sunken:#221F1D;
+  --ink:#EEEAE6; --ink-2:#A69E97; --ink-3:#7D756F;
+  --line:#2F2B28; --line-2:#262321;
+  --seal:#F0805A; --seal-hover:#F49675; --seal-soft:#3A2119; --on-seal:#1F0F09;
+  --jade:#6CC08A; --jade-hover:#86CDA0; --jade-soft:#1B3024; --on-jade:#0D1F14;
+  --gold:#D8A44C;
+  --fire:#F08A68; --earth:#CFA563; --air:#8DB0D8; --water:#6CC3CA; --metal:#ABA5A0; --wood:#7CC594;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); --shadow-lg:0 2px 4px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.35);
+  --topbar:rgba(19,17,16,.8);
   color-scheme:dark }}
 :root[data-theme="dark"]{
-  --paper:#101614; --sheet:#171F1C; --ink:#E4EAE5; --ink-2:#A3B0AB; --line:#2E3A36; --line-2:#24302C;
-  --seal:#E0685B; --seal-soft:#3A201C; --jade:#72B6A4; --jade-soft:#1D3530; --gold:#D6B25A;
-  --fire:#E2785F; --earth:#C9A45B; --air:#7FA8D8; --water:#6CC0C6; --metal:#A9AFB6; --wood:#78BD88;
+  --paper:#131110; --sheet:#1B1918; --sunken:#221F1D;
+  --ink:#EEEAE6; --ink-2:#A69E97; --ink-3:#7D756F;
+  --line:#2F2B28; --line-2:#262321;
+  --seal:#F0805A; --seal-hover:#F49675; --seal-soft:#3A2119; --on-seal:#1F0F09;
+  --jade:#6CC08A; --jade-hover:#86CDA0; --jade-soft:#1B3024; --on-jade:#0D1F14;
+  --gold:#D8A44C;
+  --fire:#F08A68; --earth:#CFA563; --air:#8DB0D8; --water:#6CC3CA; --metal:#ABA5A0; --wood:#7CC594;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); --shadow-lg:0 2px 4px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.35);
+  --topbar:rgba(19,17,16,.8);
   color-scheme:dark }
+
+/* ---------- nền tảng ---------- */
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 var(--body);padding-inline:16px;padding-block:24px 64px}
-.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
-h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
-h2{font-size:22px;font-weight:600} h3{font-size:17px;font-weight:600}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 var(--body);-webkit-font-smoothing:antialiased;transition:background-color .25s var(--ease),color .25s var(--ease)}
+.container{max-width:1120px;margin:0 auto;padding-inline:20px}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.25;letter-spacing:-.015em}
+h2{font-size:22px;font-weight:650} h3{font-size:16px;font-weight:600}
+a{color:inherit}
 .muted{color:var(--ink-2)} .small{font-size:13px}
 .num{font-variant-numeric:tabular-nums}
-.label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+.label{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);font-weight:600}
+::selection{background:var(--seal-soft)}
 
-/* header */
-.masthead{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
-.seal{width:52px;height:52px;border-radius:8px;background:var(--seal);color:#fff;display:grid;place-items:center;font:700 22px/1 var(--display);letter-spacing:-.02em;transform:rotate(-3deg);flex:none}
-.masthead h1{font-size:34px;font-weight:700;letter-spacing:-.01em}
-.masthead p{margin:2px 0 0;color:var(--ink-2);max-width:60ch}
+/* ---------- thanh trên cùng ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:var(--topbar);backdrop-filter:saturate(1.6) blur(12px);-webkit-backdrop-filter:saturate(1.6) blur(12px);border-bottom:1px solid transparent;transition:border-color .2s var(--ease),background-color .25s var(--ease)}
+.topbar.scrolled{border-bottom-color:var(--line)}
+.topbar .container{display:flex;align-items:center;gap:24px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:-.02em;flex:none}
+.logo{width:26px;height:26px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:4px;border-radius:7px;background:var(--ink)}
+.logo i{border-radius:2px;background:var(--paper)}
+.logo i:first-child{background:var(--seal)}
+.nav{display:flex;gap:4px;margin-right:auto}
+.nav a{padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--ink-2);font-size:14px;font-weight:500;transition:color .15s var(--ease),background-color .15s var(--ease)}
+.nav a:hover{color:var(--ink);background:var(--line-2)}
+.top-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+.icon-btn{width:36px;height:36px;padding:0;display:grid;place-items:center;border-radius:8px;background:transparent;border:1px solid transparent;color:var(--ink-2)}
+.icon-btn:hover{color:var(--ink);background:var(--line-2)}
+.icon-btn svg{width:18px;height:18px}
+.theme-dark{display:none}
+:root[data-theme="dark"] .theme-light{display:none} :root[data-theme="dark"] .theme-dark{display:block}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .theme-light{display:none} :root:not([data-theme="light"]) .theme-dark{display:block}}
 
-/* form */
-.panel{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:20px}
-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px 16px}
-.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+/* ---------- nút ---------- */
+button{font:600 14px/1 var(--body);border-radius:var(--r-sm);padding:11px 18px;border:1px solid transparent;cursor:pointer;color:var(--ink);background:none;
+  transition:background-color .15s var(--ease),border-color .15s var(--ease),color .15s var(--ease),box-shadow .15s var(--ease),transform .15s var(--ease)}
+button:active:not(:disabled){transform:translateY(1px)}
+.btn-primary{background:var(--seal);color:var(--on-seal);box-shadow:var(--shadow-sm)}
+.btn-primary:hover:not(:disabled){background:var(--seal-hover);box-shadow:0 4px 14px color-mix(in srgb,var(--seal) 30%,transparent);transform:translateY(-1px)}
+.btn-ghost{background:var(--sheet);color:var(--ink);border-color:var(--line);box-shadow:var(--shadow-sm)}
+.btn-ghost:hover:not(:disabled){border-color:var(--ink-3);background:var(--sheet)}
+.btn-que{background:var(--jade);color:var(--on-jade);box-shadow:var(--shadow-sm)}
+.btn-que:hover:not(:disabled){background:var(--jade-hover);transform:translateY(-1px)}
+.btn-sm{padding:8px 12px;font-size:13.5px}
+.btn-lg{padding:14px 22px;font-size:15px;border-radius:10px}
+button:disabled{opacity:.5;cursor:default}
+
+/* ---------- hero + form ---------- */
+.hero{padding-block:56px 40px}
+.hero .container{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,520px);gap:56px;align-items:start}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 8px;border:1px solid var(--line);border-radius:99px;background:var(--sheet);font-size:12.5px;font-weight:500;color:var(--ink-2)}
+.eyebrow b{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--seal)}
+.hero h1{font-size:clamp(34px,5vw,52px);font-weight:700;letter-spacing:-.035em;line-height:1.08;margin:20px 0 16px}
+.hero h1 span{color:var(--seal)}
+.lede{font-size:17px;line-height:1.6;color:var(--ink-2);max-width:46ch;margin:0}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.facts{list-style:none;padding:0;margin:36px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 20px;max-width:460px}
+.facts li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--ink-2)}
+.facts li::before{content:"";flex:none;width:16px;height:16px;margin-top:3px;border-radius:5px;background:var(--seal-soft);box-shadow:inset 0 0 0 4px var(--seal-soft),inset 0 0 0 8px var(--seal)}
+.facts b{color:var(--ink);font-weight:600}
+
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.form-card{padding:24px;scroll-margin-top:84px}
+.form-card .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:18px}
+.form-card .head h2{font-size:18px}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .field.wide{grid-column:1/-1}
-label{font-size:13px;font-weight:600;color:var(--ink-2)}
-input,select,textarea{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;min-width:0}
-textarea{min-height:64px;resize:vertical}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,[role=tab]:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
-.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.seg label{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;cursor:pointer;color:var(--ink);font-weight:500;background:var(--paper)}
+label,.field-label{font-size:13px;font-weight:500;color:var(--ink)}
+input,select,textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--sheet);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;width:100%;min-width:0;min-height:42px;
+  transition:border-color .15s var(--ease),box-shadow .15s var(--ease),background-color .15s var(--ease)}
+input:hover,select:hover,textarea:hover{border-color:var(--ink-3)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--seal);box-shadow:0 0 0 3px color-mix(in srgb,var(--seal) 18%,transparent)}
+input:disabled{background:var(--sunken);color:var(--ink-3)}
+textarea{min-height:76px;resize:vertical;line-height:1.5}
+select{appearance:none;-webkit-appearance:none;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23958C84' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+button:focus-visible,[role=tab]:focus-visible,a:focus-visible,.seg label:has(input:focus-visible){outline:2px solid var(--seal);outline-offset:2px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--sunken);border:1px solid var(--line);border-radius:var(--r-sm);min-height:42px}
+.seg label{display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:var(--ink-2);font-weight:500;font-size:14px;transition:background-color .15s var(--ease),color .15s var(--ease),box-shadow .15s var(--ease)}
 .seg input{position:absolute;opacity:0;width:1px;height:1px}
-.seg input:checked+span{color:var(--seal);font-weight:700}
-.seg label:has(input:checked){background:var(--seal-soft)}
-.row-actions{grid-column:1/-1;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.seg label:has(input:checked){background:var(--sheet);color:var(--ink);font-weight:600;box-shadow:var(--shadow-sm)}
+.row-actions{grid-column:1/-1;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-top:4px}
+.row-actions .btn-primary{flex:0 0 auto}
 .hint{font-size:12.5px;color:var(--ink-2)}
-button{font:600 14px/1 var(--body);border-radius:8px;padding:11px 18px;border:1px solid transparent;cursor:pointer}
-.btn-primary{background:var(--seal);color:#fff}
-.btn-primary:hover{filter:brightness(1.07)}
-.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
-.btn-ghost:hover{border-color:var(--ink-2)}
-button:disabled{opacity:.55;cursor:default}
-.check{display:flex;align-items:center;gap:8px;font-weight:500;color:var(--ink);font-size:13.5px;cursor:pointer}
-.check input{width:auto}
-.warn{border-left:3px solid var(--gold);background:var(--sheet);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;font-size:14px}
-.custom-geo{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px}
+.check{display:flex;align-items:center;gap:8px;font-weight:400;color:var(--ink-2);font-size:13.5px;cursor:pointer;margin-top:2px}
+.check input{width:16px;height:16px;min-height:0;accent-color:var(--seal);margin:0}
+.custom-geo{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px}
+.warn{border:1px solid var(--line);border-left:3px solid var(--seal);background:var(--sheet);padding:12px 16px;border-radius:var(--r-sm);font-size:14px;color:var(--ink)}
 
-/* tabs */
-.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:thin}
-[role=tab]{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:12px 14px;color:var(--ink-2);font-weight:600;white-space:nowrap}
-[role=tab][aria-selected=true]{color:var(--ink);border-bottom-color:var(--seal)}
-.tabpanel{padding-top:20px;display:flex;flex-direction:column;gap:20px}
+/* ---------- kết quả ---------- */
+.results{padding-block:32px 72px;scroll-margin-top:60px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.section-head p{margin:4px 0 0;color:var(--ink-2);font-size:14px}
+#result{scroll-margin-top:72px}
+.tabs{display:flex;gap:2px;padding:4px;background:var(--sunken);border:1px solid var(--line);border-radius:10px;overflow-x:auto;scrollbar-width:none;width:max-content;max-width:100%}
+.tabs::-webkit-scrollbar{display:none}
+[role=tab]{background:none;border:0;border-radius:7px;padding:9px 14px;color:var(--ink-2);font-weight:500;white-space:nowrap;font-size:14px}
+[role=tab]:hover{color:var(--ink)}
+[role=tab][aria-selected=true]{background:var(--sheet);color:var(--ink);font-weight:600;box-shadow:var(--shadow-sm)}
+[role=tab].tab-ai{display:inline-flex;align-items:center;gap:6px}
+[role=tab].tab-ai::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--seal)}
+.tabpanel{padding-top:24px;display:flex;flex-direction:column;gap:20px}
+.panel{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-sm)}
 
-/* summary */
-.who{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
-.who h2{font-size:26px}
-.lens-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-.lens{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.lens .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+/* tổng quan */
+.who{display:flex;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;align-items:baseline}
+.who h2{font-size:26px;letter-spacing:-.025em}
+.who .muted{font-size:14px}
+.lens-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.lens{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0;box-shadow:var(--shadow-sm);transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .2s var(--ease)}
+.lens:hover,.ncard:hover{border-color:color-mix(in srgb,var(--ink-3) 60%,var(--line));box-shadow:var(--shadow);transform:translateY(-2px)}
+.lens h3{font-size:17px}
+.lens .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;margin:4px 0 0;padding-top:12px;border-top:1px solid var(--line-2)}
 .lens .kv dt{color:var(--ink-2)} .lens .kv dd{margin:0;font-weight:600;text-align:right}
-.callout{border-left:3px solid var(--seal);background:var(--sheet);padding:14px 16px;border-radius:0 var(--r) var(--r) 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between}
-.callout p{margin:0;max-width:62ch}
+.callout{position:relative;overflow:hidden;border:1px solid color-mix(in srgb,var(--seal) 35%,var(--line));background:linear-gradient(135deg,var(--seal-soft),var(--sheet) 70%);padding:18px 20px;border-radius:var(--r);display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.callout p{margin:0;max-width:62ch;font-weight:500}
 
-/* bazi */
+/* bát tự */
 .table-wrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{padding:9px 10px;border-bottom:1px solid var(--line-2);text-align:left;vertical-align:top}
-th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.03em}
-.pillars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.pillar{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:14px 10px;text-align:center;display:flex;flex-direction:column;gap:6px}
-.pillar.day{border-color:var(--seal);box-shadow:inset 0 0 0 1px var(--seal)}
-.pillar .gz{font:600 26px/1.15 var(--display)}
+tr:last-child td{border-bottom:0}
+th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
+.pillars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.pillar{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:16px 10px;text-align:center;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow-sm)}
+.pillar.day{border-color:var(--seal);box-shadow:0 0 0 3px var(--seal-soft)}
+.pillar .gz{font:650 26px/1.15 var(--display);letter-spacing:-.02em}
 .pillar .god{font-size:12.5px;color:var(--ink-2)}
-.chip{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;background:var(--line-2);color:var(--ink)}
+.chip{display:inline-block;align-self:center;padding:3px 9px;border-radius:99px;font-size:12px;font-weight:500;background:var(--sunken);border:1px solid var(--line);color:var(--ink)}
 .el-Kim{color:var(--metal)} .el-Mộc{color:var(--wood)} .el-Thủy{color:var(--water)} .el-Hỏa{color:var(--fire)} .el-Thổ{color:var(--earth)}
-.bars{display:flex;flex-direction:column;gap:8px}
+.bars{display:flex;flex-direction:column;gap:10px}
 .bar{display:grid;grid-template-columns:52px 1fr 40px;gap:10px;align-items:center;font-size:14px}
-.bar .track{height:10px;background:var(--line-2);border-radius:99px;overflow:hidden}
-.bar .fill{height:100%;border-radius:99px}
-.timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
-.tl{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--sheet);font-size:13px}
+.bar .track{height:8px;background:var(--line-2);border-radius:99px;overflow:hidden}
+.bar .fill{height:100%;border-radius:99px;transform-origin:left;animation:grow .7s var(--ease) both}
+.timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:8px}
+.tl{border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;background:var(--sheet);font-size:13px}
 .tl.now{border-color:var(--seal);background:var(--seal-soft)}
 .tl b{display:block;font:600 16px var(--display)}
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
 .two>*{min-width:0}
 
-/* astro */
-.wheel-box{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:10px;display:flex;justify-content:center}
+/* bản đồ sao */
+.wheel-box{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:12px;display:flex;justify-content:center;box-shadow:var(--shadow-sm)}
 .wheel-box svg{width:100%;max-width:520px;height:auto}
-.asp-list{display:flex;flex-direction:column;gap:2px;font-size:14px}
-.asp-list div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line-2);padding:5px 0}
+.asp-list{display:flex;flex-direction:column;font-size:14px}
+.asp-list div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line-2);padding:7px 0}
+.asp-list div:last-child{border-bottom:0}
 .retro{color:var(--seal);font-size:12px;font-weight:700}
 
-/* tuvi */
-.tv-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,auto);gap:4px;min-width:640px}
-.tv-cell{background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:8px;font-size:12.5px;display:flex;flex-direction:column;gap:3px;min-height:150px}
+/* tử vi */
+.tv-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,auto);gap:6px;min-width:640px}
+.tv-cell{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px;font-size:12.5px;display:flex;flex-direction:column;gap:3px;min-height:150px}
 .tv-cell.menh{border-color:var(--seal);box-shadow:inset 0 0 0 1px var(--seal)}
 .tv-cell.dh{background:var(--jade-soft)}
 .tv-head{display:flex;justify-content:space-between;gap:6px;align-items:baseline}
-.tv-name{font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
-.tv-major{font-weight:700;color:var(--seal)}
-.tv-major .br{font-weight:500;color:var(--ink-2);font-size:11.5px}
-.mut{display:inline-block;font-size:10.5px;padding:0 5px;border-radius:4px;margin-left:3px;background:var(--jade);color:var(--sheet);font-weight:700}
-.tv-minor{color:var(--ink);} .tv-adj{color:var(--ink-2);font-size:11.5px}
+.tv-name{font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.tv-major{font-weight:600;color:var(--seal)}
+.tv-major .br{font-weight:400;color:var(--ink-2);font-size:11.5px}
+.mut{display:inline-block;font-size:10.5px;padding:0 5px;border-radius:4px;margin-left:3px;background:var(--jade);color:var(--on-jade);font-weight:600}
+.tv-minor{color:var(--ink)} .tv-adj{color:var(--ink-2);font-size:11.5px}
 .tv-foot{margin-top:auto;display:flex;justify-content:space-between;color:var(--ink-2);font-size:11.5px}
-.tv-center{grid-column:2/4;grid-row:2/4;background:var(--paper);border:1px dashed var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:6px;justify-content:center;text-align:center}
+.tv-center{grid-column:2/4;grid-row:2/4;background:var(--sunken);border:1px dashed var(--line);border-radius:var(--r-sm);padding:16px;display:flex;flex-direction:column;gap:6px;justify-content:center;text-align:center}
 .tv-center h3{font-size:20px}
-.tag{font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:4px;background:var(--seal);color:#fff}
-.tag.alt{background:var(--jade)}
+.tag{font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:4px;background:var(--seal);color:var(--on-seal)}
+.tag.alt{background:var(--jade);color:var(--on-jade)}
 
-/* numerology */
+/* thần số */
 .num-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-.ncard{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:4px}
-.ncard .n{font:700 34px/1 var(--display);color:var(--seal)}
+.ncard{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm);transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .2s var(--ease)}
+.ncard .n{font:700 34px/1 var(--display);letter-spacing:-.03em;color:var(--seal);margin-bottom:6px}
 .ncard .t{font-weight:600} .ncard .d{font-size:12.5px;color:var(--ink-2)}
 .lo-shu{display:grid;grid-template-columns:repeat(3,64px);gap:6px}
-.lo-shu div{height:64px;border:1px solid var(--line);border-radius:8px;display:grid;place-items:center;font:600 18px var(--display);background:var(--sheet)}
-.lo-shu div.empty{color:var(--line);background:transparent}
+.lo-shu div{height:64px;border:1px solid var(--line);border-radius:var(--r-sm);display:grid;place-items:center;font:600 17px var(--display);background:var(--sheet)}
+.lo-shu div.empty{color:var(--ink-3);background:var(--sunken);border-style:dashed}
 
-/* AI */
+/* ---------- luận giải AI ---------- */
+.ai-shell{border:1px solid color-mix(in srgb,var(--seal) 30%,var(--line));border-radius:16px;background:var(--sheet);box-shadow:var(--shadow-lg);overflow:hidden}
+.ai-head{padding:20px 22px;background:linear-gradient(135deg,var(--seal-soft),var(--sheet) 65%);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+.ai-title{display:flex;gap:12px;align-items:flex-start}
+.ai-badge{flex:none;width:36px;height:36px;border-radius:10px;background:var(--seal);color:var(--on-seal);display:grid;place-items:center}
+.ai-badge svg{width:18px;height:18px}
+.ai-title h2{font-size:18px}
+.ai-title p{margin:2px 0 0;color:var(--ink-2);font-size:14px}
 .ai-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.ai-out{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;min-height:120px}
-.ai-out h1,.ai-out h2{font-size:21px;margin:18px 0 8px}.ai-out h3{font-size:17px;margin:16px 0 6px}
-.ai-out p,.ai-out li{max-width:70ch}
+.ai-controls select{width:auto}
+.ai-controls #code{width:190px}
+.ai-body{padding:22px}
+.ai-out{min-height:120px;font-size:15.5px;line-height:1.7}
+.ai-out h1,.ai-out h2{font-size:19px;margin:24px 0 8px}.ai-out h3{font-size:16.5px;margin:20px 0 6px}
+.ai-out p,.ai-out li{max-width:72ch}
 .ai-out>:first-child{margin-top:0}
 .ai-out table{margin:10px 0}
 .ai-status{font-size:13px;color:var(--ink-2)}
-.chat-row{display:flex;gap:10px;flex-wrap:wrap}
-.chat-row input{flex:1 1 260px}
-.qa{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
-.qa .q{font-weight:700;margin-bottom:6px}
+.chat{margin-top:8px;border-top:1px solid var(--line);padding-top:4px}
+.chat-row{display:flex;gap:8px;flex-wrap:wrap;padding:8px;border:1px solid var(--line);border-radius:12px;background:var(--sunken)}
+.chat-row input{flex:1 1 240px;border-color:transparent;background:var(--sheet)}
+.chat-hint{margin:16px 0 8px;font-size:12.5px;color:var(--ink-2)}
+.qa{border-top:1px solid var(--line-2);padding-top:16px;margin-top:16px;animation:rise .35s var(--ease) both}
+.qa:first-child{border-top:0;margin-top:12px;padding-top:12px}
+.qa .q{display:inline-block;font-weight:600;margin-bottom:10px;padding:8px 12px;border-radius:10px;background:var(--sunken);border:1px solid var(--line)}
 /* gieo quẻ */
-.hex-card{display:flex;flex-wrap:wrap;gap:18px 24px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:4px 0 12px}
+.hex-card{display:flex;flex-wrap:wrap;gap:18px 24px;align-items:center;background:var(--jade-soft);border:1px solid color-mix(in srgb,var(--jade) 30%,var(--line));border-radius:var(--r);padding:16px;margin:4px 0 12px}
 .hex-figs{display:flex;align-items:center;gap:14px}
 .hex{display:flex;flex-direction:column;gap:6px;width:76px}
 .hex .ln{display:flex;gap:10px;height:9px;position:relative}
@@ -166,100 +271,208 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.03em}
 .hex-cap{font-size:12px;color:var(--ink-2);text-align:center;margin-top:6px}
 .hex-arrow{color:var(--ink-2);font-size:20px}
 .hex-info{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1 1 240px;font-size:14px}
-.hex-info h4{margin:0;font:600 18px/1.25 var(--display)}
+.hex-info h4{margin:0;font:600 17px/1.25 var(--display)}
 .hex-meta{font-size:12.5px;color:var(--ink-2)}
-.btn-que{background:var(--jade);color:#fff}
-.note{font-size:12.5px;color:var(--ink-2);max-width:75ch}
+.note{font-size:12.5px;color:var(--ink-2);max-width:75ch;margin:0}
 .err{color:var(--seal);font-weight:600}
-@media (max-width:560px){ .pillar .gz{font-size:20px} .masthead h1{font-size:28px} }
-@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+#promptBox{font-size:12.5px;min-height:160px}
+
+/* ---------- chân trang ---------- */
+.footer{border-top:1px solid var(--line);padding-block:32px 40px;font-size:13.5px;color:var(--ink-2)}
+.footer .container{display:flex;justify-content:space-between;gap:16px 32px;flex-wrap:wrap;align-items:flex-start}
+.footer p{margin:6px 0 0;max-width:52ch}
+.footer nav{display:flex;gap:20px;flex-wrap:wrap}
+.footer nav a{text-decoration:none;color:var(--ink-2);transition:color .15s var(--ease)}
+.footer nav a:hover{color:var(--ink)}
+
+/* ---------- thông báo nhỏ ---------- */
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:var(--ink);color:var(--paper);padding:11px 16px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:var(--shadow-lg);transition:opacity .2s var(--ease),transform .2s var(--ease);z-index:50;max-width:calc(100vw - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- chuyển động ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.reveal{animation:rise .6s var(--ease) both;animation-delay:var(--d,0s)}
+.tabpanel.enter{animation:rise .3s var(--ease) both}
+
+/* ---------- màn hình nhỏ ---------- */
+@media (max-width:960px){
+  .hero{padding-block:36px 24px}
+  .hero .container{grid-template-columns:1fr;gap:32px}
+  .nav{display:none}
+}
+@media (max-width:560px){
+  .container{padding-inline:16px}
+  .topbar .container{gap:12px}
+  .top-actions .signup{display:none}
+  .hero h1{margin-top:16px}
+  .lede{font-size:16px}
+  .facts{grid-template-columns:1fr;margin-top:28px}
+  .form-card{padding:18px}
+  .row-actions .btn-primary{flex:1 1 100%}
+  .pillar .gz{font-size:20px}
+  .pillars{gap:8px}
+  .ai-head,.ai-body{padding:16px}
+  .ai-controls #code{width:100%}
+  .ai-controls select{flex:1 1 100%}
+  .chat-row button{flex:1 1 auto}
+}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <header class="masthead">
-    <div class="seal" aria-hidden="true">四</div>
-    <div>
-      <h1>Tứ Chiếu</h1>
-      <p>Một ngày giờ sinh, bốn lăng kính: Bát tự, Bản đồ sao, Tử vi, Thần số học. Lập lá số rồi để AI đối chiếu xem các trường phái nói giống và khác nhau ở đâu.</p>
+<header class="topbar" id="topbar">
+  <div class="container">
+    <a class="brand" href="#top" aria-label="Tứ Chiếu, về đầu trang"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Tứ Chiếu</a>
+    <nav class="nav" aria-label="Điều hướng chính">
+      <a href="#lap">Lập lá số</a>
+      <a href="#ket-qua">Kết quả</a>
+      <a href="#ket-qua" data-tab="t-ai">Luận giải AI</a>
+      <a href="#ket-qua" data-tab="t-ai" data-focus="ask">Gieo quẻ</a>
+    </nav>
+    <div class="top-actions">
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Đổi giao diện sáng hoặc tối">
+        <svg class="theme-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="theme-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <button class="btn-ghost btn-sm" type="button" data-soon>Đăng nhập</button>
+      <button class="btn-primary btn-sm signup" type="button" data-soon>Đăng ký</button>
     </div>
-  </header>
+  </div>
+</header>
 
-  <section class="panel" aria-label="Thông tin sinh">
-    <form id="f" novalidate>
-      <div class="field wide"><label for="name">Họ và tên (có dấu)</label><input id="name" autocomplete="off" value="Nguyễn Minh An"></div>
-      <div class="field"><span class="label" style="text-transform:none;letter-spacing:0;font-size:13px">Giới tính</span>
-        <div class="seg" role="radiogroup" aria-label="Giới tính">
-          <label><input type="radio" name="gender" id="g-nam" value="nam" checked><span>Nam</span></label>
-          <label><input type="radio" name="gender" id="g-nu" value="nu"><span>Nữ</span></label>
-        </div></div>
-      <div class="field"><label for="date">Ngày sinh (dương lịch)</label><input id="date" type="date" value="1995-03-14" required></div>
-      <div class="field"><label for="time">Giờ sinh</label><input id="time" type="time" value="07:30">
-        <label class="check" for="noTime"><input type="checkbox" id="noTime"> Không rõ giờ sinh</label></div>
-      <div class="field" id="canhField" hidden><label for="canh">Biết khoảng giờ không?</label>
-        <select id="canh"><option value="">Không biết</option></select></div>
-      <div class="field"><label for="place">Nơi sinh</label><select id="place"></select></div>
-      <div class="custom-geo" id="geo" hidden>
-        <div class="field"><label for="lat">Vĩ độ</label><input id="lat" type="number" step="0.001" value="10.776"></div>
-        <div class="field"><label for="lon">Kinh độ</label><input id="lon" type="number" step="0.001" value="106.700"></div>
-        <div class="field"><label for="tz">Múi giờ (GMT+)</label><input id="tz" type="number" step="0.5" value="7"></div>
-      </div>
-      <div class="field wide"><label for="ctx">Bối cảnh hoặc câu hỏi cho phần luận giải (không bắt buộc)</label>
-        <textarea id="ctx" placeholder="Ví dụ:"></textarea></div>
-      <div class="row-actions">
-        <button class="btn-primary" type="submit" id="go">Lập lá số</button>
-        <span class="hint" id="tzNote">Giờ sinh tính theo giờ địa phương lúc sinh.</span>
-      </div>
-    </form>
-  </section>
-
-  <section id="result" aria-live="polite">
-    <div class="tabs" role="tablist" aria-label="Kết quả">
-      <button role="tab" id="t-sum" aria-selected="true" aria-controls="p-sum">Tổng quan</button>
-      <button role="tab" id="t-bz" aria-selected="false" aria-controls="p-bz">Bát tự</button>
-      <button role="tab" id="t-as" aria-selected="false" aria-controls="p-as">Bản đồ sao</button>
-      <button role="tab" id="t-tv" aria-selected="false" aria-controls="p-tv">Tử vi</button>
-      <button role="tab" id="t-nm" aria-selected="false" aria-controls="p-nm">Thần số học</button>
-      <button role="tab" id="t-ai" aria-selected="false" aria-controls="p-ai">Luận giải AI</button>
-    </div>
-    <div class="tabpanel" role="tabpanel" id="p-sum" aria-labelledby="t-sum"></div>
-    <div class="tabpanel" role="tabpanel" id="p-bz" aria-labelledby="t-bz" hidden></div>
-    <div class="tabpanel" role="tabpanel" id="p-as" aria-labelledby="t-as" hidden></div>
-    <div class="tabpanel" role="tabpanel" id="p-tv" aria-labelledby="t-tv" hidden></div>
-    <div class="tabpanel" role="tabpanel" id="p-nm" aria-labelledby="t-nm" hidden></div>
-    <div class="tabpanel" role="tabpanel" id="p-ai" aria-labelledby="t-ai" hidden>
-      <div class="ai-controls">
-        <label for="focus" class="small" style="font-weight:600">Trọng tâm</label>
-        <select id="focus" style="width:auto">
-          <option value="tổng quát">Tổng quát</option>
-          <option value="sự nghiệp và tài chính">Sự nghiệp và tài chính</option>
-          <option value="tình cảm và các mối quan hệ">Tình cảm và các mối quan hệ</option>
-          <option value="thời vận 3 năm tới">Thời vận 3 năm tới</option>
-        </select>
-        <input id="code" type="password" placeholder="Mã truy cập (nếu có)" aria-label="Mã truy cập" style="width:auto;max-width:190px" autocomplete="off">
-        <button class="btn-primary" id="aiGo" type="button">Viết luận giải</button>
-        <button class="btn-ghost" id="aiStop" type="button" hidden>Dừng</button>
-        <button class="btn-ghost" id="copyPrompt" type="button">Sao chép lời nhắc</button>
-        <button class="btn-ghost" id="aiCopy" type="button" hidden>Sao chép</button>
-        <span class="ai-status" id="aiStatus"></span>
-      </div>
-      <div class="ai-out" id="aiOut"><p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p></div>
-      <div id="chat" hidden>
-        <div id="qaList"></div>
-        <p class="small muted" style="margin:10px 0 0">Gieo quẻ theo phép Mai Hoa Dịch Số, lấy năm, tháng, ngày, giờ âm lịch lúc bấm. Mỗi câu hỏi chỉ gieo một lần trong ngày.</p>
-        <div class="chat-row" style="margin-top:12px">
-          <input id="ask" placeholder="Hỏi thêm, ví dụ: năm 2027 có nên mở kinh doanh riêng không?">
-          <button class="btn-ghost" id="askGo" type="button">Hỏi</button>
-          <button class="btn-que" id="castGo" type="button" title="Gieo một quẻ Kinh Dịch theo thời điểm bấm, rồi luận cho câu hỏi này">☯ Gieo quẻ cho câu này</button>
+<main id="top">
+  <section class="hero">
+    <div class="container">
+      <div>
+        <span class="eyebrow reveal"><b aria-hidden="true"></b>Bát tự · Bản đồ sao · Tử vi · Thần số học</span>
+        <h1 class="reveal" style="--d:.05s">Một ngày sinh,<br><span>bốn góc nhìn.</span></h1>
+        <p class="lede reveal" style="--d:.1s">Lập cùng lúc bốn lá số rồi để AI đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng khác nhau, và bạn nên làm gì tiếp theo.</p>
+        <div class="hero-cta reveal" style="--d:.15s">
+          <button class="btn-primary btn-lg" type="button" id="heroGo">Lập lá số miễn phí</button>
+          <button class="btn-ghost btn-lg" type="button" data-tab="t-ai">Xem luận giải AI</button>
         </div>
-        <p id="askStatus" class="small" role="status" style="margin:8px 0 0"></p>
+        <ul class="facts reveal" style="--d:.2s">
+          <li><span><b>Tính ngay trên máy</b><br>Kết quả hiện sau một giây</span></li>
+          <li><span><b>Hỏi tiếp với AI</b><br>Chat về sự nghiệp, tình cảm, thời vận</span></li>
+          <li><span><b>Không rõ giờ sinh</b><br>Vẫn lập được phần không cần giờ</span></li>
+          <li><span><b>Gieo quẻ Kinh Dịch</b><br>Cho từng câu hỏi cụ thể</span></li>
+        </ul>
       </div>
-      <textarea id="promptBox" readonly hidden aria-label="Lời nhắc để dán vào AI khác" style="min-height:160px;font-size:12.5px"></textarea>
-      <p class="note">Bát tự, tử vi, chiêm tinh và thần số học là các hệ thống diễn giải văn hóa, không phải dự đoán khoa học. Dùng để tự soi lại mình, đừng dùng thay cho quyết định y tế, tài chính hay pháp lý.</p>
+
+      <section class="card form-card reveal" style="--d:.1s" id="lap" aria-label="Thông tin sinh">
+        <div class="head"><h2>Thông tin sinh</h2><span class="hint">Mất khoảng 30 giây</span></div>
+        <form id="f" novalidate>
+          <div class="field wide"><label for="name">Họ và tên (có dấu)</label><input id="name" autocomplete="off" value="Nguyễn Minh An"></div>
+          <div class="field"><span class="field-label" id="gLabel">Giới tính</span>
+            <div class="seg" role="radiogroup" aria-labelledby="gLabel">
+              <label><input type="radio" name="gender" id="g-nam" value="nam" checked><span>Nam</span></label>
+              <label><input type="radio" name="gender" id="g-nu" value="nu"><span>Nữ</span></label>
+            </div></div>
+          <div class="field"><label for="date">Ngày sinh (dương lịch)</label><input id="date" type="date" value="1995-03-14" required></div>
+          <div class="field"><label for="time">Giờ sinh</label><input id="time" type="time" value="07:30">
+            <label class="check" for="noTime"><input type="checkbox" id="noTime"> Không rõ giờ sinh</label></div>
+          <div class="field" id="canhField" hidden><label for="canh">Biết khoảng giờ không?</label>
+            <select id="canh"><option value="">Không biết</option></select></div>
+          <div class="field"><label for="place">Nơi sinh</label><select id="place"></select></div>
+          <div class="custom-geo" id="geo" hidden>
+            <div class="field"><label for="lat">Vĩ độ</label><input id="lat" type="number" step="0.001" value="10.776"></div>
+            <div class="field"><label for="lon">Kinh độ</label><input id="lon" type="number" step="0.001" value="106.700"></div>
+            <div class="field"><label for="tz">Múi giờ (GMT+)</label><input id="tz" type="number" step="0.5" value="7"></div>
+          </div>
+          <div class="field wide"><label for="ctx">Bối cảnh hoặc câu hỏi cho AI <span class="muted" style="font-weight:400">(không bắt buộc)</span></label>
+            <textarea id="ctx" placeholder="Ví dụ:"></textarea></div>
+          <div class="row-actions">
+            <button class="btn-primary btn-lg" type="submit" id="go">Lập lá số</button>
+            <span class="hint" id="tzNote">Giờ sinh tính theo giờ địa phương lúc sinh.</span>
+          </div>
+        </form>
+      </section>
     </div>
   </section>
-</div>
+
+  <section class="results" id="ket-qua">
+    <div class="container">
+      <div class="section-head">
+        <div><h2>Kết quả</h2><p>Bốn lá số của cùng một người, và phần AI đối chiếu.</p></div>
+      </div>
+      <div id="result" aria-live="polite">
+        <div class="tabs" role="tablist" aria-label="Kết quả">
+          <button role="tab" id="t-sum" aria-selected="true" aria-controls="p-sum">Tổng quan</button>
+          <button role="tab" id="t-bz" aria-selected="false" aria-controls="p-bz">Bát tự</button>
+          <button role="tab" id="t-as" aria-selected="false" aria-controls="p-as">Bản đồ sao</button>
+          <button role="tab" id="t-tv" aria-selected="false" aria-controls="p-tv">Tử vi</button>
+          <button role="tab" id="t-nm" aria-selected="false" aria-controls="p-nm">Thần số học</button>
+          <button role="tab" id="t-ai" class="tab-ai" aria-selected="false" aria-controls="p-ai">Luận giải AI</button>
+        </div>
+        <div class="tabpanel" role="tabpanel" id="p-sum" aria-labelledby="t-sum"></div>
+        <div class="tabpanel" role="tabpanel" id="p-bz" aria-labelledby="t-bz" hidden></div>
+        <div class="tabpanel" role="tabpanel" id="p-as" aria-labelledby="t-as" hidden></div>
+        <div class="tabpanel" role="tabpanel" id="p-tv" aria-labelledby="t-tv" hidden></div>
+        <div class="tabpanel" role="tabpanel" id="p-nm" aria-labelledby="t-nm" hidden></div>
+        <div class="tabpanel" role="tabpanel" id="p-ai" aria-labelledby="t-ai" hidden>
+          <div class="ai-shell">
+            <div class="ai-head">
+              <div class="ai-title">
+                <span class="ai-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span>
+                <div><h2>AI đối chiếu bốn lá số</h2><p>Đọc cả bốn trường phái cùng lúc, chỉ ra chỗ trùng, chỗ vênh, rồi trả lời tiếp các câu hỏi của bạn.</p></div>
+              </div>
+              <div class="ai-controls">
+                <label for="focus" class="small" style="font-weight:500">Trọng tâm</label>
+                <select id="focus">
+                  <option value="tổng quát">Tổng quát</option>
+                  <option value="sự nghiệp và tài chính">Sự nghiệp và tài chính</option>
+                  <option value="tình cảm và các mối quan hệ">Tình cảm và các mối quan hệ</option>
+                  <option value="thời vận 3 năm tới">Thời vận 3 năm tới</option>
+                </select>
+                <input id="code" type="password" placeholder="Mã truy cập (nếu có)" aria-label="Mã truy cập" autocomplete="off">
+                <button class="btn-primary" id="aiGo" type="button">Viết luận giải</button>
+                <button class="btn-ghost" id="aiStop" type="button" hidden>Dừng</button>
+                <button class="btn-ghost" id="copyPrompt" type="button">Sao chép lời nhắc</button>
+                <button class="btn-ghost" id="aiCopy" type="button" hidden>Sao chép</button>
+                <span class="ai-status" id="aiStatus"></span>
+              </div>
+            </div>
+            <div class="ai-body">
+              <div class="ai-out" id="aiOut"><p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p></div>
+              <div id="chat" class="chat" hidden>
+                <div id="qaList"></div>
+                <p class="chat-hint">Hỏi tiếp, hoặc gieo một quẻ Kinh Dịch (Mai Hoa Dịch Số, lấy năm, tháng, ngày, giờ âm lịch lúc bấm). Mỗi câu hỏi chỉ gieo một lần trong ngày.</p>
+                <div class="chat-row">
+                  <input id="ask" placeholder="Hỏi thêm, ví dụ: năm 2027 có nên mở kinh doanh riêng không?">
+                  <button class="btn-ghost" id="askGo" type="button">Hỏi</button>
+                  <button class="btn-que" id="castGo" type="button" title="Gieo một quẻ Kinh Dịch theo thời điểm bấm, rồi luận cho câu hỏi này">☯ Gieo quẻ cho câu này</button>
+                </div>
+                <p id="askStatus" class="small" role="status" style="margin:8px 0 0"></p>
+              </div>
+              <textarea id="promptBox" readonly hidden aria-label="Lời nhắc để dán vào AI khác"></textarea>
+            </div>
+          </div>
+          <p class="note">Bát tự, tử vi, chiêm tinh và thần số học là các hệ thống diễn giải văn hóa, không phải dự đoán khoa học. Dùng để tự soi lại mình, đừng dùng thay cho quyết định y tế, tài chính hay pháp lý.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div>
+      <a class="brand" href="#top"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Tứ Chiếu</a>
+      <p>Các hệ thống diễn giải văn hóa, dùng để tự soi lại mình, không phải dự đoán khoa học.</p>
+    </div>
+    <nav aria-label="Liên kết cuối trang">
+      <a href="#lap">Lập lá số</a>
+      <a href="#ket-qua" data-tab="t-ai">Luận giải AI</a>
+      <a href="#top">Về đầu trang</a>
+    </nav>
+  </div>
+  <div class="container"><p class="small" style="margin-top:20px;color:var(--ink-3)">© 2026 Tứ Chiếu</p></div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="lib/lunar.js"></script>
 <script src="lib/astronomy.min.js"></script>
@@ -311,7 +524,8 @@ updateTzNote();
 
 // tabs
 const tabs = [...document.querySelectorAll('[role=tab]')];
-function show(id){ tabs.forEach(t => { const on = t.id === id; t.setAttribute('aria-selected', on); $('#'+t.getAttribute('aria-controls')).hidden = !on; }); }
+function pulse(p){ p.classList.remove('enter'); void p.offsetWidth; p.classList.add('enter'); }
+function show(id){ tabs.forEach(t => { const on = t.id === id; t.setAttribute('aria-selected', on); const p = $('#'+t.getAttribute('aria-controls')); const was = !p.hidden; p.hidden = !on; if (on && !was) pulse(p); }); }
 tabs.forEach((t,i) => { t.addEventListener('click', () => show(t.id)); t.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowLeft'){ const n = tabs[(i + (e.key==='ArrowRight'?1:-1) + tabs.length) % tabs.length]; n.focus(); show(n.id);} }); });
 
 let R = null;
@@ -340,6 +554,7 @@ function run(save){
   try { R = TC.all(inp); adjustForTime(R); } catch(err) { console.error(err); $('#p-sum').innerHTML = '<p class="err">Không lập được lá số với thông tin này. Kiểm tra lại ngày giờ sinh.</p>'; return; }
   if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, place:sel.value, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value })); } catch(e) {}
   renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); resetAI();
+  if (save) pulse(document.querySelector('.tabpanel:not([hidden])'));
   if (save) { show('t-sum'); $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'}); }
 }
 
@@ -617,6 +832,30 @@ async function castAsk(){
 $('#castGo').onclick = castAsk;
 $('#askGo').onclick = ask; $('#ask').addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
 
+
+/* ---- giao diện: thanh trên, sáng/tối, điều hướng, nút sắp ra mắt ---- */
+const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const go = (el, block = 'start') => el.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth', block });
+const topbar = $('#topbar');
+const onScroll = () => topbar.classList.toggle('scrolled', scrollY > 4);
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+$('#themeBtn').onclick = () => {
+  const root = document.documentElement;
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('tuchieu:theme', root.dataset.theme); } catch(e) {}
+};
+let toastTimer;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800); }
+document.querySelectorAll('[data-soon]').forEach(b => b.addEventListener('click', () => toast('Tài khoản và lưu lá số sắp ra mắt.')));
+document.querySelectorAll('[data-tab]').forEach(el => el.addEventListener('click', e => {
+  e.preventDefault(); show(el.dataset.tab); go($('#result'));
+  if (el.dataset.focus) setTimeout(() => {
+    if ($('#chat').hidden) { toast('Bấm "Viết luận giải" trước, rồi gieo quẻ ở khung hỏi thêm.'); $('#aiGo').focus({ preventScroll: true }); }
+    else { go($('#ask'), 'center'); $('#ask').focus({ preventScroll: true }); }
+  }, 450);
+}));
+$('#heroGo').onclick = () => { go($('#lap')); setTimeout(() => $('#date').focus({ preventScroll: true }), 450); };
 
 run(false);
 })();
