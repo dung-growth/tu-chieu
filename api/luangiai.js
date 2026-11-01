@@ -126,7 +126,7 @@ export default async function handler(req, res) {
   }
 
   const b = req.body || {};
-  const brief = clip(b.brief, 14000);
+  const brief = clip(b.brief, 20000);
   if (brief.length < 200) return res.status(400).json({ error: 'Thiếu dữ liệu lá số.' });
   const focus = FOCUS.includes(b.focus) ? b.focus : 'tổng quát';
   const ctx = clip(b.ctx, 600);
