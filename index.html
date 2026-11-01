@@ -349,7 +349,7 @@ tr.cur td{background:var(--seal-soft)}
   .num-core,.num-sub{grid-template-columns:repeat(2,minmax(0,1fr))} .chal{grid-template-columns:repeat(2,minmax(0,1fr))} .ncard.big .n{font-size:36px} }
 
 /* ---------- luận giải AI ---------- */
-.ai-shell{border:1px solid color-mix(in srgb,var(--seal) 30%,var(--line));border-radius:16px;background:var(--sheet);box-shadow:var(--shadow-lg);overflow:hidden}
+.ai-shell{border:1px solid color-mix(in srgb,var(--seal) 30%,var(--line));border-radius:16px;background:var(--sheet);box-shadow:var(--shadow-lg);overflow:clip}
 .ai-head{padding:20px 22px;background:linear-gradient(135deg,var(--seal-soft),var(--sheet) 65%);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
 .ai-title{display:flex;gap:12px;align-items:flex-start}
 .ai-badge{flex:none;width:36px;height:36px;border-radius:10px;background:var(--seal);color:var(--on-seal);display:grid;place-items:center}
@@ -360,6 +360,37 @@ tr.cur td{background:var(--seal-soft)}
 .ai-controls select{width:auto}
 .ai-controls #code{width:190px}
 .ai-body{padding:22px}
+/* bài luận có mục lục: thu gọn từng phần */
+.ai-body.has-toc{display:grid;grid-template-columns:200px minmax(0,1fr);gap:8px 28px;align-items:start}
+.ai-body.has-toc>*:not(.rd-toc):not(#aiOut){grid-column:1/-1}
+.rd-toc{position:sticky;top:76px;display:flex;flex-direction:column;gap:2px;font-size:13.5px;padding:4px 0}
+.rd-toc .label{margin:0 0 6px 10px}
+.rd-toc a{display:block;padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--ink-2);border-left:2px solid transparent;line-height:1.35;transition:background-color .15s var(--ease),color .15s var(--ease)}
+.rd-toc a:hover{background:var(--sunken);color:var(--ink)}
+.rd-toc a.on{color:var(--ink);font-weight:600;border-left-color:var(--seal);background:var(--sunken);border-radius:0 6px 6px 0}
+.rd-toc .rd-all{margin-top:10px;align-self:flex-start}
+.rd-sec{border-top:1px solid var(--line-2);scroll-margin-top:80px}
+.rd-sec:first-child{border-top:0}
+.ai-out .rd-sec>h2{margin:0;font-size:inherit}
+.rd-toggle{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;cursor:pointer;font:650 18px/1.3 var(--display);letter-spacing:-.015em;color:var(--ink)}
+.rd-toggle:focus-visible{outline:2px solid var(--seal);outline-offset:2px;border-radius:4px}
+.rd-toggle::after{content:"";flex:none;width:9px;height:9px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(45deg) translateY(-3px);transition:transform .2s var(--ease)}
+.rd-toggle[aria-expanded=false]::after{transform:rotate(-45deg)}
+.rd-body{padding-bottom:12px;animation:fade .25s var(--ease)}
+.rd-body>:first-child{margin-top:0}
+.rd-quick{border:1px solid color-mix(in srgb,var(--seal) 30%,var(--line));background:var(--seal-soft);border-radius:var(--r);padding:4px 18px 8px;margin-bottom:12px}
+.rd-quick .rd-toggle{cursor:default} .rd-quick .rd-toggle::after{display:none}
+.rd-quick ul{margin:0;padding-left:20px} .rd-quick li{margin:6px 0}
+@media (max-width:960px){
+  .ai-body.has-toc{display:block}
+  .rd-toc{position:sticky;top:60px;z-index:5;flex-direction:row;overflow-x:auto;gap:6px;margin:-4px -16px 12px;padding:8px 16px;background:var(--sheet);border-bottom:1px solid var(--line);scrollbar-width:none}
+  .rd-toc::-webkit-scrollbar{display:none}
+  .rd-toc .label{display:none}
+  .rd-toc a{white-space:nowrap;border:1px solid var(--line);border-radius:99px;padding:5px 12px}
+  .rd-toc a.on{border-color:var(--seal);border-radius:99px}
+  .rd-toc .rd-all{margin:0;white-space:nowrap}
+  .rd-sec{scroll-margin-top:124px}
+}
 .ai-out{min-height:120px;font-size:15.5px;line-height:1.7}
 .ai-out h1,.ai-out h2{font-size:19px;margin:24px 0 8px}.ai-out h3{font-size:16.5px;margin:20px 0 6px}
 .ai-out p,.ai-out li{max-width:72ch}
@@ -462,6 +493,7 @@ tr.cur td{background:var(--seal-soft)}
   .pd-qa .hex-card{break-inside:avoid;background:#F3F8F4}
   .pd-foot{margin-top:24px;padding-top:8px;border-top:1px solid var(--line);font-size:8.5pt;color:var(--ink-2)}
   .ai-by{font-size:8.5pt}
+  .rd-body{display:block!important} .rd-toggle{all:unset;display:block;font-weight:700;font-size:13pt;margin:14px 0 6px} .rd-toggle::after{display:none} .rd-quick{background:#FBF3EF;padding:6px 12px;border-radius:6px;break-inside:avoid}
 }
 </style>
 </head>
@@ -1191,6 +1223,43 @@ function tvcHTML(A){
   </div>`;
 }
 
+/* ---- bài luận: tách theo tiêu đề ##, thu gọn từng phần, mục lục ---- */
+let tocObs = null;
+function clearToc(){ const n = document.querySelector('.rd-toc'); if (n) n.remove(); $('.ai-body').classList.remove('has-toc'); if (tocObs) { tocObs.disconnect(); tocObs = null; } }
+function structureReading(){
+  const out = $('#aiOut'), hs = [...out.querySelectorAll(':scope > h2')];
+  if (hs.length < 3) return;
+  const FOCUS_KEY = { 'sự nghiệp và tài chính': /sự nghiệp/i, 'tình cảm và các mối quan hệ': /tình cảm/i, 'thời vận 3 năm tới': /thời vận/i, 'tổng quát': /chân dung/i };
+  const want = FOCUS_KEY[$('#focus').value] || /chân dung/i;
+  const items = [];
+  hs.forEach((h, k) => {
+    const title = h.textContent.trim(), quick = /đọc nhanh/i.test(title);
+    const open = quick || want.test(title) || (k === 1 && !hs.some(x => want.test(x.textContent)));
+    const sec = document.createElement('section'); sec.className = 'rd-sec' + (quick ? ' rd-quick' : ''); sec.id = 'rd-' + k;
+    const body = document.createElement('div'); body.className = 'rd-body'; body.id = 'rdb-' + k;
+    let n = h.nextSibling; while (n && !(n.nodeType === 1 && n.tagName === 'H2')) { const nx = n.nextSibling; body.append(n); n = nx; }
+    if (!open && !quick) body.hidden = true;
+    h.replaceWith(sec);
+    sec.innerHTML = `<h2><button type="button" class="rd-toggle" aria-expanded="${!body.hidden}" aria-controls="rdb-${k}">${esc(title)}</button></h2>`;
+    sec.append(body);
+    if (!quick) sec.querySelector('.rd-toggle').onclick = e => { const on = body.hidden; body.hidden = !on; e.currentTarget.setAttribute('aria-expanded', on); };
+    items.push({ k, title, quick });
+  });
+  const nav = document.createElement('nav'); nav.className = 'rd-toc'; nav.setAttribute('aria-label', 'Mục lục bài luận');
+  nav.innerHTML = `<span class="label">Mục lục</span>${items.map(it => `<a href="#rd-${it.k}" data-k="${it.k}">${esc(it.title)}</a>`).join('')}<button type="button" class="btn-ghost btn-sm rd-all">Mở tất cả</button>`;
+  out.before(nav); $('.ai-body').classList.add('has-toc');
+  nav.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); const k = a.dataset.k, b = $('#rdb-' + k), t = document.querySelector(`#rd-${k} .rd-toggle`);
+    if (b.hidden) { b.hidden = false; t.setAttribute('aria-expanded', 'true'); } go($('#rd-' + k)); });
+  const all = nav.querySelector('.rd-all');
+  all.onclick = () => { const anyClosed = [...out.querySelectorAll('.rd-body')].some(b => b.hidden);
+    out.querySelectorAll('.rd-sec:not(.rd-quick)').forEach(sec => { sec.querySelector('.rd-body').hidden = !anyClosed; sec.querySelector('.rd-toggle').setAttribute('aria-expanded', anyClosed); });
+    all.textContent = anyClosed ? 'Thu gọn' : 'Mở tất cả'; };
+  // đánh dấu phần đang đọc
+  tocObs = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { nav.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.k === en.target.id.slice(3)));
+    const on = nav.querySelector('a.on'); if (on && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: on.offsetLeft - 16, behavior: 'smooth' }); } }), { rootMargin: '-90px 0px -60% 0px' });
+  out.querySelectorAll('.rd-sec').forEach(sec => tocObs.observe(sec));
+}
+
 /* ---- tải PDF: dựng bản in rồi mở hộp thoại in (chọn "Lưu thành PDF") ---- */
 function printSummary(){
   const { input:i, bazi:b, astro:a, tuvi:t, numerology:n, tvc } = R, F = R.flags;
@@ -1312,7 +1381,7 @@ const byNote = () => lastModel && lastModel !== 'Gemini' ? `<p class="ai-by">Tr�
 const md = s => DOMPurify.sanitize(marked.parse(s || ''));
 const CODE_KEY = 'tuchieu:code';
 try { $('#code').value = localStorage.getItem(CODE_KEY) || ''; } catch(e) {}
-function resetAI(){ history = []; firstText = ''; lastText=''; $('#qaList').innerHTML=''; $('#chat').hidden = true; $('#aiCopy').hidden = true; $('#aiPdf').hidden = true; $('#aiStatus').textContent='';
+function resetAI(){ clearToc(); history = []; firstText = ''; lastText=''; $('#qaList').innerHTML=''; $('#chat').hidden = true; $('#aiCopy').hidden = true; $('#aiPdf').hidden = true; $('#aiStatus').textContent='';
   $('#aiOut').innerHTML = `<p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số của <b>${esc(R.input.name)}</b> và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p>`; }
 function busy(on){ $('#aiGo').disabled = on; $('#askGo').disabled = on; $('#castGo').disabled = on; $('#aiStop').hidden = !on; }
 $('#aiStop').onclick = () => ctl && ctl.abort();
@@ -1331,11 +1400,13 @@ async function callAI(payload, onText){
 }
 $('#aiGo').onclick = async () => {
   if (!R) return;
+  clearToc();
   ctl = new AbortController(); busy(true); history = []; $('#qaList').innerHTML=''; $('#chat').hidden = true; $('#aiCopy').hidden = true;
   $('#aiOut').innerHTML = '<p class="muted">Đang đọc bốn lá số và suy nghĩ…</p>'; $('#aiStatus').textContent = '';
   try {
     const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx }, t => { $('#aiOut').innerHTML = md(t); });
     firstText = lastText = text; $('#chat').hidden = false; $('#aiCopy').hidden = false; $('#aiPdf').hidden = false;
+    structureReading();
     $('#aiOut').insertAdjacentHTML('beforeend', byNote());
   } catch(e) {
     if (e.name === 'AbortError') { $('#aiStatus').textContent = 'Đã dừng.'; }

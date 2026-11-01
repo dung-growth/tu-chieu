@@ -16,6 +16,8 @@ CÁCH VIẾT CHO SÂU (áp dụng cho mọi phần):
 - Không tâng bốc kiểu "người khác không đủ tầm hiểu bạn"; không viết câu đúng với ai cũng được.
 
 Cấu trúc (dùng Markdown với tiêu đề ##):
+## Đọc nhanh
+Đúng 5 gạch đầu dòng, mỗi dòng một câu ngắn nói thẳng một điều quan trọng nhất của người này (ưu tiên trọng tâm người đọc chọn), cuối câu ghi căn cứ trong ngoặc, ví dụ "(Tử vi: cách Cơ Lương)". Không chào hỏi, không mở bài.
 ## Chân dung chung
 Những điểm mà NHIỀU trường phái cùng chỉ ra, và những điểm kéo ngược nhau trong cùng một người.
 ## Tính cách: điểm mạnh và điểm cần lưu ý
