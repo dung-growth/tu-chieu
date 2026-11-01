@@ -21,20 +21,22 @@ Những điểm mà NHIỀU trường phái cùng chỉ ra, và những điểm 
 ## Tính cách: điểm mạnh và điểm cần lưu ý
 ## Sự nghiệp và tài chính
 ## Tình cảm và các mối quan hệ
+## Các cách nổi bật trên lá số Tử vi
+Chỉ viết phần này nếu dữ liệu có mục [TỬ VI: CÁC CÁCH ĐÃ DÒ TRÊN LÁ SỐ]. Chọn 5–7 cách quan trọng nhất (cách lớn, Thân cư, Tuần Triệt, Nhật Nguyệt, tứ hóa ở Mệnh trước). Mỗi cách: gọi đúng tên cách như người luận Tử vi, giải nghĩa bằng lời thường, cho một ví dụ đời sống cụ thể, và nói cách đó ứng rõ nhất vào đại hạn nào. Nói thẳng, có chính kiến như một người luận lâu năm, nhưng không dọa. Chỗ nào các cách kéo ngược nhau thì nói rõ cách hiểu.
 ## Thời vận 3 năm tới
-Kết hợp đại vận và lưu niên Bát tự, đại hạn/tiểu hạn Tử vi, quá cảnh Sao Mộc/Sao Thổ, năm cá nhân. Ghi mốc tháng/năm cụ thể có trong dữ liệu. Chỉ ra giai đoạn thuận và giai đoạn cần thận trọng, và nên làm gì trong từng giai đoạn.
+Kết hợp đại vận và lưu niên Bát tự, đại hạn/tiểu hạn Tử vi (dùng mục [TỬ VI: ĐƯỜNG ĐI ĐẠI HẠN] và [TỬ VI: 3 NĂM TỚI]: nêu rõ song hóa, cách của đại hạn như Sát Phá Tham, lưu niên về cung Mệnh, Kỵ chồng Kỵ, Tam Tai nếu có; nói thêm đại hạn kế tiếp mở ra điều gì), quá cảnh Sao Mộc/Sao Thổ, năm cá nhân. Ghi mốc tháng/năm cụ thể có trong dữ liệu. Chỉ ra giai đoạn thuận và giai đoạn cần thận trọng, và nên làm gì trong từng giai đoạn.
 ## Chỗ các trường phái nói khác nhau
 Nêu thẳng mâu thuẫn, không cố ép cho khớp; nói cách hiểu hợp lý cho từng mâu thuẫn.
 ## Lời khuyên cụ thể
 3–6 việc làm được ngay, thực tế, gắn với dấu hiệu đã nêu.
 
-Quy tắc: không phán số mệnh cứng nhắc, không dọa (tai nạn, bệnh nặng, chết chóc, ly hôn); nói về xu hướng và khả năng. Không đưa lời khuyên y tế, đầu tư tài chính cụ thể. Không tự gán nghề nghiệp, chức vụ hay hoàn cảnh mà người đọc chưa nói. Nếu thông tin ghi KHÔNG RÕ GIỜ SINH hoặc CHỈ BIẾT CANH GIỜ: tuyệt đối không bịa trụ giờ, cung Mọc, các nhà hay lá số Tử vi; nói ngắn gọn phần nào thiếu và vì sao, rồi luận trên những gì có. Không nhắc tới "dữ liệu" hay "prompt". Dài khoảng 1.800–2.200 từ. Kết thúc bằng một câu nhắc ngắn rằng đây là các hệ thống diễn giải văn hóa, không phải khoa học.`;
+Quy tắc: không phán số mệnh cứng nhắc, không dọa (tai nạn, bệnh nặng, chết chóc, ly hôn); nói về xu hướng và khả năng. Không đưa lời khuyên y tế, đầu tư tài chính cụ thể. Không tự gán nghề nghiệp, chức vụ hay hoàn cảnh mà người đọc chưa nói. Nếu thông tin ghi KHÔNG RÕ GIỜ SINH hoặc CHỈ BIẾT CANH GIỜ: tuyệt đối không bịa trụ giờ, cung Mọc, các nhà hay lá số Tử vi; nói ngắn gọn phần nào thiếu và vì sao, rồi luận trên những gì có. Không nhắc tới "dữ liệu" hay "prompt". Dài khoảng 2.000–2.600 từ. Kết thúc bằng một câu nhắc ngắn rằng đây là các hệ thống diễn giải văn hóa, không phải khoa học.`;
 }
 
 // Luật trả lời câu hỏi thêm trong khung chat
 export function askRules() {
   return `Trả lời câu hỏi trên dựa vào các lá số đã có. Dùng Markdown. Cách trả lời:
-1. Một–hai câu đầu trả lời thẳng. Không mặc định đồng ý với giả định trong câu hỏi: nếu lá số chỉ đúng một phần thì nói "không hẳn" và giải thích.
+1. Một–hai câu đầu trả lời thẳng. Nếu dữ liệu có các cách Tử vi đã dò, đại hạn hoặc 3 năm tới liên quan tới câu hỏi thì dùng chúng, gọi đúng tên cách. Không mặc định đồng ý với giả định trong câu hỏi: nếu lá số chỉ đúng một phần thì nói "không hẳn" và giải thích.
 2. Theo từng trường phái liên quan: nêu dấu hiệu cụ thể (sao/cung/trụ/con số) → nghĩa là gì → biểu hiện ngoài đời ra sao. Đưa cả dấu hiệu ủng hộ lẫn dấu hiệu ngược lại.
 3. Một đoạn **Ghép lại**: các trường phái cùng nói gì, lệch nhau chỗ nào, và điều đó thể hiện khi nào, với ai, trong hoàn cảnh nào. Nếu câu hỏi liên quan thời gian, ghi mốc tháng/năm có trong dữ liệu.
 4. **Nên làm**: 2–3 việc cụ thể, làm được ngay.
