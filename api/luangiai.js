@@ -131,10 +131,15 @@ export default async function handler(req, res) {
   const focus = FOCUS.includes(b.focus) ? b.focus : 'tổng quát';
   const ctx = clip(b.ctx, 600);
 
-  const messages = [{ role: 'user', content: rules(focus, ctx) + '\n\nDỮ LIỆU:\n' + brief }];
+  // Chưa có bài luận tổng mà hỏi thẳng: chỉ đưa dữ liệu lá số, không bắt viết bài luận
+  const firstText = clip(b.first, 20000);
+  const messages = b.question && !firstText
+    ? [{ role: 'user', content: `Dưới đây là DỮ LIỆU ĐÃ TÍNH SẴN của người hỏi (Bát tự, chiêm tinh, Tử vi, thần số học). Chỉ dùng dữ liệu này, không tự tính lại. Người hỏi chưa đọc bài luận tổng.${ctx ? `\nBối cảnh của người hỏi: "${ctx}".` : ''}\n\nDỮ LIỆU:\n` + brief },
+       { role: 'assistant', content: 'Tôi đã đọc xong dữ liệu lá số. Bạn muốn hỏi gì?' }]
+    : [{ role: 'user', content: rules(focus, ctx) + '\n\nDỮ LIỆU:\n' + brief }];
   let maxTokens = 12288;
   if (b.question) {
-    messages.push({ role: 'assistant', content: clip(b.first, 20000) || '(đã luận giải)' });
+    if (firstText) messages.push({ role: 'assistant', content: firstText });
     (Array.isArray(b.history) ? b.history.slice(-3) : []).forEach(h => {
       messages.push({ role: 'user', content: clip(h.q, 400) });
       messages.push({ role: 'assistant', content: clip(h.a, 6000) || '...' });
