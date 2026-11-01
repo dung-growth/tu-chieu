@@ -361,8 +361,7 @@ tr.cur td{background:var(--seal-soft)}
 .ai-controls #code{width:190px}
 .ai-body{padding:22px}
 /* bài luận có mục lục: thu gọn từng phần */
-.ai-body.has-toc{display:grid;grid-template-columns:200px minmax(0,1fr);gap:8px 28px;align-items:start}
-.ai-body.has-toc>*:not(.rd-toc):not(#aiOut){grid-column:1/-1}
+.rd-wrap{display:grid;grid-template-columns:200px minmax(0,1fr);gap:8px 28px;align-items:start}
 .rd-toc{position:sticky;top:76px;display:flex;flex-direction:column;gap:2px;font-size:13.5px;padding:4px 0}
 .rd-toc .label{margin:0 0 6px 10px}
 .rd-toc a{display:block;padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--ink-2);border-left:2px solid transparent;line-height:1.35;transition:background-color .15s var(--ease),color .15s var(--ease)}
@@ -382,7 +381,7 @@ tr.cur td{background:var(--seal-soft)}
 .rd-quick .rd-toggle{cursor:default} .rd-quick .rd-toggle::after{display:none}
 .rd-quick ul{margin:0;padding-left:20px} .rd-quick li{margin:6px 0}
 @media (max-width:960px){
-  .ai-body.has-toc{display:block}
+  .rd-wrap{display:block}
   .rd-toc{position:sticky;top:60px;z-index:5;flex-direction:row;overflow-x:auto;gap:6px;margin:-4px -16px 12px;padding:8px 16px;background:var(--sheet);border-bottom:1px solid var(--line);scrollbar-width:none}
   .rd-toc::-webkit-scrollbar{display:none}
   .rd-toc .label{display:none}
@@ -1225,7 +1224,8 @@ function tvcHTML(A){
 
 /* ---- bài luận: tách theo tiêu đề ##, thu gọn từng phần, mục lục ---- */
 let tocObs = null;
-function clearToc(){ const n = document.querySelector('.rd-toc'); if (n) n.remove(); $('.ai-body').classList.remove('has-toc'); if (tocObs) { tocObs.disconnect(); tocObs = null; } }
+// Mục lục và bài luận nằm chung một khung riêng, để mục lục dính chỉ trượt trong phạm vi bài luận, không đè lên khung chat
+function clearToc(){ const w = document.querySelector('.rd-wrap'); if (w) { w.before($('#aiOut')); w.remove(); } if (tocObs) { tocObs.disconnect(); tocObs = null; } }
 function structureReading(){
   const out = $('#aiOut'), hs = [...out.querySelectorAll(':scope > h2')];
   if (hs.length < 3) return;
@@ -1247,7 +1247,7 @@ function structureReading(){
   });
   const nav = document.createElement('nav'); nav.className = 'rd-toc'; nav.setAttribute('aria-label', 'Mục lục bài luận');
   nav.innerHTML = `<span class="label">Mục lục</span>${items.map(it => `<a href="#rd-${it.k}" data-k="${it.k}">${esc(it.title)}</a>`).join('')}<button type="button" class="btn-ghost btn-sm rd-all">Mở tất cả</button>`;
-  out.before(nav); $('.ai-body').classList.add('has-toc');
+  const wrap = document.createElement('div'); wrap.className = 'rd-wrap'; out.before(wrap); wrap.append(nav, out);
   nav.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); const k = a.dataset.k, b = $('#rdb-' + k), t = document.querySelector(`#rd-${k} .rd-toggle`);
     if (b.hidden) { b.hidden = false; t.setAttribute('aria-expanded', 'true'); } go($('#rd-' + k)); });
   const all = nav.querySelector('.rd-all');
