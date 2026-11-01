@@ -7,6 +7,7 @@ Lập cùng lúc Bát tự, Bản đồ sao, Tử vi, Thần số học từ ng�
 ```
 index.html          giao diện + code trang
 compute.js          tính toán 4 trường phái (chạy trên trình duyệt người dùng)
+nghia.js            từ điển nghĩa ngắn cho khung "bấm vào xem nghĩa" (sao, cung, thập thần, hành tinh, con số)
 tuvi-cach.js        dò cách Tử vi (Thân cư, Tuần Triệt, Cơ Lương, Sát Phá Tham, Nhật Nguyệt…), đường đi đại hạn kèm tứ hóa, 3 năm tới
 iching.js           gieo quẻ Kinh Dịch theo Mai Hoa Dịch Số (năm, tháng, ngày, giờ âm lịch)
 prompt.js           bộ hướng dẫn luận giải, dùng chung cho máy chủ và nút "Sao chép lời nhắc"

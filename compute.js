@@ -376,6 +376,6 @@ const TC = (() => {
       tuvi: tuvi(y, mo, d, h, mi, inp.gender)
     };
   }
-  return { all, numerology, bazi, natal, transits, tuvi, SIGNS, SIGN_GLYPH, SIGN_EL, MODES, fmtDeg, yearGZ, tenGodOf, relations, strength, shensha, BR };
+  return { all, numerology, bazi, natal, transits, tuvi, SIGNS, SIGN_GLYPH, SIGN_EL, MODES, fmtDeg, yearGZ, tenGodOf, relations, strength, shensha, BR, lonOf };
 })();
 if (typeof module !== 'undefined') module.exports = TC;

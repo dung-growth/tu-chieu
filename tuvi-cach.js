@@ -137,16 +137,38 @@ const TVC = (() => {
     // 3 năm tới
     const TAM_TAI = [['Thân','Tý','Thìn','Dần Mão Thìn'], ['Dần','Ngọ','Tuất','Thân Dậu Tuất'], ['Hợi','Mão','Mùi','Tỵ Ngọ Mùi'], ['Tỵ','Dậu','Sửu','Hợi Tý Sửu']];
     const birthChi = t.lunarYearGZ.split(' ')[1], tt = TAM_TAI.find(g => g.includes(birthChi))[3].split(' ');
-    const years = [0, 1, 2].map(k => { const y = nowYear + k; let h; try { h = t.horo(y); } catch (e) { return null; }
+    const yearOf = y => { let h; try { h = t.horo(y); } catch (e) { return null; }
       const dec = decades.find(d => y >= d.years[0] && y <= d.years[1]);
       const land = h.yearlyMut.map((name, i) => { const at = starAt[name]; const goc = at && at.s.mut ? at.s.mut : '';
         const decHit = dec && dec.mut.find(m => m.palace === (at ? pname(at.b) : '?') && m.hoa === 'Kỵ');
         return { hoa: MUT[i], star: name, palace: at ? pname(at.b) : '?', chong: MUT[i] === 'Kỵ' && (goc === 'Kỵ' || (at && byB[at.b] && [...byB[at.b].major, ...byB[at.b].minor].some(s => s.mut === 'Kỵ')) || !!decHit) }; });
-      return { year: y, gz: h.gz, age: h.age, luuNien: pname(h.yearly), tieuHan: pname(h.tieuHan), veMenh: h.yearly === M, mut: land, tamTai: tt.includes(h.gz.split(' ')[1]) };
-    }).filter(Boolean);
+      return { year: y, gz: h.gz, age: h.age, luuNien: pname(h.yearly), tieuHan: pname(h.tieuHan), veMenh: h.yearly === M, mut: land, tamTai: tt.includes(h.gz.split(' ')[1]), decade: dec || null };
+    };
+    const years = [0, 1, 2].map(k => yearOf(nowYear + k)).filter(Boolean);
+
+    // Kiểm chứng quá khứ: rút từ các đại hạn đã qua (tứ hóa rơi vào cung nào → chuyện gì)
+    const TOPIC = { // [câu khi hóa Lộc, câu khi hóa Kỵ]
+      'Quan Lộc': ['việc học, việc làm của bạn khởi sắc rõ, được ghi nhận', 'việc học, việc làm của bạn hay vướng, phải làm đi làm lại'],
+      'Tài Bạch': ['tiền bạc của bạn khá lên rõ', 'tiền bạc của bạn eo hẹp, hay hao hụt'],
+      'Điền Trạch': ['nhà cửa, chỗ ở của bạn có thay đổi tốt (chuyển nhà, sắm sửa)', 'nhà cửa, chỗ ở của bạn hay xáo trộn'],
+      'Phu Thê': ['chuyện tình cảm của bạn thuận, có người đến', 'chuyện tình cảm của bạn trục trặc, nhiều hiểu lầm'],
+      'Mệnh': ['bạn tự tin, được để ý nhiều', 'bạn hay bế tắc, tự làm khó mình'],
+      'Phúc Đức': ['trong lòng bạn khá thanh thản', 'trong lòng bạn nhiều băn khoăn, bất an về hướng đi'],
+      'Phụ Mẫu': ['bạn được cha mẹ hoặc cấp trên nâng đỡ', 'chuyện với cha mẹ hoặc cấp trên căng thẳng'],
+      'Thiên Di': ['chuyện đi xa, đổi môi trường của bạn thuận lợi', 'chuyện đi xa, đổi môi trường của bạn trắc trở'],
+      'Nô Bộc': ['bạn được bạn bè, cộng sự giúp nhiều', 'bạn hay mất lòng hoặc hao vì bạn bè'],
+      'Huynh Đệ': ['bạn gắn bó, được anh em, đồng nghiệp giúp', 'bạn hay va chạm với anh em, đồng nghiệp'],
+      'Tật Ách': ['sức khỏe của bạn khá tốt', 'bạn hay mệt, căng thẳng kéo dài'],
+      'Tử Nữ': ['việc riêng, sản phẩm của bạn có thành quả', 'việc riêng, sản phẩm của bạn trục trặc'] };
+    const checks = [];
+    decades.filter(d => d.years[1] < nowYear && d.range[0] >= 12).slice(-2).reverse().forEach(d => {
+      ['Lộc', 'Kỵ'].forEach(hoa => { const m = d.mut.find(x => x.hoa === hoa); const tp = m && TOPIC[m.palace]; if (!tp || checks.length >= 3) return;
+        checks.push({ id: `tv-${d.range[0]}-${hoa}`, school: 'Tử vi', period: `${d.years[0]}–${d.years[1]}`,
+          text: `Khoảng ${d.years[0]}–${d.years[1]}, ${hoa === 'Lộc' ? tp[0] : tp[1]}?`,
+          basis: `đại hạn ${d.palace}: ${m.star} hóa ${hoa} vào cung ${m.palace}` }); }); });
 
     cach.sort((a, b) => b.w - a.w);
-    return { cach, decades, years };
+    return { cach, decades, years, yearOf, checks };
   }
 
   // Tóm tắt gửi cho AI

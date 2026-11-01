@@ -324,6 +324,54 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .hoa{display:inline-block;min-width:38px;text-align:center;font-size:10.5px;font-weight:600;padding:0 5px;border-radius:4px;background:var(--jade);color:var(--on-jade)}
 .hoa-Kỵ{background:var(--ink);color:var(--paper)} .hoa-Quyền{background:var(--seal);color:var(--on-seal)}
 .song{color:var(--seal);font-weight:600}
+/* bấm xem nghĩa */
+[data-tip]{cursor:pointer;text-decoration:underline dotted var(--ink-3);text-underline-offset:3px}
+[data-tip]:hover{text-decoration-color:var(--seal);color:var(--seal)}
+.tv-grid [data-tip]{text-decoration:none} .tv-grid [data-tip]:hover{text-decoration:underline;text-decoration-color:var(--seal)}
+.tip-pop{position:fixed;z-index:60;width:min(340px,calc(100vw - 24px));background:var(--sheet);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);padding:14px 16px 16px;animation:rise .18s var(--ease)}
+.tip-pop h4{font-size:16px;margin:0 28px 2px 0} .tip-pop .tip-sub{font-size:12.5px;color:var(--ink-2)}
+.tip-pop p{margin:8px 0 0;font-size:14px;line-height:1.55}
+.tip-pop .tip-x{position:absolute;top:6px;right:6px;width:30px;height:30px;padding:0;font-size:20px;line-height:1;color:var(--ink-2);background:none}
+.tip-pop .btn-ghost{margin-top:12px}
+@media (max-width:560px){ .tip-pop{left:12px!important;right:12px;top:auto!important;bottom:12px;width:auto} }
+/* năm của bạn */
+.yr-head{display:flex;justify-content:space-between;align-items:center;gap:10px 16px;flex-wrap:wrap}
+.yr-ctl{display:flex;align-items:center;gap:8px;flex:1 1 320px;max-width:560px}
+.yr-ctl input[type=range]{flex:1;min-height:0;padding:0;border:0;background:none;accent-color:var(--seal)}
+.yr-ctl .icon-btn{border:1px solid var(--line);font-size:18px}
+.yr-title{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:14px 0 10px}
+.yr-title b{font-size:22px;letter-spacing:-.02em}
+.yr-flags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.yr-flag{font-size:12.5px;font-weight:500;padding:3px 10px;border-radius:99px;border:1px solid var(--line);background:var(--sunken)}
+.yr-flag.good{background:var(--jade-soft);border-color:color-mix(in srgb,var(--jade) 30%,var(--line))} .yr-flag.bad{background:var(--seal-soft);border-color:color-mix(in srgb,var(--seal) 30%,var(--line))}
+.yr-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.yr-grid>div{border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;font-size:13.5px;line-height:1.55}
+.yr-grid .label{display:block;margin-bottom:4px}
+@media (max-width:960px){ .yr-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:560px){ .yr-grid{grid-template-columns:1fr} }
+/* kiểm lại quá khứ */
+.chk-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.chk{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;display:flex;justify-content:space-between;gap:10px 16px;align-items:center;flex-wrap:wrap}
+.chk p{margin:0;font-size:14.5px;flex:1 1 300px} .chk small{display:block;color:var(--ink-3);font-size:12px;margin-top:3px}
+.chk-btns{display:flex;gap:6px}
+.chk-btns button{padding:7px 12px;font-size:13px;background:var(--sheet);border:1px solid var(--line);font-weight:500}
+.chk-btns button[aria-pressed=true][data-v=y]{background:var(--jade);color:var(--on-jade);border-color:var(--jade)}
+.chk-btns button[aria-pressed=true][data-v=p]{background:var(--ink-2);color:var(--paper);border-color:var(--ink-2)}
+.chk-btns button[aria-pressed=true][data-v=n]{background:var(--seal);color:var(--on-seal);border-color:var(--seal)}
+.chk-score{margin:10px 0 0;font-size:13.5px;color:var(--ink-2)}
+/* xem độ hợp */
+.hop-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 16px}
+.hop-score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.hop-ring{width:96px;height:96px;flex:none}
+.hop-score b.big{font-size:26px;letter-spacing:-.02em;display:block}
+.hop-sec{margin-top:6px}
+.hop-sec h4{margin:14px 0 6px;font-size:15px}
+.hop-sec ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.hop-sec li{font-size:14px;padding-left:24px;position:relative;line-height:1.5}
+.hop-sec li::before{position:absolute;left:0;top:1px;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700}
+.hop-sec li.good::before{content:"✓";background:var(--jade-soft);color:var(--jade)}
+.hop-sec li.bad::before{content:"!";background:var(--seal-soft);color:var(--seal)}
+.hop-sec li.mid::before{content:"·";background:var(--sunken);color:var(--ink-2)}
 /* thần số: thêm */
 .num-core{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 .num-sub{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
@@ -590,6 +638,7 @@ tr.cur td{background:var(--seal-soft)}
           <button role="tab" id="t-as" aria-selected="false" aria-controls="p-as">Bản đồ sao</button>
           <button role="tab" id="t-tv" aria-selected="false" aria-controls="p-tv">Tử vi</button>
           <button role="tab" id="t-nm" aria-selected="false" aria-controls="p-nm">Thần số học</button>
+          <button role="tab" id="t-hop" aria-selected="false" aria-controls="p-hop">Xem độ hợp</button>
           <button role="tab" id="t-ai" class="tab-ai" aria-selected="false" aria-controls="p-ai">Luận giải AI</button>
         </div>
         <div class="tabpanel" role="tabpanel" id="p-sum" aria-labelledby="t-sum"></div>
@@ -597,6 +646,29 @@ tr.cur td{background:var(--seal-soft)}
         <div class="tabpanel" role="tabpanel" id="p-as" aria-labelledby="t-as" hidden></div>
         <div class="tabpanel" role="tabpanel" id="p-tv" aria-labelledby="t-tv" hidden></div>
         <div class="tabpanel" role="tabpanel" id="p-nm" aria-labelledby="t-nm" hidden></div>
+        <div class="tabpanel" role="tabpanel" id="p-hop" aria-labelledby="t-hop" hidden>
+          <div class="panel">
+            <h3>Xem độ hợp với một người khác</h3>
+            <p class="small muted" style="margin:4px 0 14px">Nhập ngày sinh của người kia. Trang so hai lá số theo cả bốn môn rồi chấm điểm tham khảo. Thông tin người kia chỉ dùng để tính, không được lưu.</p>
+            <div class="hop-form">
+              <div class="field"><label for="h-name">Tên người kia (không bắt buộc)</label><input id="h-name" autocomplete="off" placeholder="Ví dụ: Lan"></div>
+              <div class="field"><span class="field-label" id="hgLabel">Giới tính</span>
+                <div class="seg" role="radiogroup" aria-labelledby="hgLabel">
+                  <label><input type="radio" name="h-gender" id="hg-nam" value="nam"><span>Nam</span></label>
+                  <label><input type="radio" name="h-gender" id="hg-nu" value="nu" checked><span>Nữ</span></label>
+                </div></div>
+              <div class="field"><label for="h-date">Ngày sinh (dương lịch)</label><input id="h-date" type="date"></div>
+              <div class="field"><label for="h-time">Giờ sinh</label><input id="h-time" type="time" value="12:00">
+                <label class="check" for="h-noTime"><input type="checkbox" id="h-noTime"> Không rõ giờ sinh</label></div>
+              <div class="field"><label for="h-place">Nơi sinh</label><select id="h-place"></select></div>
+              <div class="field"><label for="h-rel">Mối quan hệ</label><select id="h-rel">
+                <option value="tình yêu, vợ chồng">Người yêu, vợ chồng</option><option value="bạn bè">Bạn bè</option>
+                <option value="đối tác làm ăn">Đối tác làm ăn</option><option value="gia đình">Gia đình</option></select></div>
+            </div>
+            <div class="row-actions" style="margin-top:14px"><button class="btn-primary" type="button" id="hopGo">So hai lá số</button><span class="hint" id="hopMsg"></span></div>
+          </div>
+          <div id="hopOut"></div>
+        </div>
         <div class="tabpanel" role="tabpanel" id="p-ai" aria-labelledby="t-ai" hidden>
           <div class="ai-shell">
             <div class="ai-head">
@@ -660,6 +732,7 @@ tr.cur td{background:var(--seal-soft)}
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div id="printDoc" aria-hidden="true"></div>
+<div id="tipPop" class="tip-pop" role="dialog" aria-labelledby="tipTitle" hidden><button type="button" class="tip-x" aria-label="Đóng">×</button><div class="tip-body"></div></div>
 
 <script src="lib/lunar.js"></script>
 <script src="lib/astronomy.min.js"></script>
@@ -669,6 +742,7 @@ tr.cur td{background:var(--seal-soft)}
 <script src="compute.js"></script>
 <script src="iching.js"></script>
 <script src="tuvi-cach.js"></script>
+<script src="nghia.js"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -962,8 +1036,11 @@ function renderSummary(){
       <dl class="kv"><dt>Sứ mệnh</dt><dd>${n.expression}</dd><dt>Linh hồn</dt><dd>${n.soul}</dd><dt>Nhân cách</dt><dd>${n.personality}</dd><dt>Năm cá nhân ${n.personalYears[0].year}</dt><dd>${n.personalYears[0].n}</dd></dl></div>
   </div>
   ${input.timeMode==='unknown' ? '<div class="warn">Không rõ giờ sinh: Thần số học đầy đủ; Bát tự còn 3 trụ (thiếu trụ giờ); Bản đồ sao tính theo 12 giờ trưa, không có cung Mọc và các nhà; Tử vi chưa lập được. Nếu biết khoảng giờ, chọn canh giờ để có thêm Tử vi và trụ giờ.</div>' : input.timeMode==='canh' ? '<div class="warn">Tính theo canh giờ: Bát tự và Tử vi đầy đủ. Bản đồ sao lấy giờ giữa canh nên cung Mọc và các nhà chỉ là ước lượng.</div>' : ''}
+  <div class="panel" id="yearPanel"></div>
+  <div class="panel" id="checkPanel" hidden></div>
   <div class="callout"><p>Các lá số đã sẵn sàng. Để AI đọc tất cả và viết bài luận đối chiếu giữa các trường phái.</p><button class="btn-primary" type="button" id="sumAi">Mở luận giải AI</button></div>`;
   $('#sumAi').onclick = () => { show('t-ai'); $('#t-ai').focus(); };
+  renderYearPanel(); renderChecks();
 }
 function curDV(){ const y = new Date().getFullYear(); const d = R.bazi.daiVan.find(v => y >= v.startYear && y <= v.endYear); return d ? `${d.gz} (${d.thapThan})` : '—'; }
 
@@ -973,12 +1050,12 @@ function renderBazi(){
   const st = b.strength, dm = b.pillars[2];
   const pillarHTML = (p, i) => !p ? `<div class="pillar"><span class="label">Trụ Giờ</span><span class="gz muted">?<br>?</span><span class="god">Không rõ giờ sinh</span></div>` : `
     <div class="pillar ${i===2?'day':''}"><span class="label">Trụ ${names[i]}</span>
-      <span class="god">${i===2?'Nhật chủ':p.thapThanCan}</span>
+      <span class="god"><span data-tip="god" data-key="${i===2?'Nhật chủ':p.thapThanCan}" data-ctx="${p.can} ở trụ ${names[i].toLowerCase()}">${i===2?'Nhật chủ':p.thapThanCan}</span></span>
       <span class="gz"><span class="el-${p.canHanh}">${p.can}</span><br><span class="el-${p.chiHanh}">${p.chi}</span></span>
       <dl class="pkv">
         <dt>Tàng can</dt><dd>${p.tangCan.join(', ')}</dd>
-        <dt>Thập thần</dt><dd>${p.thapThanChi.join(', ')}</dd>
-        <dt>Trường sinh</dt><dd>${p.truongSinh || '—'}</dd>
+        <dt>Thập thần</dt><dd>${p.thapThanChi.map(g=>`<span data-tip="god" data-key="${g}" data-ctx="tàng trong ${p.chi}, trụ ${names[i].toLowerCase()}">${g}</span>`).join(', ')}</dd>
+        <dt>Trường sinh</dt><dd>${p.truongSinh ? `<span data-tip="ts" data-key="${p.truongSinh}" data-ctx="Nhật chủ ${b.dayMaster} gặp ${p.chi}">${p.truongSinh}</span>` : '—'}</dd>
         <dt>Nạp âm</dt><dd>${p.napAm}</dd>
       </dl>
       <div class="ss">${(b.shensha[i]||[]).map(x=>`<span class="chip ss-chip" title="${esc(x.note)}">${x.name}</span>`).join('')}${b.khongVong.includes(p.chi) && i!==2 ? '<span class="chip kv-chip" title="Chi này rơi vào Không vong (tính theo trụ ngày): sức của trụ yếu đi">Không vong</span>' : ''}</div>
@@ -1097,8 +1174,8 @@ function renderAstro(){
   <div class="two">
     <div class="panel"><h3>Vị trí các sao</h3><div class="table-wrap"><table><thead><tr><th>Sao</th><th>Vị trí</th><th>Nhà</th></tr></thead><tbody>
       ${F.hasHour ? `<tr><td><b>Cung Mọc</b></td><td class="num">${a.asc.text}${F.approxHouses?' <span class="muted">(ước lượng)</span>':''}</td><td>1</td></tr><tr><td><b>Thiên Đỉnh (MC)</b></td><td class="num">${a.mc.text}${F.approxHouses?' <span class="muted">(ước lượng)</span>':''}</td><td>10</td></tr>` : ''}
-      ${a.points.map(p=>`<tr><td><span style="color:${SIGN_COL[p.signIdx%4]}">${p.glyph}︎</span> ${p.name}</td><td class="num">${p.key==='Moon'&&F.moonRange ? `${F.moonRange.from} → ${F.moonRange.to}` : p.text} ${p.retro&&p.key!=='Node'?'<span class="retro">℞</span>':''}</td><td class="num">${F.hasHour ? p.house+(F.approxHouses?'?':'') : '—'}</td></tr>`).join('')}
-      ${a.extra.filter(e=>F.hasHour||e.key!=='PoF').map(p=>`<tr><td class="muted">${p.glyph}︎ ${p.name}</td><td class="num">${p.text}</td><td class="num">${F.hasHour ? p.house : '—'}</td></tr>`).join('')}
+      ${a.points.map(p=>`<tr><td><span style="color:${SIGN_COL[p.signIdx%4]}">${p.glyph}︎</span> <span data-tip="planet" data-key="${p.key}" data-ctx="${p.name}|${p.sign}|${F.hasHour?p.house:''}">${p.name}</span></td><td class="num">${p.key==='Moon'&&F.moonRange ? `${F.moonRange.from} → ${F.moonRange.to}` : p.text} ${p.retro&&p.key!=='Node'?'<span class="retro">℞</span>':''}</td><td class="num">${F.hasHour ? p.house+(F.approxHouses?'?':'') : '—'}</td></tr>`).join('')}
+      ${a.extra.filter(e=>F.hasHour||e.key!=='PoF').map(p=>`<tr><td class="muted">${p.glyph}︎ <span data-tip="planet" data-key="${p.key}" data-ctx="${p.name}|${p.sign}|${F.hasHour?p.house:''}">${p.name}</span></td><td class="num">${p.text}</td><td class="num">${F.hasHour ? p.house : '—'}</td></tr>`).join('')}
       </tbody></table></div>
       <p class="small muted" style="margin:10px 0 0">Hoàng đạo nhiệt đới, hệ nhà Placidus. ℞ là nghịch hành. La Hầu và Lilith tính theo vị trí trung bình.${F.hasHour?` Điểm may mắn tính theo công thức sinh ${a.extra[1].dayBirth?'ban ngày':'ban đêm'}.`:''}</p></div>
     ${F.hasHour ? `<div class="panel"><h3>12 nhà và chủ tinh</h3><div class="table-wrap"><table><thead><tr><th>Nhà</th><th>Cung đầu nhà</th><th>Chủ tinh</th><th>Chủ tinh nằm ở</th></tr></thead><tbody>
@@ -1150,9 +1227,10 @@ function drawTuvi(){
   const t = R.tuvi, H = t.horo(tvYear), grid = $('#tvGrid');
   const byB = {}; t.palaces.forEach(p => byB[p.branch] = p);
   const mutOf = (name, list) => { const k = (list||[]).indexOf(name); return k >= 0 ? MUT_LIST[k] : ''; };
-  const starLine = s => { const el = MAJOR_EL[s.name]; const lm = mutOf(s.name, H.yearlyMut);
-    return `<div class="tv-st"><span class="el-${el}">${s.name}</span>${s.bright?`<sup title="${s.bright==='Hạn'?'Hãm':s.bright}">${BRIGHT[s.bright]||s.bright}</sup>`:''}${s.mut?`<span class="mut mut-${s.mut}" title="Hóa ${s.mut} gốc">${s.mut}</span>`:''}${lm?`<span class="mut-luu" title="Lưu niên hóa ${lm}">L.${lm}</span>`:''}</div>`; };
-  const minorName = s => { const lm = mutOf(s.name, H.yearlyMut); return `${s.name}${s.mut?`<span class="mut mut-${s.mut}">${s.mut}</span>`:''}${lm?`<span class="mut-luu">L.${lm}</span>`:''}`; };
+  const tip = (s, p) => `data-tip="star" data-key="${esc(s.name)}" data-ctx="${esc(p.name + '|' + (s.bright||'') + '|' + (s.mut||''))}"`;
+  const starLine = (s, p) => { const el = MAJOR_EL[s.name]; const lm = mutOf(s.name, H.yearlyMut);
+    return `<div class="tv-st"><span class="el-${el}" ${tip(s, p)}>${s.name}</span>${s.bright?`<sup title="${s.bright==='Hạn'?'Hãm':s.bright}">${BRIGHT[s.bright]||s.bright}</sup>`:''}${s.mut?`<span class="mut mut-${s.mut}" title="Hóa ${s.mut} gốc">${s.mut}</span>`:''}${lm?`<span class="mut-luu" title="Lưu niên hóa ${lm}">L.${lm}</span>`:''}</div>`; };
+  const minorName = (s, p) => { const lm = mutOf(s.name, H.yearlyMut); return `<span ${tip(s, p)}>${s.name}</span>${s.mut?`<span class="mut mut-${s.mut}">${s.mut}</span>`:''}${lm?`<span class="mut-luu">L.${lm}</span>`:''}`; };
   const tt = {}; // Tuần/Triệt: đặt nhãn ở cạnh chung của hai cung
   const mark = (pair, label) => { const [a, b] = pair; const ia = LAYOUT.indexOf(a), ib = LAYOUT.indexOf(b); const first = Math.min(ia, ib), second = Math.max(ia, ib);
     const side = Math.floor(first/4) === Math.floor(second/4) ? 'right' : 'bottom'; const key = LAYOUT[first] + side; tt[key] = { b: LAYOUT[first], side, label: tt[key] ? tt[key].label + ' · ' + label : label }; };
@@ -1176,10 +1254,10 @@ function drawTuvi(){
     const ttHere = Object.values(tt).filter(x=>x.b===b).map(x=>`<span class="tt tt-${x.side}">${x.label}</span>`).join('');
     cells += `<div class="tv-cell ${p.name==='Mệnh'?'menh':''} ${b===H.decadal?'dh':''} ${b===H.yearly?'ln':''} ${b===H.tieuHan?'th':''}" data-b="${b}" tabindex="0" role="button" aria-label="Cung ${p.name} tại ${b}">
       ${ttHere}
-      <div class="tv-head"><span class="tv-name">${p.name}${p.isBody?' <span class="tag alt">Thân</span>':''}</span><span class="tv-gz">${p.stem} ${p.branch}</span></div>
+      <div class="tv-head"><span class="tv-name" data-tip="palace" data-key="${p.name}">${p.name}${p.isBody?' <span class="tag alt">Thân</span>':''}</span><span class="tv-gz">${p.stem} ${p.branch}</span></div>
       ${flags?`<div class="tv-flags">${flags}</div>`:''}
-      <div class="tv-major">${p.major.length?p.major.map(starLine).join(''):'<span class="muted" style="font-weight:500">Vô chính diệu</span>'}</div>
-      <div class="tv-cols"><div class="tv-good">${good.map(minorName).join('<br>')}</div><div class="tv-bad">${badS.map(minorName).join('<br>')}</div></div>
+      <div class="tv-major">${p.major.length?p.major.map(s=>starLine(s,p)).join(''):'<span class="muted" style="font-weight:500">Vô chính diệu</span>'}</div>
+      <div class="tv-cols"><div class="tv-good">${good.map(s=>minorName(s,p)).join('<br>')}</div><div class="tv-bad">${badS.map(s=>minorName(s,p)).join('<br>')}</div></div>
       ${luu.length?`<div class="tv-luu">${luu.map(s=>s.name).join(' · ')}</div>`:''}
       <div class="tv-foot"><span>${p.changsheng||''}${p.boshi?' · '+p.boshi:''}</span><span class="num">${p.decadal?p.decadal[0]+'–'+p.decadal[1]:''}</span></div></div>`;
   });
@@ -1299,6 +1377,237 @@ $('#aiPdf').onclick = () => {
   setTimeout(() => { window.print(); setTimeout(done, 1500); }, 50);
 };
 
+/* ---- Năm của bạn: kéo năm, cả 4 môn đổi theo ---- */
+const dsum = n => String(n).split('').reduce((a, c) => a + (+c || 0), 0);
+function personalYear(y){ const [, m, d] = R.input.date.split('-').map(Number); let v = dsum(d) + dsum(m) + dsum(y); while (v > 9) v = dsum(v); return v; }
+function houseOfLon(l){ const c = R.astro.cusps.map(x => x.lon); for (let i = 0; i < 12; i++) { const a = c[i], b = c[(i + 1) % 12]; if (((l - a + 360) % 360) < ((b - a + 360) % 360)) return i + 1; } return 1; }
+let yrSel = null;
+function renderYearPanel(){
+  const by = +R.input.date.slice(0,4), nowY = new Date().getFullYear();
+  if (yrSel === null || yrSel < by || yrSel > by + 80) yrSel = Math.max(by, nowY);
+  $('#yearPanel').innerHTML = `<div class="yr-head"><h3>Năm của bạn</h3>
+    <div class="yr-ctl"><button type="button" class="icon-btn" id="yrPrev" aria-label="Năm trước">‹</button>
+      <input type="range" id="yrRange" min="${by}" max="${by+80}" value="${yrSel}" aria-label="Chọn năm">
+      <button type="button" class="icon-btn" id="yrNext" aria-label="Năm sau">›</button>
+      <button type="button" class="btn-ghost btn-sm" id="yrNow">Năm nay</button></div></div>
+    <div id="yrCard" aria-live="polite"></div>`;
+  const set = y => { yrSel = Math.min(by + 80, Math.max(by, y)); $('#yrRange').value = yrSel; drawYear(yrSel); };
+  let raf = 0; $('#yrRange').oninput = e => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => set(+e.target.value)); };
+  $('#yrPrev').onclick = () => set(yrSel - 1); $('#yrNext').onclick = () => set(yrSel + 1); $('#yrNow').onclick = () => set(nowY);
+  drawYear(yrSel);
+}
+function drawYear(y){
+  const by = +R.input.date.slice(0,4), b = R.bazi, a = R.astro, F = R.flags;
+  const g = TC.yearGZ(y), tt = TC.tenGodOf(b.dayMaster, g.can);
+  const items = b.pillars.map((p,i) => p && ({ label: ['năm','tháng','ngày','giờ'][i], can: p.can, chi: p.chi })).filter(Boolean);
+  const rel = TC.relations([{ label: 'năm ' + y, ...g }, ...items]).filter(r => r.text.includes('năm ' + y));
+  const dv = b.daiVan.find(v => y >= v.startYear && y <= v.endYear);
+  const T = R.tvc ? R.tvc.yearOf(y) : null;
+  const py = personalYear(y);
+  // Chiêm tinh: Sao Mộc, Sao Thổ giữa năm
+  const date = new Date(Date.UTC(y, 6, 1)), movers = [['Sao Mộc', TC.lonOf('Jupiter', date), 'Jupiter'], ['Sao Thổ', TC.lonOf('Saturn', date), 'Saturn']];
+  const targets = [['Mặt Trời', a.points[0].lon], ['Mặt Trăng', a.points[1].lon], ...(F.hasHouses ? [['Cung Mọc', a.asc.lon], ['Thiên Đỉnh', a.mc.lon]] : [])];
+  const AS = [['trùng tụ',0],['vuông góc',90],['tam hợp',120],['đối đỉnh',180]];
+  const hits = [];
+  movers.forEach(([mn, ml, mk]) => {
+    targets.forEach(([tn, tl]) => { let d = Math.abs(ml - tl); if (d > 180) d = 360 - d; AS.forEach(([an, av]) => { if (Math.abs(d - av) <= 4) hits.push(`${mn} ${an} ${tn}`); }); });
+    const natal = a.points.find(p => p.key === mk).lon; let d = Math.abs(ml - natal); if (d > 180) d = 360 - d;
+    if (d <= 8) hits.push(mk === 'Saturn' ? 'Sao Thổ trở về (hạn kiểm điểm lớn, khoảng 29–30 và 58–59 tuổi)' : 'Sao Mộc trở về (năm mở rộng, chu kỳ 12 năm)');
+  });
+  const sign = l => TC.SIGNS[Math.floor(l / 30)];
+  // Cờ nổi bật
+  const flags = [];
+  if (T && T.veMenh) flags.push(['Lưu niên về cung Mệnh', 'mid']);
+  if (T && T.mut.some(m => m.chong)) flags.push(['Kỵ chồng Kỵ ở ' + T.mut.find(m => m.chong).palace, 'bad']);
+  if (T && T.mut[0]) flags.push([`Hóa Lộc vào ${T.mut[0].palace}`, 'good']);
+  if (T && T.tamTai) flags.push(['Tam Tai', 'bad']);
+  rel.filter(r => /xung|hại|hình/i.test(r.kind) && /ngày/.test(r.text)).forEach(r => flags.push([`${r.kind} trụ ngày`, 'bad']));
+  rel.filter(r => /hợp/i.test(r.kind) && /ngày/.test(r.text)).forEach(r => flags.push([`${r.kind} trụ ngày`, 'good']));
+  if (py === 1) flags.push(['Năm cá nhân 1: khởi đầu chu kỳ', 'good']); if (py === 9) flags.push(['Năm cá nhân 9: khép lại', 'mid']);
+  if (hits.some(h => /trở về/.test(h))) flags.push([hits.find(h => /trở về/.test(h)).split(' (')[0], 'mid']);
+  $('#yrCard').innerHTML = `
+    <div class="yr-title"><b class="num">${y}</b><span>${g.can} ${g.chi}</span><span class="muted">${y - by + 1} tuổi âm</span></div>
+    ${flags.length ? `<div class="yr-flags">${flags.map(([t,c]) => `<span class="yr-flag ${c}">${t}</span>`).join('')}</div>` : ''}
+    <div class="yr-grid">
+      <div><span class="label">Tử vi</span>${T ? `Lưu niên ở <b>${T.luuNien}</b>, tiểu hạn ở ${T.tieuHan}${T.decade ? `. Đại hạn cung ${T.decade.palace}` : ''}.<br>${T.mut.map(m => `${m.hoa} ${m.star} → ${m.palace}`).join('<br>')}` : '<span class="muted">Cần giờ sinh để xem Tử vi theo năm.</span>'}</div>
+      <div><span class="label">Bát tự</span>Năm <b>${g.can} ${g.chi}</b> là <b><span data-tip="god" data-key="${tt}" data-ctx="năm ${y}">${tt}</span></b> với Nhật chủ ${b.dayMaster}.${dv ? ` Đại vận ${dv.gz} (${dv.thapThan}).` : ''}<br>${rel.length ? rel.map(r => `${r.kind}: ${r.text.replace(/ \\(năm \\d+\\)/, '')}`).join('<br>') : '<span class="muted">Không hợp, xung với trụ nào.</span>'}</div>
+      <div><span class="label">Chiêm tinh</span>Sao Mộc ở ${sign(movers[0][1])}${F.hasHouses ? `, nhà ${houseOfLon(movers[0][1])}` : ''}. Sao Thổ ở ${sign(movers[1][1])}${F.hasHouses ? `, nhà ${houseOfLon(movers[1][1])}` : ''}.<br>${hits.length ? hits.join('<br>') : '<span class="muted">Không có góc lớn chạm điểm chính.</span>'}</div>
+      <div><span class="label">Thần số học</span>Năm cá nhân <b><span data-tip="num" data-key="${py}" data-ctx="Năm cá nhân ${y}">${py}</span></b>: ${NGHIA.num[py] || ''}${R.numerology.peaks.filter(p => y >= p.year).slice(-1).map(p => `<br>Đang trong đỉnh cao số ${p.n} (từ ${p.year}).`).join('')}</div>
+    </div>
+    <button type="button" class="btn-ghost btn-sm" id="yrAsk" style="margin-top:12px">Hỏi AI về năm ${y}</button>`;
+  $('#yrAsk').onclick = () => askAbout(`Năm ${y} (${g.can} ${g.chi}) của tôi thế nào? Nên tập trung vào điều gì, cẩn thận điều gì?`);
+}
+
+/* ---- Kiểm lại quá khứ ---- */
+const CHECK_KEY = () => 'tuchieu:check:' + R.input.date + ':' + R.input.time;
+function checkAns(){ try { return JSON.parse(localStorage.getItem(CHECK_KEY()) || '{}'); } catch(e) { return {}; } }
+function checkList(){
+  if (!R) return [];
+  const by = +R.input.date.slice(0,4), nowY = new Date().getFullYear(), out = [...(R.tvc ? R.tvc.checks : [])];
+  const DV = { 'Chính Quan': 'áp lực, kỷ luật, trách nhiệm tăng lên rõ (học hành nghiêm, việc gò bó, có người quản chặt)', 'Thất Sát': 'nhiều áp lực, thử thách, phải gồng lên để vượt qua',
+    'Chính Tài': 'bạn bắt đầu tự kiếm tiền đều đặn, chuyện tiền chiếm nhiều tâm trí', 'Thiên Tài': 'tiền vào ra thất thường, có những khoản bất ngờ',
+    'Thực Thần': 'bạn được sống thoải mái, theo sở thích, sáng tạo nhiều', 'Thương Quan': 'bạn muốn thể hiện, hay đổi hướng hoặc va chạm với cấp trên, khuôn khổ',
+    'Chính Ấn': 'bạn học nhiều, được người lớn đỡ đầu', 'Thiên Ấn': 'bạn hướng vào bên trong, học kiểu riêng, hơi cô độc',
+    'Tỷ Kiên': 'bạn bè, người ngang hàng ảnh hưởng nhiều tới quyết định của bạn', 'Kiếp Tài': 'tiền dễ hao vì bạn bè, hùn hạp, cạnh tranh nhiều' };
+  const dv = R.bazi.daiVan.filter(v => v.endYear < nowY && v.startYear >= by + 10).slice(-1)[0];
+  if (dv && DV[dv.thapThan]) out.push({ id: 'bz-' + dv.startYear, school: 'Bát tự', text: `Giai đoạn ${dv.startYear}–${dv.endYear}, ${DV[dv.thapThan]}?`, basis: `đại vận ${dv.gz} (${dv.thapThan})` });
+  for (let y = nowY - 1; y >= Math.max(by + 15, nowY - 9); y--) if (personalYear(y) === 1) { out.push({ id: 'ns-' + y, school: 'Thần số học', text: `Năm ${y}, bạn có bắt đầu một điều mới quan trọng (việc mới, chỗ mới, mối quan hệ mới)?`, basis: 'năm cá nhân 1' }); break; }
+  return out.slice(0, 5);
+}
+function renderChecks(){
+  const list = checkList(), box = $('#checkPanel');
+  if (!list.length) { box.hidden = true; return; }
+  const ans = checkAns(); box.hidden = false;
+  const score = () => { const a = checkAns(), done = list.filter(c => a[c.id]); if (!done.length) return 'Trả lời vài câu để AI biết môn nào đoán trúng với bạn, bài luận sẽ sát hơn.';
+    const by = {}; done.forEach(c => { by[c.school] = by[c.school] || [0, 0]; by[c.school][1]++; if (a[c.id] === 'y') by[c.school][0]++; });
+    return 'Đã trả lời ' + done.length + '/' + list.length + ' câu. Trúng: ' + Object.entries(by).map(([k, [h, t]]) => `${k} ${h}/${t}`).join(', ') + '. AI sẽ dựa vào kết quả này khi luận.'; };
+  box.innerHTML = `<h3>Lá số đoán trúng tới đâu?</h3><p class="small muted" style="margin:4px 0 0">Vài điều lá số nói về quá khứ của bạn. Bạn tự kiểm xem có đúng không.</p>
+    <div class="chk-list">${list.map(c => `<div class="chk" data-id="${c.id}"><p>${esc(c.text)}<small>${c.school}: ${esc(c.basis)}</small></p>
+      <div class="chk-btns" role="group" aria-label="Đánh giá">${[['y','Đúng'],['p','Không hẳn'],['n','Sai']].map(([v,t]) => `<button type="button" data-v="${v}" aria-pressed="${ans[c.id]===v}">${t}</button>`).join('')}</div></div>`).join('')}</div>
+    <p class="chk-score" id="chkScore">${score()}</p>`;
+  box.querySelectorAll('.chk').forEach(row => row.querySelectorAll('button').forEach(btn => btn.onclick = () => {
+    const a = checkAns(), id = row.dataset.id; a[id] = a[id] === btn.dataset.v ? undefined : btn.dataset.v;
+    try { localStorage.setItem(CHECK_KEY(), JSON.stringify(a)); } catch(e) {}
+    row.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', a[id] === b.dataset.v)); $('#chkScore').textContent = score(); }));
+}
+
+/* ---- Bấm vào sao, cung, thập thần, số… để xem nghĩa ---- */
+function askAbout(q){ closeTip(); show('t-ai'); $('#chat').hidden = false; $('#ask').value = q; go($('#ask'), 'center'); ask(); }
+function closeTip(){ const p = $('#tipPop'); if (!p.hidden) { p.hidden = true; if (closeTip.from) closeTip.from.focus({ preventScroll: true }); } }
+function openTip(el){
+  const kind = el.dataset.tip, key = el.dataset.key, ctx = (el.dataset.ctx || '').split('|');
+  let title = key, sub = '', body = '', q = '';
+  if (kind === 'star') { const [palace, bright, mut] = ctx; const base = key.replace(/^Lưu /, '');
+    body = (TVC.STAR[base] ? `${base} là ${TVC.STAR[base]}.` : (NGHIA.star[base] || 'Sao phụ trong lá số Tử vi.')) + (/^Lưu /.test(key) ? ' Đây là lưu tinh, chỉ tác động trong năm đang xem.' : '');
+    sub = `Ở cung ${palace}${bright ? ' · ' + (NGHIA.bright[bright] || bright) : ''}`;
+    if (mut) body += ` Sao này hóa ${mut}: ${(NGHIA.star['Hóa ' + mut] || '').replace(/^Hóa \S+: /, '')}`;
+    body += ` Cung ${palace}: ${(NGHIA.palace[palace] || '').split(':')[0].split('.')[0].toLowerCase()}.`;
+    q = `Sao ${key} ở cung ${palace} trong lá số Tử vi của tôi nói gì về tôi?`; }
+  else if (kind === 'palace') { const p = R.tuvi && R.tuvi.palaces.find(x => x.name === key); body = NGHIA.palace[key] || '';
+    sub = p ? `Tại ${p.stem} ${p.branch} · ${p.major.length ? p.major.map(s => s.name).join(', ') : 'vô chính diệu'}` : ''; title = 'Cung ' + key;
+    q = `Cung ${key} trong lá số Tử vi của tôi nói gì? Đọc cả các sao trong cung và cung chiếu về.`; }
+  else if (kind === 'god') { body = NGHIA.god[key] || ''; sub = ctx[0] ? 'Thập thần · ' + ctx[0] : 'Thập thần'; q = `${key} (${ctx[0] || 'trong Bát tự'}) có ý nghĩa gì với tôi?`; }
+  else if (kind === 'ts') { body = NGHIA.truongSinh[key] || ''; sub = 'Vòng Trường sinh · ' + (ctx[0] || ''); q = `Trụ có ${key} trong Bát tự của tôi (${ctx[0]}) nói gì?`; }
+  else if (kind === 'planet') { const [name, sg, house] = ctx; title = name; body = (NGHIA.planet[key] || '') + (sg ? ` Ở ${sg}: ${(NGHIA.sign[sg] || '').toLowerCase()}` : '') + (house ? ` Nhà ${house}: ${NGHIA.house[+house].toLowerCase()}` : '');
+    sub = `${sg}${house ? ', nhà ' + house : ''}`; q = `${name} ở ${sg}${house ? ' nhà ' + house : ''} nói gì về tôi?`; }
+  else if (kind === 'num') { title = `${ctx[0]}: số ${key}`; body = NGHIA.num[key] || ''; sub = 'Thần số học'; q = `${ctx[0]} số ${key} của tôi có ý nghĩa gì, nên tận dụng thế nào?`; }
+  const pop = $('#tipPop');
+  pop.querySelector('.tip-body').innerHTML = `<h4 id="tipTitle">${esc(title)}</h4>${sub ? `<div class="tip-sub">${esc(sub)}</div>` : ''}<p>${esc(body)}</p>${q ? '<button type="button" class="btn-ghost btn-sm" id="tipAsk">Hỏi AI về điều này</button>' : ''}`;
+  pop.hidden = false; closeTip.from = el;
+  const r = el.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+  pop.style.left = Math.max(12, Math.min(innerWidth - w - 12, r.left)) + 'px';
+  pop.style.top = (r.bottom + h + 12 < innerHeight ? r.bottom + 8 : Math.max(12, r.top - h - 8)) + 'px';
+  if (q) $('#tipAsk').onclick = () => askAbout(q);
+  pop.querySelector('.tip-x').focus({ preventScroll: true });
+}
+document.addEventListener('click', e => { // bắt ở pha đầu để không kích hoạt việc chọn cung Tử vi
+  const el = e.target.closest('[data-tip]');
+  if (el && R) { e.preventDefault(); e.stopPropagation(); openTip(el); return; }
+  if (!e.target.closest('#tipPop')) closeTip();
+}, true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTip(); });
+$('#tipPop .tip-x').onclick = closeTip;
+addEventListener('scroll', () => { if (innerWidth > 560) closeTip(); }, { passive: true });
+
+/* ---- Xem độ hợp ---- */
+CITIES.forEach((c, i) => { if (c[4] === 'c' || c[6]) return; const o = document.createElement('option'); o.value = i; o.textContent = c[0]; $('#h-place').append(o); });
+$('#h-place').value = placeIndex('TP. Hồ Chí Minh');
+$('#h-noTime').onchange = () => { $('#h-time').disabled = $('#h-noTime').checked; };
+const SINH = {'Mộc':'Hỏa','Hỏa':'Thổ','Thổ':'Kim','Kim':'Thủy','Thủy':'Mộc'}, KHAC = {'Mộc':'Thổ','Thổ':'Thủy','Thủy':'Hỏa','Hỏa':'Kim','Kim':'Mộc'};
+const relH = (a, b) => a === b ? 'same' : SINH[a] === b ? 'a>b' : SINH[b] === a ? 'b>a' : KHAC[a] === b ? 'aXb' : 'bXa';
+let R2 = null, hopData = null;
+$('#hopGo').onclick = () => {
+  if (!R) return;
+  const date = $('#h-date').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { $('#hopMsg').innerHTML = '<span class="err">Nhập ngày sinh của người kia.</span>'; return; }
+  const c = CITIES[+$('#h-place').value], noT = $('#h-noTime').checked, time = noT ? '12:00' : ($('#h-time').value || '12:00');
+  const inp2 = { name: $('#h-name').value.trim() || 'Người kia', gender: $('#hg-nam').checked ? 'nam' : 'nu', date, time, timeMode: noT ? 'unknown' : 'exact', timeLabel: noT ? 'không rõ giờ' : time,
+    place: c[0], lat: c[1], lon: c[2], tz: effTz(c, date, time), ctx: '' };
+  try { R2 = TC.all(inp2); adjustForTime(R2); } catch(e) { $('#hopMsg').innerHTML = '<span class="err">Không lập được lá số người kia, kiểm tra lại ngày giờ.</span>'; return; }
+  $('#hopMsg').textContent = ''; renderHop();
+};
+function compareCharts(A, B, relType, alias){
+  const love = /yêu|vợ chồng/.test(relType), secs = [];
+  const nameB = alias || B.input.name;
+  // Bát tự
+  const bz = [], a = A.bazi, b = B.bazi, ha = a.dayMasterHanh, hb = b.dayMasterHanh, r = relH(ha, hb);
+  bz.push(r === 'same' ? ['mid', `Hai Nhật chủ cùng hành ${ha}: dễ hiểu nhau, nhưng cũng dễ cạnh tranh, ai cũng muốn theo cách mình.`]
+    : r === 'a>b' ? ['good', `Nhật chủ của bạn (${ha}) sinh cho ${nameB} (${hb}): bạn là người nuôi dưỡng, nâng đỡ.`]
+    : r === 'b>a' ? ['good', `${nameB} (${hb}) sinh cho Nhật chủ của bạn (${ha}): ${nameB} là người nâng đỡ bạn.`]
+    : r === 'aXb' ? ['mid', `Nhật chủ của bạn (${ha}) khắc ${nameB} (${hb}): bạn dễ lấn át, cần nhường.`] : ['mid', `${nameB} (${hb}) khắc Nhật chủ của bạn (${ha}): ${nameB} dễ lấn át, nhưng cũng là người giữ bạn lại.`]);
+  if (love) { const star = A.input.gender === 'nam' ? KHAC[ha] : Object.keys(KHAC).find(k => KHAC[k] === ha);
+    if (hb === star) bz.push(['good', `Nhật chủ ${nameB} đúng hành ${A.input.gender === 'nam' ? 'Tài (sao vợ)' : 'Quan (sao chồng)'} trong Bát tự của bạn: kiểu người bạn hay bị cuốn hút.`]); }
+  const items = [{ label: 'năm của bạn', can: a.pillars[0].can, chi: a.pillars[0].chi }, { label: 'ngày của bạn', can: a.pillars[2].can, chi: a.pillars[2].chi },
+    { label: `năm của ${nameB}`, can: b.pillars[0].can, chi: b.pillars[0].chi }, { label: `ngày của ${nameB}`, can: b.pillars[2].can, chi: b.pillars[2].chi }];
+  TC.relations(items).filter(x => /của bạn/.test(x.text) && new RegExp(nameB).test(x.text) && !/Tam hợp|Bán hợp/.test(x.kind)).forEach(x => {
+    const good = /hợp/i.test(x.kind), dayDay = /ngày của bạn/.test(x.text) && /ngày của/.test(x.text.split('–')[1] || '');
+    bz.push([good ? 'good' : 'bad', `${x.kind}: ${x.text}${dayDay ? (good ? ' (trụ ngày là cung phu thê: rất đáng quý)' : ' (trụ ngày là cung phu thê: dễ va chạm khi sống gần)') : ''}`]); });
+  const strongB = Object.entries(b.countFull).sort((x, y) => y[1] - x[1])[0][0], strongA = Object.entries(a.countFull).sort((x, y) => y[1] - x[1])[0][0];
+  if (a.strength.help.includes(strongB)) bz.push(['good', `${nameB} mạnh hành ${strongB}, đúng hành bạn cần để cân bằng: ở cạnh nhau bạn dễ "đủ" hơn.`]);
+  if (b.strength.help.includes(strongA)) bz.push(['good', `Bạn mạnh hành ${strongA}, đúng hành ${nameB} cần: bạn bù cho ${nameB}.`]);
+  secs.push(['Bát tự', bz]);
+  // Tử vi
+  if (A.tuvi && B.tuvi) { const tv = []; const ma = elOfNapAm(A.tuvi.napAmNam), mb = elOfNapAm(B.tuvi.napAmNam), rr = relH(ma, mb);
+    tv.push([rr === 'same' ? 'good' : /X/.test(rr) ? 'bad' : 'good', `Bản mệnh: bạn ${A.tuvi.napAmNam}, ${nameB} ${B.tuvi.napAmNam}: ${rr === 'same' ? 'cùng hành, bình hòa' : rr === 'a>b' ? 'mệnh bạn sinh mệnh người kia' : rr === 'b>a' ? 'mệnh người kia sinh mệnh bạn' : 'hai mệnh khắc nhau, cần nhường nhịn'}.`]);
+    const i1 = BRANCHES.indexOf(A.tuvi.menh), i2 = BRANCHES.indexOf(B.tuvi.menh), d = (i2 - i1 + 12) % 12;
+    tv.push(d === 4 || d === 8 ? ['good', `Cung Mệnh hai người tam hợp (${A.tuvi.menh}, ${B.tuvi.menh}): cùng nhịp, dễ đồng lòng.`] : d === 6 ? ['mid', `Cung Mệnh hai người xung chiếu (${A.tuvi.menh}, ${B.tuvi.menh}): hút nhau vì khác nhau, nhưng hay va.`]
+      : d === 0 ? ['good', `Cung Mệnh cùng ở ${A.tuvi.menh}: rất giống nhau.`] : ['mid', `Cung Mệnh ở ${A.tuvi.menh} và ${B.tuvi.menh}: không hợp không xung.`]);
+    const st = x => x.tuvi.palaces.find(p => p.name === 'Mệnh').major.map(s => s.name).join(', ') || 'vô chính diệu';
+    tv.push(['mid', `Mệnh bạn có ${st(A)}; Mệnh ${nameB} có ${st(B)}.`]);
+    secs.push(['Tử vi', tv]); }
+  // Chiêm tinh
+  const as = [], P = (X, k) => X.astro.points.find(p => p.key === k);
+  const PAIRS = [['Sun','Moon',6],['Moon','Sun',6],['Moon','Moon',6],['Sun','Sun',6],['Venus','Venus',5],['Mercury','Mercury',5],['Moon','Venus',5],['Venus','Moon',5],
+    ...(love ? [['Venus','Mars',5],['Mars','Venus',5]] : []), ['Saturn','Sun',4],['Sun','Saturn',4],['Saturn','Moon',4],['Moon','Saturn',4],['Saturn','Venus',4],['Venus','Saturn',4]];
+  const AS2 = [['trùng tụ',0],['lục hợp',60],['vuông góc',90],['tam hợp',120],['đối đỉnh',180]];
+  PAIRS.forEach(([ka, kb, orb]) => { const pa = P(A, ka), pb = P(B, kb); let d = Math.abs(pa.lon - pb.lon); if (d > 180) d = 360 - d;
+    const hit = AS2.find(([, v]) => Math.abs(d - v) <= orb); if (!hit) return;
+    const sat = ka === 'Saturn' || kb === 'Saturn', soft = ['lục hợp','tam hợp'].includes(hit[0]) || (hit[0] === 'trùng tụ' && !sat);
+    const unsure = (ka === 'Moon' && A.flags.moonRange) || (kb === 'Moon' && B.flags.moonRange);
+    as.push([soft ? 'good' : sat ? 'mid' : 'bad', `${pa.name} của bạn ${hit[0]} ${pb.name} của ${nameB}${sat ? (soft ? ': gắn bó lâu dài, có trách nhiệm' : ': ràng buộc, có lúc thấy nặng') : ''}${unsure ? ' (ước lượng, thiếu giờ sinh)' : ''}.`]); });
+  if (!as.length) as.push(['mid', 'Không có góc chiếu nổi bật giữa các sao chính của hai người.']);
+  secs.push(['Chiêm tinh', as]);
+  // Thần số
+  const g = n => ({10:1,11:2,22:4,33:6})[n] || n, grp = n => [[1,5,7],[2,4,8],[3,6,9]].findIndex(x => x.includes(g(n)));
+  const la = A.numerology.lifePath, lb = B.numerology.lifePath, ns = [];
+  ns.push(la === lb ? ['good', `Cùng Đường đời ${la}: như soi gương, rất hiểu nhau.`] : grp(la) === grp(lb) ? ['good', `Đường đời ${la} và ${lb} cùng nhóm tự nhiên: hợp nhịp sống, cách nghĩ.`] : ['mid', `Đường đời ${la} và ${lb} khác nhóm: bổ sung cho nhau, cần học cách của người kia.`]);
+  secs.push(['Thần số học', ns]);
+  // Điểm tham khảo
+  let score = 60; secs.forEach(([, li]) => li.forEach(([k, t]) => { score += k === 'good' ? (/phu thê|Thiên can hợp/.test(t) ? 10 : 6) : k === 'bad' ? -7 : 0; }));
+  score = Math.max(15, Math.min(96, score));
+  const label = score >= 80 ? 'Rất hợp' : score >= 65 ? 'Hợp' : score >= 50 ? 'Bình thường, cần vun' : 'Nhiều điểm vênh';
+  return { secs, score, label, relType, nameB };
+}
+function renderHop(){
+  hopData = compareCharts(R, R2, $('#h-rel').value);
+  const { secs, score, label, nameB } = hopData, C = 2 * Math.PI * 40;
+  $('#hopOut').innerHTML = `<div class="panel">
+    <div class="hop-score"><svg class="hop-ring" viewBox="0 0 96 96" role="img" aria-label="Điểm hợp ${score} trên 100"><circle cx="48" cy="48" r="40" fill="none" stroke="var(--line-2)" stroke-width="9"/>
+      <circle cx="48" cy="48" r="40" fill="none" stroke="var(--seal)" stroke-width="9" stroke-linecap="round" stroke-dasharray="${(C*score/100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 48 48)"/>
+      <text x="48" y="48" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="700" fill="var(--ink)">${score}</text></svg>
+      <div><b class="big">${label}</b><span class="muted small">Bạn và ${esc(nameB)} · ${esc(hopData.relType)} · điểm tham khảo, cộng trừ từ các điểm hợp và vênh bên dưới</span></div></div>
+    ${secs.map(([t, li]) => `<div class="hop-sec"><h4>${t}</h4><ul>${li.map(([k, x]) => `<li class="${k}">${esc(x)}</li>`).join('')}</ul></div>`).join('')}
+    <div class="row-actions" style="margin-top:16px"><button class="btn-primary" type="button" id="hopAiGo">Nhờ AI bình độ hợp</button><span class="hint">Tốn 1 lượt AI.</span></div>
+    <div class="ai-out" id="hopAi" style="margin-top:12px"></div></div>`;
+  $('#hopAiGo').onclick = hopAI;
+}
+function hopBrief(){
+  const B = R2, { score, label, relType } = hopData, { secs } = compareCharts(R, R2, relType, 'người thứ hai'); // không gửi tên người kia cho AI
+  const L = [`[SO SÁNH ĐỘ HỢP] Quan hệ: ${relType}. Điểm tham khảo ${score}/100 (${label}).`,
+    `Người thứ hai: ${B.input.gender==='nam'?'Nam':'Nữ'}, sinh ${fmtDate(B.input.date)}${B.input.timeMode==='unknown'?' (không rõ giờ)':' lúc '+B.input.time}. Bát tự ${B.bazi.pillars.filter(Boolean).map(p=>p.can+' '+p.chi).join(' · ')}, Nhật chủ ${B.bazi.dayMaster} ${B.bazi.dayMasterHanh}, ${B.bazi.strength.level}. Mặt Trời ${B.astro.points[0].sign}, Mặt Trăng ${B.astro.points[1].sign}, Sao Kim ${B.astro.points[3].sign}, Sao Hỏa ${B.astro.points[4].sign}. Đường đời ${B.numerology.lifePath}.${B.tuvi ? ` Tử vi: Mệnh tại ${B.tuvi.menh} (${B.tuvi.palaces.find(p=>p.name==='Mệnh').major.map(s=>s.name).join(', ')||'vô chính diệu'}), ${B.tuvi.napAmNam}.` : ''}`];
+  secs.forEach(([t, li]) => L.push(`${t}: ` + li.map(([k, x]) => `[${k==='good'?'hợp':k==='bad'?'vênh':'trung tính'}] ${x}`).join(' ')));
+  return L.join('\n');
+}
+async function hopAI(){
+  const out = $('#hopAi'); out.innerHTML = '<p class="muted">Đang đọc hai lá số…</p>';
+  ctl = new AbortController(); busy(true); $('#hopAiGo').disabled = true;
+  try {
+    const text = await callAI({ brief: brief() + '\n\n' + hopBrief(), focus: 'tình cảm và các mối quan hệ', ctx: readInput().ctx,
+      question: `Bình độ hợp giữa tôi và người thứ hai (quan hệ: ${hopData.relType}) dựa trên mục [SO SÁNH ĐỘ HỢP]: tổng quan, điểm hợp, điểm vênh, lời khuyên cụ thể cho hai người. Không phán chia tay hay cưới.` }, t => { out.innerHTML = md(t); });
+    out.insertAdjacentHTML('beforeend', byNote());
+  } catch(e) { if (e.name !== 'AbortError') out.insertAdjacentHTML('beforeend', `<p class="err">${esc(e.message)}</p>`); }
+  finally { busy(false); $('#hopAiGo').disabled = false; }
+}
+
 /* ---- thần số ---- */
 const NUM_TEXT = {0:'Không có thử thách lớn ở chặng này',1:'Độc lập, khởi xướng',2:'Hợp tác, tinh tế',3:'Sáng tạo, biểu đạt',4:'Kỷ luật, xây nền',5:'Tự do, thay đổi',6:'Trách nhiệm, chăm lo',7:'Chiêm nghiệm, chiều sâu',8:'Quản trị, vật chất',9:'Nhân văn, bao dung',10:'Tiên phong, tự lập',11:'Trực giác, truyền cảm hứng',22:'Kiến tạo lớn',33:'Chữa lành, cống hiến'};
 const DEBT_TEXT = {13:'Bài học về chăm chỉ, kiên trì, không đi đường tắt',14:'Bài học về tiết chế, giữ chừng mực trong tự do',16:'Bài học về buông cái tôi, xây lại sau đổ vỡ',19:'Bài học về tự lập nhưng biết nhận giúp đỡ'};
@@ -1321,7 +1630,7 @@ function renderNum(){
   const n = R.numerology;
   const core = [['Đường đời',n.lifePath,'Con đường và bài học chính'],['Sứ mệnh',n.expression,'Từ họ tên: cách đạt mục tiêu'],['Linh hồn',n.soul,'Nguyên âm: khao khát bên trong'],['Nhân cách',n.personality,'Phụ âm: người khác thấy bạn']];
   const sub = [['Trưởng thành',n.maturity,'Rõ dần từ khoảng 40 tuổi'],['Ngày sinh',n.birthday,'Năng lực tự nhiên'],['Thái độ',n.attitude,'Phản ứng đầu tiên'],[`Tháng cá nhân ${n.personalMonth.month}`,n.personalMonth.n,'Nhịp của tháng này']];
-  const card = ([t,v,d], big) => `<div class="ncard ${big?'big':''}"><span class="n num">${v}</span><span class="t">${t}</span><span class="d">${NUM_TEXT[v]||''}</span><span class="d muted">${d}</span></div>`;
+  const card = ([t,v,d], big) => `<div class="ncard ${big?'big':''}"><span class="n num">${v}</span><span class="t" data-tip="num" data-key="${v}" data-ctx="${t}">${t}</span><span class="d">${NUM_TEXT[v]||''}</span><span class="d muted">${d}</span></div>`;
   const by = +R.input.date.slice(0,4), nowY = new Date().getFullYear();
   const cyc = n.yearCycle;
   $('#p-nm').innerHTML = `
@@ -1372,6 +1681,8 @@ function brief(){
   else { L.push(`\n[TỬ VI] ${t.amDuong}, bản mệnh ${t.napAmNam}, ${t.cuc}. Tuần tại ${t.tuan.join('-')}, Triệt tại ${t.triet.join('-')}. Mệnh ${t.menh}, Thân ${t.than}, Mệnh chủ ${t.soul}, Thân chủ ${t.body}. Đại hạn hiện tại: ${t.decadalNow?t.decadalNow.stem+' '+t.decadalNow.branch:'?'}; tiểu hạn năm nay: ${t.yearlyNow?t.yearlyNow.stem+' '+t.yearlyNow.branch:'?'}.`);
   t.palaces.forEach(p => L.push(`- ${p.name} (${p.stem} ${p.branch}${p.isBody?', Thân cư':''}; đại hạn ${p.decadal?p.decadal.join('-'):'?'}): chính tinh ${p.major.length?p.major.map(s=>s.name+(s.bright?' '+s.bright:'')+(s.mut?' hóa '+s.mut:'')).join(', '):'vô chính diệu'}; phụ tinh ${p.minor.map(s=>s.name+(s.mut?' hóa '+s.mut:'')).join(', ')||'—'}; ${p.adj.slice(0,8).join(', ')}`)); }
   if (R.tvc) L.push('\n' + TVC.brief(R.tvc));
+  const ck = checkList().filter(c => checkAns()[c.id]);
+  if (ck.length) L.push('\n[NGƯỜI XEM TỰ KIỂM QUÁ KHỨ] (môn nào trúng thì dựa nhiều hơn, môn nào sai thì nói thận trọng hơn)\n' + ck.map(c => `- ${c.school}, ${c.text} (căn cứ: ${c.basis}) → ${({y:'ĐÚNG',p:'KHÔNG HẲN',n:'SAI'})[checkAns()[c.id]]}`).join('\n'));
   L.push(`\n[THẦN SỐ HỌC] Đường đời ${n.lifePath}, Sứ mệnh ${n.expression}, Linh hồn ${n.soul}, Nhân cách ${n.personality}, Trưởng thành ${n.maturity}, Ngày sinh ${n.birthday}, Thái độ ${n.attitude}. Năm cá nhân: ${n.personalYears.map(p=>p.year+'='+p.n).join(', ')}. Đỉnh cao: ${n.peaks.map(p=>`${p.age} tuổi (${p.year})=${p.n}`).join(', ')}. Số thiếu trong ngày sinh: ${Object.keys(n.grid).filter(k=>!n.grid[k]).join(', ')}. Mũi tên: ${n.arrows.map(a=>(a.kind==='full'?'mũi tên ':'mũi tên trống ')+a.name+' ('+a.nums.join('-')+')').join(', ')||'không có'}. Thử thách: ${n.challenges.join(', ')}. Nợ nghiệp: ${n.debts.map(d=>d.n+' ở '+d.where).join(', ')||'không có'}. Đam mê ẩn: ${n.passion.join(', ')}. Tháng cá nhân ${n.personalMonth.month}: ${n.personalMonth.n}.`);
   return L.join('\n');
 }
@@ -1381,7 +1692,7 @@ const byNote = () => lastModel && lastModel !== 'Gemini' ? `<p class="ai-by">Tr�
 const md = s => DOMPurify.sanitize(marked.parse(s || ''));
 const CODE_KEY = 'tuchieu:code';
 try { $('#code').value = localStorage.getItem(CODE_KEY) || ''; } catch(e) {}
-function resetAI(){ clearToc(); history = []; firstText = ''; lastText=''; $('#qaList').innerHTML=''; $('#chat').hidden = true; $('#aiCopy').hidden = true; $('#aiPdf').hidden = true; $('#aiStatus').textContent='';
+function resetAI(){ clearToc(); history = []; firstText = ''; lastText=''; $('#qaList').innerHTML=''; $('#chat').hidden = false; $('#aiCopy').hidden = true; $('#aiPdf').hidden = true; $('#aiStatus').textContent='';
   $('#aiOut').innerHTML = `<p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số của <b>${esc(R.input.name)}</b> và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p>`; }
 function busy(on){ $('#aiGo').disabled = on; $('#askGo').disabled = on; $('#castGo').disabled = on; $('#aiStop').hidden = !on; }
 $('#aiStop').onclick = () => ctl && ctl.abort();
@@ -1401,7 +1712,7 @@ async function callAI(payload, onText){
 $('#aiGo').onclick = async () => {
   if (!R) return;
   clearToc();
-  ctl = new AbortController(); busy(true); history = []; $('#qaList').innerHTML=''; $('#chat').hidden = true; $('#aiCopy').hidden = true;
+  ctl = new AbortController(); busy(true); $('#aiCopy').hidden = true;
   $('#aiOut').innerHTML = '<p class="muted">Đang đọc bốn lá số và suy nghĩ…</p>'; $('#aiStatus').textContent = '';
   try {
     const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx }, t => { $('#aiOut').innerHTML = md(t); });
@@ -1422,7 +1733,7 @@ function failAsk(box, q, e, gotText, retry){
   $('#askStatus').innerHTML = e.name === 'AbortError' ? 'Đã dừng.' : `<span class="err">${esc(e.message)}</span>`;
 }
 async function ask(){
-  const q = $('#ask').value.trim(); if (!q || !firstText) return;
+  const q = $('#ask').value.trim(); if (!q) return;
   $('#ask').value=''; $('#askStatus').textContent=''; ctl = new AbortController(); busy(true);
   const box = document.createElement('div'); box.className = 'qa'; box.innerHTML = `<div class="q">${esc(q)}</div><div class="a"><p class="muted">Đang suy nghĩ…</p></div>`; $('#qaList').append(box);
   const a = box.querySelector('.a'); let got = false;
@@ -1458,7 +1769,6 @@ const QUE_KEY = (q) => 'tuchieu:que:' + new Date().toISOString().slice(0,10) + '
 async function castAsk(){
   const q = $('#ask').value.trim();
   if (!q) { $('#ask').focus(); $('#ask').placeholder = 'Nhập câu hỏi trước khi gieo quẻ, ví dụ:'; return; }
-  if (!firstText) return;
   let saved = null; try { saved = JSON.parse(localStorage.getItem(QUE_KEY(q)) || 'null'); } catch(e) {}
   const box = document.createElement('div'); box.className = 'qa';
   $('#qaList').append(box); $('#ask').value = ''; $('#askStatus').textContent = '';

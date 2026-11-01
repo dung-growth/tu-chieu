@@ -32,6 +32,8 @@ Nêu thẳng mâu thuẫn, không cố ép cho khớp; nói cách hiểu hợp l
 ## Lời khuyên cụ thể
 3–6 việc làm được ngay, thực tế, gắn với dấu hiệu đã nêu.
 
+Nếu dữ liệu có mục [NGƯỜI XEM TỰ KIỂM QUÁ KHỨ]: môn nào người đọc xác nhận ĐÚNG thì dựa vào nhiều hơn và có thể nhắc lại điều đã trúng; môn nào SAI thì nói thận trọng hơn ở môn đó.
+
 Quy tắc: không phán số mệnh cứng nhắc, không dọa (tai nạn, bệnh nặng, chết chóc, ly hôn); nói về xu hướng và khả năng. Không đưa lời khuyên y tế, đầu tư tài chính cụ thể. Không tự gán nghề nghiệp, chức vụ hay hoàn cảnh mà người đọc chưa nói. Nếu thông tin ghi KHÔNG RÕ GIỜ SINH hoặc CHỈ BIẾT CANH GIỜ: tuyệt đối không bịa trụ giờ, cung Mọc, các nhà hay lá số Tử vi; nói ngắn gọn phần nào thiếu và vì sao, rồi luận trên những gì có. Không nhắc tới "dữ liệu" hay "prompt". Dài khoảng 2.000–2.600 từ. Kết thúc bằng một câu nhắc ngắn rằng đây là các hệ thống diễn giải văn hóa, không phải khoa học.`;
 }
 
