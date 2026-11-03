@@ -27,6 +27,7 @@ try { const t = localStorage.getItem('tuchieu:theme'); if (t === 'light' || t ==
   --jade:#2C7A4B; --jade-hover:#24683F; --jade-soft:#E6F2EA; --on-jade:#FFFFFF;
   --gold:#B7791F;
   --fire:#D9481F; --earth:#9A6B25; --air:#4E78A6; --water:#23838E; --metal:#857F79; --wood:#378553;
+  --hd-y:#EBC25C; --hd-g:#83B784; --hd-b:#CDA176; --hd-r:#DE6A4A; --hd-edge:#CFC6BE;
   --shadow-sm:0 1px 2px rgba(28,25,23,.05);
   --shadow:0 1px 2px rgba(28,25,23,.04), 0 4px 16px rgba(28,25,23,.06);
   --shadow-lg:0 2px 4px rgba(28,25,23,.04), 0 12px 32px rgba(28,25,23,.08);
@@ -45,6 +46,7 @@ try { const t = localStorage.getItem('tuchieu:theme'); if (t === 'light' || t ==
   --jade:#6CC08A; --jade-hover:#86CDA0; --jade-soft:#1B3024; --on-jade:#0D1F14;
   --gold:#D8A44C;
   --fire:#F08A68; --earth:#CFA563; --air:#8DB0D8; --water:#6CC3CA; --metal:#ABA5A0; --wood:#7CC594;
+  --hd-y:#B8933F; --hd-g:#558D5E; --hd-b:#8E6B48; --hd-r:#B5503A; --hd-edge:#4A433E;
   --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); --shadow-lg:0 2px 4px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.35);
   --topbar:rgba(19,17,16,.8);
   color-scheme:dark }}
@@ -56,6 +58,7 @@ try { const t = localStorage.getItem('tuchieu:theme'); if (t === 'light' || t ==
   --jade:#6CC08A; --jade-hover:#86CDA0; --jade-soft:#1B3024; --on-jade:#0D1F14;
   --gold:#D8A44C;
   --fire:#F08A68; --earth:#CFA563; --air:#8DB0D8; --water:#6CC3CA; --metal:#ABA5A0; --wood:#7CC594;
+  --hd-y:#B8933F; --hd-g:#558D5E; --hd-b:#8E6B48; --hd-r:#B5503A; --hd-edge:#4A433E;
   --shadow-sm:0 1px 2px rgba(0,0,0,.3); --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25); --shadow-lg:0 2px 4px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.35);
   --topbar:rgba(19,17,16,.8);
   color-scheme:dark }
@@ -249,6 +252,44 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .lo-shu div{height:64px;border:1px solid var(--line);border-radius:var(--r-sm);display:grid;place-items:center;font:600 17px var(--display);background:var(--sheet)}
 .lo-shu div.empty{color:var(--ink-3);background:var(--sunken);border-style:dashed}
 
+/* human design */
+.hd-svg{width:100%;max-width:400px;display:block;margin:0 auto}
+.hd-body-sil{fill:var(--sunken);stroke:var(--line);stroke-width:1}
+.hd-tube-o path{fill:none;stroke:var(--hd-edge);stroke-width:9;stroke-linecap:round}
+.hd-tube-i path{fill:none;stroke:var(--sheet);stroke-width:6.5;stroke-linecap:round}
+.hd-fill path{fill:none;stroke-width:6.5}
+.hd-center path{fill:var(--sheet);stroke:var(--hd-edge);stroke-width:1.5;cursor:pointer;transition:filter .2s var(--ease)}
+.hd-center.def path{stroke:color-mix(in srgb,var(--ink) 25%,transparent)}
+.hd-center:hover path{filter:brightness(.94)}
+.hd-gate{cursor:pointer}
+.hd-gate circle{stroke:var(--sheet);stroke-width:1.5}
+.hd-gate text{font:700 8.5px var(--body);text-anchor:middle;pointer-events:none;font-variant-numeric:tabular-nums}
+.hd-gate.p circle{fill:var(--ink)} .hd-gate.p text{fill:var(--paper)}
+.hd-gate.d circle{fill:var(--seal)} .hd-gate.d text{fill:var(--on-seal)}
+.hd-gate.both circle{fill:var(--ink);stroke:var(--seal);stroke-width:2.5} .hd-gate.both text{fill:var(--paper)}
+.hd-gate.off circle{fill:var(--sheet);stroke:var(--ink-3)} .hd-gate.off text{fill:var(--ink-2)}
+.hd-gate.unsure circle{stroke-dasharray:2.5 2;stroke:var(--ink-2);stroke-width:1.5}
+.hd-gate:hover circle{stroke:var(--seal);stroke-width:2.5}
+.hd-svg :focus-visible{outline:none} .hd-gate:focus-visible circle,.hd-center:focus-visible path{stroke:var(--seal);stroke-width:3}
+.hd-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
+.hd-top .ncard .n{font-size:22px;line-height:1.2}
+.hd-body{display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:20px;align-items:start}
+@media (max-width:760px){.hd-body{grid-template-columns:1fr}}
+.hd-legend{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;font-size:12px;color:var(--ink-2);margin-top:10px}
+.hd-legend i{display:inline-block;width:18px;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.hd-legend i.sq{width:11px;height:11px;border-radius:3px}
+.hd-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.hd-list li{font-size:14px;padding:8px 0;border-top:1px solid var(--line-2)}
+.hd-list li:first-child{border-top:0}
+.hd-list b{font-weight:600}
+.hd-act{width:100%;border-collapse:collapse;font-size:13.5px}
+.hd-act th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);font-weight:600;text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+.hd-act td{padding:6px 8px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.hd-act .gd{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.hd-act .gd.d{color:var(--seal)}
+.hd-act [data-tip]{cursor:pointer}
+@media (max-width:560px){.hd-top{grid-template-columns:1fr 1fr}.hd-top .ncard .n{font-size:17px}.hd-act th:nth-child(4),.hd-act td:nth-child(4){display:none}}
+
 /* bát tự: thêm */
 .pkv{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;margin:6px 0 0;font-size:12px;text-align:left;padding-top:8px;border-top:1px solid var(--line-2)}
 .pkv dt{color:var(--ink-3)} .pkv dd{margin:0;color:var(--ink);text-align:right}
@@ -327,6 +368,7 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 /* bấm xem nghĩa */
 [data-tip]{cursor:pointer;text-decoration:underline dotted var(--ink-3);text-underline-offset:3px}
 [data-tip]:hover{text-decoration-color:var(--seal);color:var(--seal)}
+.hd-svg [data-tip],.hd-svg [data-tip]:hover{text-decoration:none;color:inherit}
 .tv-grid [data-tip]{text-decoration:none} .tv-grid [data-tip]:hover{text-decoration:underline;text-decoration-color:var(--seal)}
 .tip-pop{position:fixed;z-index:60;width:min(340px,calc(100vw - 24px));background:var(--sheet);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);padding:14px 16px 16px;animation:rise .18s var(--ease)}
 .tip-pop h4{font-size:16px;margin:0 28px 2px 0} .tip-pop .tip-sub{font-size:12.5px;color:var(--ink-2)}
@@ -638,6 +680,7 @@ tr.cur td{background:var(--seal-soft)}
           <button role="tab" id="t-as" aria-selected="false" aria-controls="p-as">Bản đồ sao</button>
           <button role="tab" id="t-tv" aria-selected="false" aria-controls="p-tv">Tử vi</button>
           <button role="tab" id="t-nm" aria-selected="false" aria-controls="p-nm">Thần số học</button>
+          <button role="tab" id="t-hd" aria-selected="false" aria-controls="p-hd">Human Design</button>
           <button role="tab" id="t-hop" aria-selected="false" aria-controls="p-hop">Xem độ hợp</button>
           <button role="tab" id="t-ai" class="tab-ai" aria-selected="false" aria-controls="p-ai">Luận giải AI</button>
         </div>
@@ -646,6 +689,7 @@ tr.cur td{background:var(--seal-soft)}
         <div class="tabpanel" role="tabpanel" id="p-as" aria-labelledby="t-as" hidden></div>
         <div class="tabpanel" role="tabpanel" id="p-tv" aria-labelledby="t-tv" hidden></div>
         <div class="tabpanel" role="tabpanel" id="p-nm" aria-labelledby="t-nm" hidden></div>
+        <div class="tabpanel" role="tabpanel" id="p-hd" aria-labelledby="t-hd" hidden></div>
         <div class="tabpanel" role="tabpanel" id="p-hop" aria-labelledby="t-hop" hidden>
           <div class="panel">
             <h3>Xem độ hợp với một người khác</h3>
@@ -743,6 +787,7 @@ tr.cur td{background:var(--seal-soft)}
 <script src="iching.js"></script>
 <script src="tuvi-cach.js"></script>
 <script src="nghia.js"></script>
+<script src="hd.js"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -983,7 +1028,7 @@ function run(save){
   const y = +inp.date.slice(0,4); if (y < 1900 || y > 2100) { $('#p-sum').innerHTML = '<p class="err">Ngày sinh cần nằm trong khoảng 1900–2100.</p>'; return; }
   try { R = TC.all(inp); adjustForTime(R); R.tvc = R.tuvi ? TVC.analyze(R.tuvi, +inp.date.slice(0,4), new Date().getFullYear()) : null; } catch(err) { console.error(err); $('#p-sum').innerHTML = '<p class="err">Không lập được lá số với thông tin này. Kiểm tra lại ngày giờ sinh.</p>'; return; }
   if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, placeName:CITIES[+sel.value][0], placeGeo:CITIES[+sel.value][6] ? placeGeoOf(CITIES[+sel.value]) : null, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value })); } catch(e) {}
-  renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); resetAI();
+  renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); renderHD(); resetAI();
   if (save) pulse(document.querySelector('.tabpanel:not([hidden])'));
   if (save) { show('t-sum'); $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'}); }
 }
@@ -1471,6 +1516,70 @@ function renderChecks(){
     row.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', a[id] === b.dataset.v)); $('#chkScore').textContent = score(); }));
 }
 
+
+/* ---- Human Design (tab riêng, không đưa vào bài luận chính) ---- */
+function hdUTC(date, minutes, tz){ const [y, m, d] = date.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 0, minutes) - tz * 3600e3); }
+function hdCompute(){
+  const i = R.input, [hh, mm] = i.time.split(':').map(Number);
+  // Không rõ giờ: lấy mẫu cả ngày; chỉ biết canh: lấy mẫu trong 2 tiếng của canh. Thứ gì đổi theo giờ thì đánh dấu "chưa chắc".
+  const span = i.timeMode === 'unknown' ? [0, 1439, 60] : i.timeMode === 'canh' ? [i.canh * 120 - 60, i.canh * 120 + 59, 15] : null;
+  const c = HD.chart(hdUTC(i.date, hh * 60 + mm, i.tz));
+  const unsure = new Set(), vary = { type: new Set([c.type]), authority: new Set([c.authority]), profile: new Set([c.profile]), definition: new Set([c.definition]) };
+  if (span) for (let t = span[0]; t <= span[1]; t += span[2]) {
+    const x = HD.chart(hdUTC(i.date, t, i.tz));
+    Object.keys(vary).forEach(k => vary[k].add(x[k]));
+    Object.keys(x.active).forEach(g => { if (!c.active[g]) unsure.add(+g); });
+    Object.keys(c.active).forEach(g => { if (!x.active[g]) unsure.add(+g); });
+  }
+  return { c, unsure, vary };
+}
+function hdBrief(q){
+  if (!R || !R.hd || !/human\s*design|\bhd\b|bodygraph|thẩm quyền|projector|generator|manifestor|reflector|trung tâm|cổng \d|kênh \d|hồ sơ \d/i.test(q)) return '';
+  const { c, vary } = R.hd, many = Object.entries(vary).filter(([, v]) => v.size > 1);
+  return '\n\n' + HD.brief(c, many.length ? `KHÔNG CHẮC vì thiếu giờ sinh chính xác: ${many.map(([k, v]) => k + ' có thể là ' + [...v].join(' hoặc ')).join('; ')}.` : '');
+}
+function renderHD(){
+  try { R.hd = hdCompute(); } catch(e) { console.error(e); $('#p-hd').innerHTML = '<p class="err">Không tính được biểu đồ Human Design.</p>'; return; }
+  const { c, unsure, vary } = R.hd, T = HD.TYPE[c.type];
+  const maybe = k => vary[k].size > 1 ? ` <span class="tag alt" title="Đổi theo giờ sinh">chưa chắc</span>` : '';
+  const alt = k => vary[k].size > 1 ? `<span class="d muted">Có thể là: ${[...vary[k]].join(', ')}</span>` : '';
+  const [p1, p2] = c.profile.split('/').map(Number);
+  const open = Object.keys(HD.CENTERS).filter(k => !c.defined.includes(k));
+  const row = (x, side) => `<td class="gd ${side}"><span data-tip="hd" data-key="gate:${x.gate}">${x.gate}.${x.line}</span>${unsure.has(x.gate) ? '?' : ''}</td>`;
+  const warn = R.input.timeMode === 'unknown' ? '<p class="warn">Không rõ giờ sinh: Mặt Trăng đi khoảng 13° mỗi ngày nên vài cổng có thể khác (ô nét đứt, dấu ?). Phần gắn nhãn <b>chưa chắc</b> đổi theo giờ, đừng dựa vào.</p>'
+    : R.input.timeMode === 'canh' ? '<p class="warn">Chỉ biết canh giờ: những cổng nét đứt hoặc có dấu ? có thể khác trong khoảng 2 tiếng đó.</p>' : '';
+  $('#p-hd').innerHTML = `${warn}
+  <div class="hd-top">
+    <div class="ncard"><span class="label">Loại</span><span class="n">${T.vi}${maybe('type')}</span><span class="d">${c.type}</span>${alt('type')}</div>
+    <div class="ncard"><span class="label">Chiến lược</span><span class="n">${T.strategy}</span><span class="d">Đúng hướng thấy: ${T.sig.toLowerCase()} · lệch hướng thấy: ${T.notSelf.toLowerCase()}</span></div>
+    <div class="ncard"><span class="label">Thẩm quyền</span><span class="n">${HD.AUTH[c.authority].split(':')[0]}${maybe('authority')}</span><span class="d">${(t => t.charAt(0).toUpperCase() + t.slice(1))(HD.AUTH[c.authority].split(': ').slice(1).join(': '))}</span>${alt('authority')}</div>
+    <div class="ncard"><span class="label">Hồ sơ</span><span class="n">${c.profile}${maybe('profile')}</span><span class="d">${HD.PROFILE_LINE[p1].split(':')[0]} / ${HD.PROFILE_LINE[p2].split(':')[0]}</span>${alt('profile')}</div>
+  </div>
+  <div class="hd-body">
+    <div class="panel">
+      ${HD.svg(c, unsure)}
+      <div class="hd-legend"><span><i style="background:var(--ink)"></i>Ý thức (Personality)</span><span><i style="background:var(--seal)"></i>Vô thức (Design)</span><span><i class="sq" style="background:linear-gradient(135deg,var(--hd-y),var(--hd-r))"></i>Tô màu: có định nghĩa</span></div>
+      <p class="small muted" style="text-align:center;margin:8px 0 0">Chỉ hiện số của cổng đang kích hoạt. Bấm vào trung tâm hoặc số cổng để xem nghĩa.</p>
+    </div>
+    <div style="display:grid;gap:20px">
+      <div class="panel"><h3>${T.vi}</h3><p style="margin:8px 0 0">${T.text}</p>
+        <ul class="hd-list"><li><b>Hồ sơ ${c.profile}.</b> ${HD.PROFILE_LINE[p1]}; ${HD.PROFILE_LINE[p2].charAt(0).toLowerCase() + HD.PROFILE_LINE[p2].slice(1)}.</li>
+        <li><b>Định nghĩa:</b> ${c.definition}${maybe('definition')}. ${c.definition.startsWith('Đơn') ? 'Năng lượng liền một khối, tự xử lý được.' : c.definition.startsWith('Không') ? '' : 'Có những phần tách rời; người hay môi trường phù hợp giúp nối chúng lại.'}</li>
+        <li><b>Thập tự:</b> ${c.cross.angle}, cổng ${c.cross.gates.join(' / ')}.</li></ul></div>
+      <div class="panel"><h3>Kênh (${c.channels.length})</h3>
+        <ul class="hd-list">${c.channels.map(x => { const k = HD.chKey(x); return `<li><b>${k} · ${HD.CHANNEL_NAME[k]}</b><br><span class="small muted">${x.gates.map(g => HD.GATE[g]).join(' + ')}</span></li>`; }).join('') || '<li class="muted">Không có kênh nào nối liền.</li>'}</ul></div>
+      <div class="panel"><h3>Trung tâm</h3>
+        <ul class="hd-list">${c.defined.map(k => `<li><b>${HD.CENTERS[k].name}</b> <span class="tag alt">có định nghĩa</span><br><span class="small muted">${HD.CENTER_TEXT[k][1]}</span></li>`).join('')}
+        ${open.map(k => `<li><b>${HD.CENTERS[k].name}</b> <span class="small muted">để mở</span><br><span class="small muted">${HD.CENTER_TEXT[k][2]}</span></li>`).join('')}</ul></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:20px"><h3>Kích hoạt</h3>
+    <div style="overflow-x:auto"><table class="hd-act"><thead><tr><th>Thiên thể</th><th>Design</th><th>Personality</th><th>Nghĩa (Personality)</th></tr></thead>
+    <tbody>${c.pers.map((x, k) => `<tr><td>${x.glyph}︎ ${x.name}</td>${row(c.des[k], 'd')}${row(x, '')}<td class="small muted">${HD.GATE[x.gate]}</td></tr>`).join('')}</tbody></table></div>
+    <p class="small muted" style="margin:12px 0 0">Design là thời điểm Mặt Trời lùi 88° trước ngày sinh (${c.designDate.toLocaleDateString('vi-VN')}). Human Design là hệ thống hiện đại (từ 1987), Tứ Chiếu để riêng, không trộn vào bài luận 4 hệ. Muốn hỏi thêm thì hỏi AI, nhắc chữ "Human Design" trong câu hỏi.</p>
+  </div>`;
+}
+
 /* ---- Bấm vào sao, cung, thập thần, số… để xem nghĩa ---- */
 function askAbout(q){ closeTip(); show('t-ai'); $('#chat').hidden = false; $('#ask').value = q; go($('#ask'), 'center'); ask(); }
 function closeTip(){ const p = $('#tipPop'); if (!p.hidden) { p.hidden = true; if (closeTip.from) closeTip.from.focus({ preventScroll: true }); } }
@@ -1491,6 +1600,13 @@ function openTip(el){
   else if (kind === 'planet') { const [name, sg, house] = ctx; title = name; body = (NGHIA.planet[key] || '') + (sg ? ` Ở ${sg}: ${(NGHIA.sign[sg] || '').toLowerCase()}` : '') + (house ? ` Nhà ${house}: ${NGHIA.house[+house].toLowerCase()}` : '');
     sub = `${sg}${house ? ', nhà ' + house : ''}`; q = `${name} ở ${sg}${house ? ' nhà ' + house : ''} nói gì về tôi?`; }
   else if (kind === 'num') { title = `${ctx[0]}: số ${key}`; body = NGHIA.num[key] || ''; sub = 'Thần số học'; q = `${ctx[0]} số ${key} của tôi có ý nghĩa gì, nên tận dụng thế nào?`; }
+  else if (kind === 'hd') { const [what, id] = key.split(':'); const c = R.hd && R.hd.c;
+    if (what === 'gate') { const g = +id, a = c.active[g], ch = HD.CHANNELS.filter(x => x.includes(g)).map(x => x.slice().sort((m, n) => m - n).join('-'));
+      title = 'Cổng ' + g; sub = `Trung tâm ${HD.CENTERS[HD.centerOfGate[g]].name}${a ? ' · ' + (a.p && a.d ? 'cả ý thức lẫn vô thức' : a.p ? 'ý thức (Personality)' : 'vô thức (Design)') : ' · không kích hoạt'}`;
+      body = HD.GATE[g] + '. Thuộc kênh ' + ch.map(k => `${k} (${HD.CHANNEL_NAME[k]})`).join(', ') + '.' + (R.hd.unsure.has(g) ? ' Cổng này có thể khác tùy giờ sinh.' : '');
+      q = `Cổng ${g} trong Human Design của tôi${a ? '' : ' (đang không kích hoạt)'} nói gì về tôi?`; }
+    else { const def = c.defined.includes(id), t = HD.CENTER_TEXT[id]; title = HD.CENTERS[id].name; sub = def ? 'Có định nghĩa' : 'Để mở';
+      body = `${t[0]}. ${def ? 'Có định nghĩa: ' + t[1] : 'Để mở: ' + t[2]}.`; q = `Trung tâm ${HD.CENTERS[id].name} ${def ? 'có định nghĩa' : 'để mở'} trong Human Design của tôi nghĩa là gì trong đời thường?`; } }
   const pop = $('#tipPop');
   pop.querySelector('.tip-body').innerHTML = `<h4 id="tipTitle">${esc(title)}</h4>${sub ? `<div class="tip-sub">${esc(sub)}</div>` : ''}<p>${esc(body)}</p>${q ? '<button type="button" class="btn-ghost btn-sm" id="tipAsk">Hỏi AI về điều này</button>' : ''}`;
   pop.hidden = false; closeTip.from = el;
@@ -1505,7 +1621,7 @@ document.addEventListener('click', e => { // bắt ở pha đầu để không k
   if (el && R) { e.preventDefault(); e.stopPropagation(); openTip(el); return; }
   if (!e.target.closest('#tipPop')) closeTip();
 }, true);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTip(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTip(); else if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('svg [data-tip]') && R) { e.preventDefault(); openTip(e.target); } });
 $('#tipPop .tip-x').onclick = closeTip;
 addEventListener('scroll', () => { if (innerWidth > 560) closeTip(); }, { passive: true });
 
@@ -1738,7 +1854,7 @@ async function ask(){
   const box = document.createElement('div'); box.className = 'qa'; box.innerHTML = `<div class="q">${esc(q)}</div><div class="a"><p class="muted">Đang suy nghĩ…</p></div>`; $('#qaList').append(box);
   const a = box.querySelector('.a'); let got = false;
   try {
-    const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q }, t => { got = !!t; a.innerHTML = md(t); });
+    const text = await callAI({ brief: brief() + hdBrief(q), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q }, t => { got = !!t; a.innerHTML = md(t); });
     history.push({ q, a: text }); a.insertAdjacentHTML('beforeend', byNote());
   } catch(e) { failAsk(box, q, e, got, ask); }
   finally { busy(false); }
