@@ -98,6 +98,22 @@ async function* callProvider(p, messages, maxTokens, signal) {
   }
 }
 
+// Lý do một nguồn hỏng, viết cho người đọc
+function whyFailed(e, p) {
+  const st = e.status, m = String(e.message || '');
+  if (e.timeout) return `quá ${Math.round(FIRST_TEXT_TIMEOUT / 1000)} giây chưa trả lời`;
+  if (/trả về rỗng/.test(m)) return 'trả về rỗng';
+  if (st === 429) return 'hết lượt';
+  if (st === 401 || st === 403) return 'khóa sai hoặc chưa được bật';
+  if (st === 402) return 'tài khoản hết tín dụng';
+  if (st === 404 && p.kind === 'openrouter') return /data policy|privacy|No endpoints/i.test(m)
+    ? 'chưa bật dùng model miễn phí trong openrouter.ai → Settings → Privacy' : 'model không còn trên OpenRouter, đổi OPENROUTER_MODELS';
+  if (st === 404) return 'sai tên model';
+  if (st === 400) return 'yêu cầu bị từ chối';
+  if (e.mid) return 'báo lỗi giữa luồng';
+  return st ? 'lỗi ' + st : 'không kết nối được';
+}
+
 // Lấy mẩu chữ đầu tiên, có hạn giờ
 function firstPiece(gen, ms) {
   let timer;
@@ -153,7 +169,7 @@ export default async function handler(req, res) {
   }
 
   // Thử lần lượt từng nguồn cho tới khi có chữ đầu tiên
-  let gen = null, first = null, used = null, lastErr = null;
+  let gen = null, first = null, used = null, lastErr = null; const tried = [];
   for (const p of list0) {
     const ctl = new AbortController();
     const g = callProvider(p, messages, maxTokens, ctl.signal);
@@ -164,6 +180,7 @@ export default async function handler(req, res) {
     } catch (e) {
       ctl.abort(); lastErr = e;
       console.error('AI fallback:', p.kind, p.model, e.status || '', e.message);
+      tried.push(prettyName(p.model) + ': ' + whyFailed(e, p));
     }
   }
   if (!gen) {
@@ -172,7 +189,9 @@ export default async function handler(req, res) {
       : (st === 401 || st === 403) ? 'Khóa AI không hợp lệ hoặc chưa được bật, kiểm tra GEMINI_API_KEY / OPENROUTER_API_KEY.'
       : lastErr?.timeout ? 'AI đang quá tải, thử lại sau ít phút.'
       : 'AI đang bận hoặc lỗi, thử lại sau.';
-    return res.status(502).json({ error: msg });
+    // Ghi rõ đã thử những nguồn nào và vì sao hỏng, để chủ trang biết sửa chỗ nào
+    const note = ` (Đã thử ${tried.join('; ')}.${process.env.OPENROUTER_API_KEY ? '' : ' Chưa có dự phòng vì chưa cài OPENROUTER_API_KEY trên Vercel.'})`;
+    return res.status(502).json({ error: msg + note });
   }
 
   res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no',
