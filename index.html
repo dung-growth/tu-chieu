@@ -271,6 +271,15 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .hd-gate.unsure circle{stroke-dasharray:2.5 2;stroke:var(--ink-2);stroke-width:1.5}
 .hd-gate:hover circle{stroke:var(--seal);stroke-width:2.5}
 .hd-svg :focus-visible{outline:none} .hd-gate:focus-visible circle,.hd-center:focus-visible path{stroke:var(--seal);stroke-width:3}
+.hd-graph{position:sticky;top:76px}
+@media (max-width:760px){.hd-graph{position:static}}
+.hd-read section{padding:14px 0;border-top:1px solid var(--line-2)}
+.hd-read section:first-of-type{border-top:0;padding-top:4px}
+.hd-read h3{font-size:17px;margin-bottom:6px}
+.hd-read p{margin:6px 0;max-width:68ch}
+.hd-read ul,.hd-read ol{margin:6px 0;padding-left:20px;display:grid;gap:6px}
+.hd-ai{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:8px;padding:14px 16px;border-radius:var(--r-sm);background:linear-gradient(135deg,var(--seal-soft),var(--sheet) 75%);border:1px solid color-mix(in srgb,var(--seal) 30%,var(--line))}
+#hdAiOut:not(:empty){margin-top:16px}
 .hd-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px}
 .hd-top .ncard .n{font-size:22px;line-height:1.2}
 .hd-body{display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:20px;align-items:start}
@@ -1556,21 +1565,19 @@ function renderHD(){
     <div class="ncard"><span class="label">Hồ sơ</span><span class="n">${c.profile}${maybe('profile')}</span><span class="d">${HD.PROFILE_LINE[p1].split(':')[0]} / ${HD.PROFILE_LINE[p2].split(':')[0]}</span>${alt('profile')}</div>
   </div>
   <div class="hd-body">
-    <div class="panel">
+    <div class="panel hd-graph">
       ${HD.svg(c, unsure)}
       <div class="hd-legend"><span><i style="background:var(--ink)"></i>Ý thức (Personality)</span><span><i style="background:var(--seal)"></i>Vô thức (Design)</span><span><i class="sq" style="background:linear-gradient(135deg,var(--hd-y),var(--hd-r))"></i>Tô màu: có định nghĩa</span></div>
       <p class="small muted" style="text-align:center;margin:8px 0 0">Chỉ hiện số của cổng đang kích hoạt. Bấm vào trung tâm hoặc số cổng để xem nghĩa.</p>
     </div>
-    <div style="display:grid;gap:20px">
-      <div class="panel"><h3>${T.vi}</h3><p style="margin:8px 0 0">${T.text}</p>
-        <ul class="hd-list"><li><b>Hồ sơ ${c.profile}.</b> ${HD.PROFILE_LINE[p1]}; ${HD.PROFILE_LINE[p2].charAt(0).toLowerCase() + HD.PROFILE_LINE[p2].slice(1)}.</li>
-        <li><b>Định nghĩa:</b> ${c.definition}${maybe('definition')}. ${c.definition.startsWith('Đơn') ? 'Năng lượng liền một khối, tự xử lý được.' : c.definition.startsWith('Không') ? '' : 'Có những phần tách rời; người hay môi trường phù hợp giúp nối chúng lại.'}</li>
-        <li><b>Thập tự:</b> ${c.cross.angle}, cổng ${c.cross.gates.join(' / ')}.</li></ul></div>
-      <div class="panel"><h3>Kênh (${c.channels.length})</h3>
-        <ul class="hd-list">${c.channels.map(x => { const k = HD.chKey(x); return `<li><b>${k} · ${HD.CHANNEL_NAME[k]}</b><br><span class="small muted">${x.gates.map(g => HD.GATE[g]).join(' + ')}</span></li>`; }).join('') || '<li class="muted">Không có kênh nào nối liền.</li>'}</ul></div>
-      <div class="panel"><h3>Trung tâm</h3>
-        <ul class="hd-list">${c.defined.map(k => `<li><b>${HD.CENTERS[k].name}</b> <span class="tag alt">có định nghĩa</span><br><span class="small muted">${HD.CENTER_TEXT[k][1]}</span></li>`).join('')}
-        ${open.map(k => `<li><b>${HD.CENTERS[k].name}</b> <span class="small muted">để mở</span><br><span class="small muted">${HD.CENTER_TEXT[k][2]}</span></li>`).join('')}</ul></div>
+    <div class="panel hd-read">
+      <div class="label" style="margin-bottom:6px">Luận giải Human Design</div>
+      ${HD.reading(c, vary)}
+      <div class="hd-ai">
+        <div><b>Muốn đọc sâu hơn?</b><br><span class="small muted">AI viết một bài riêng dựa trên biểu đồ của bạn${readInput().ctx ? ' và bối cảnh bạn đã kể' : ''}, tốn 1 lượt AI.</span></div>
+        <button type="button" class="btn-primary" id="hdAiGo">AI luận sâu</button>
+      </div>
+      <div id="hdAiOut" class="ai-out"></div>
     </div>
   </div>
   <div class="panel" style="margin-top:20px"><h3>Kích hoạt</h3>
@@ -1578,6 +1585,17 @@ function renderHD(){
     <tbody>${c.pers.map((x, k) => `<tr><td>${x.glyph}︎ ${x.name}</td>${row(c.des[k], 'd')}${row(x, '')}<td class="small muted">${HD.GATE[x.gate]}</td></tr>`).join('')}</tbody></table></div>
     <p class="small muted" style="margin:12px 0 0">Design là thời điểm Mặt Trời lùi 88° trước ngày sinh (${c.designDate.toLocaleDateString('vi-VN')}). Human Design là hệ thống hiện đại (từ 1987), Tứ Chiếu để riêng, không trộn vào bài luận 4 hệ. Muốn hỏi thêm thì hỏi AI, nhắc chữ "Human Design" trong câu hỏi.</p>
   </div>`;
+  $('#hdAiGo').onclick = hdAI;
+}
+async function hdAI(){
+  const out = $('#hdAiOut'), btn = $('#hdAiGo'), i = R.input, { c, vary } = R.hd, many = Object.entries(vary).filter(([, v]) => v.size > 1);
+  out.innerHTML = '<p class="muted">Đang đọc biểu đồ…</p>'; ctl = new AbortController(); busy(true); btn.disabled = true;
+  const head = `NGƯỜI XEM: ${i.gender==='nam'?'Nam':'Nữ'}, sinh ${fmtDate(i.date)} ${i.timeMode==='exact'?i.time:i.timeLabel} tại ${i.place}.\n`;
+  try {
+    const text = await callAI({ mode: 'hd', brief: head + HD.brief(c, many.length ? `KHÔNG CHẮC vì thiếu giờ sinh chính xác: ${many.map(([k, v]) => k + ' có thể là ' + [...v].join(' hoặc ')).join('; ')}.` : '').replace(/ \(hệ phụ[^)]*\)/, ''), focus: $('#focus').value, ctx: readInput().ctx }, t => { out.innerHTML = md(t); });
+    out.insertAdjacentHTML('beforeend', byNote());
+  } catch(e) { if (e.name !== 'AbortError') out.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { busy(false); btn.disabled = false; }
 }
 
 /* ---- Bấm vào sao, cung, thập thần, số… để xem nghĩa ---- */
