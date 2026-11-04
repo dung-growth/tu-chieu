@@ -252,6 +252,21 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .lo-shu div{height:64px;border:1px solid var(--line);border-radius:var(--r-sm);display:grid;place-items:center;font:600 17px var(--display);background:var(--sheet)}
 .lo-shu div.empty{color:var(--ink-3);background:var(--sunken);border-style:dashed}
 
+/* lưu nguyệt */
+.mo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.mo{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;background:var(--sheet);cursor:pointer;display:flex;flex-direction:column;gap:3px;transition:border-color .2s var(--ease),box-shadow .2s var(--ease)}
+.mo:hover{border-color:var(--ink-3)} .mo:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.mo-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mo-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--sunken);color:var(--ink-2)}
+.mo.v-bad{border-left:3px solid var(--seal)} .mo.v-bad .mo-tag{background:var(--seal-soft);color:var(--seal)}
+.mo.v-good{border-left:3px solid var(--jade)} .mo.v-good .mo-tag{background:var(--jade-soft);color:var(--jade)}
+.mo.cur{box-shadow:0 0 0 2px color-mix(in srgb,var(--gold) 55%,transparent)}
+.mo-p{font-weight:600;font-size:14px;margin-top:2px}
+.mo-chot{margin:2px 0 0;font-size:13.5px}
+.mo-more{display:none;border-top:1px solid var(--line-2);margin-top:8px;padding-top:8px}
+.mo.open .mo-more{display:block} .mo.open{grid-column:1/-1;cursor:default}
+.mo-more p{margin:0 0 8px}
+#tvMonths:not(:empty){margin:16px 0}
 /* human design */
 .hd-svg{width:100%;max-width:400px;display:block;margin:0 auto}
 .hd-body-sil{fill:var(--sunken);stroke:var(--line);stroke-width:1}
@@ -750,6 +765,7 @@ tr.cur td{background:var(--seal-soft)}
               <div class="ai-out" id="aiOut"><p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p></div>
               <div id="chat" class="chat" hidden>
                 <div id="qaList"></div>
+                <label class="check small" for="shortMode" style="margin:0 0 6px"><input type="checkbox" id="shortMode" checked> Trả lời ngắn kiểu thầy (bỏ tick để đọc giải thích đầy đủ)</label>
                 <p class="chat-hint">Hỏi tiếp, hoặc gieo một quẻ Kinh Dịch (Mai Hoa Dịch Số, lấy năm, tháng, ngày, giờ âm lịch lúc bấm). Mỗi câu hỏi chỉ gieo một lần trong ngày.</p>
                 <div class="chat-row">
                   <input id="ask" placeholder="Hỏi thêm, ví dụ: năm 2027 có nên mở kinh doanh riêng không?">
@@ -1269,7 +1285,8 @@ function renderTuvi(){
     <div class="tv-legend small muted"><span><i class="lg lg-menh"></i>Cung Mệnh</span><span><i class="lg lg-dh"></i>Đại hạn</span><span><i class="lg lg-ln"></i>Lưu niên</span><span><i class="lg lg-th"></i>Tiểu hạn</span><span>Bấm vào một cung để xem tam phương tứ chính</span></div>
   </div>
   <div class="table-wrap"><div class="tv-grid" id="tvGrid"></div></div>
-  <p class="small muted">An sao theo thư viện iztro (Tử vi Đẩu số, âm lịch chuẩn Trung Quốc; có thể lệch với lịch Việt Nam ở một số ngày giáp ranh tháng). Độ sáng: M miếu, V vượng, Đ đắc, L lợi, B bình, H hãm. Cột trái là cát tinh, cột phải là sát tinh và sao xấu. Chữ xanh là lưu tinh của năm đang xem. Góc dưới mỗi ô: vòng Trường sinh, vòng Bác sĩ và tuổi đại hạn.</p>`;
+  <p class="small muted">An sao theo thư viện iztro (Tử vi Đẩu số, âm lịch chuẩn Trung Quốc; có thể lệch với lịch Việt Nam ở một số ngày giáp ranh tháng). Độ sáng: M miếu, V vượng, Đ đắc, L lợi, B bình, H hãm. Cột trái là cát tinh, cột phải là sát tinh và sao xấu. Chữ xanh là lưu tinh của năm đang xem. Góc dưới mỗi ô: vòng Trường sinh, vòng Bác sĩ và tuổi đại hạn.</p>
+  <div id="tvMonths"></div>`;
   $('#tvYear').onchange = e => { tvYear = +e.target.value; drawTuvi(); };
   drawTuvi();
   if (R.tvc) $('#p-tv').insertAdjacentHTML('beforeend', tvcHTML(R.tvc));
@@ -1316,9 +1333,36 @@ function drawTuvi(){
       <div class="tv-foot"><span>${p.changsheng||''}${p.boshi?' · '+p.boshi:''}</span><span class="num">${p.decadal?p.decadal[0]+'–'+p.decadal[1]:''}</span></div></div>`;
   });
   grid.innerHTML = cells + '<svg class="tv-lines" aria-hidden="true"></svg>';
+  renderMonths();
   grid.querySelectorAll('.tv-cell[data-b]').forEach(c => { const go = () => selectPalace(c.dataset.b === tvSel ? null : c.dataset.b); c.addEventListener('click', go); c.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); go(); } }); });
   selectPalace(tvSel);
 }
+
+/* ---- Vận 12 tháng âm lịch (lưu nguyệt) ---- */
+function renderMonths(){
+  const box = $('#tvMonths'); if (!box) return;
+  const yy = tvYear, list = TVC.months(R.tuvi, yy); if (!list.length) { box.innerHTML = ''; return; }
+  const nowL = Lunar.fromDate(new Date()), cur = nowL.getYear() === yy ? Math.abs(nowL.getMonth()) : 0;
+  const d = x => x[2] + '/' + x[1], LBL = { 'nặng': 'Ảm đạm', 'thuận': 'Thuận', 'bình': 'Bình' };
+  box.innerHTML = `<div class="panel"><h3>Vận 12 tháng âm lịch năm ${yy}</h3>
+    <p class="small muted" style="margin:4px 0 12px">Mỗi tháng rơi vào một cung (tính từ cung tiểu hạn, đếm ngược tới tháng sinh rồi đếm thuận tới giờ sinh ra tháng Giêng). Xét sao trong cung, sao ở đối cung chiếu sang, lưu tinh của năm và tứ hóa của tháng. Bấm một tháng để xem chi tiết và cung đó trên lá số.</p>
+    <div class="mo-grid">${list.map(x => `<div class="mo v-${x.verdict === 'nặng' ? 'bad' : x.verdict === 'thuận' ? 'good' : 'mid'}${x.m === cur ? ' cur' : ''}" data-m="${x.m}" data-b="${x.branch}" tabindex="0" role="button" aria-expanded="false">
+      <div class="mo-h"><b>Tháng ${x.m}${x.leap ? ' <span class="small muted">(+nhuận)</span>' : ''}</b><span class="mo-tag">${LBL[x.verdict]}</span></div>
+      <div class="small muted">${d(x.start)}–${d(x.end)} · ${x.gz}${x.m === cur ? ' · <b>tháng này</b>' : ''}</div>
+      <div class="mo-p">Cung ${x.palace}</div>
+      <p class="mo-chot">${esc(x.chot.charAt(0).toUpperCase() + x.chot.slice(1))}.</p>
+      <div class="mo-more"><p class="small">${esc(x.line)}</p><button type="button" class="btn-ghost btn-sm mo-ask">Hỏi AI tháng này</button></div>
+    </div>`).join('')}</div></div>`;
+  box.querySelectorAll('.mo').forEach(el => {
+    const x = list.find(v => v.m === +el.dataset.m);
+    const toggle = () => { const open = !el.classList.contains('open'); box.querySelectorAll('.mo.open').forEach(o => { o.classList.remove('open'); o.setAttribute('aria-expanded', 'false'); });
+      if (open) { el.classList.add('open'); el.setAttribute('aria-expanded', 'true'); selectPalace(x.branch); } else selectPalace(null); };
+    el.addEventListener('click', e => { if (e.target.closest('.mo-ask') || e.target.closest('[data-tip]')) return; toggle(); });
+    el.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && e.target === el) { e.preventDefault(); toggle(); } });
+    el.querySelector('.mo-ask').onclick = () => askAbout(`Tháng ${x.m} âm lịch năm ${yy} (${d(x.start)}–${d(x.end)}) của tôi thế nào? ${x.line}`.slice(0, 390));
+  });
+}
+
 // Tam phương tứ chính: cung đang chọn, hai cung tam hợp (cách 4) và cung xung chiếu (cách 6)
 function selectPalace(b){
   tvSel = b; const grid = $('#tvGrid'), svg = grid.querySelector('.tv-lines');
@@ -1872,7 +1916,7 @@ async function ask(){
   const box = document.createElement('div'); box.className = 'qa'; box.innerHTML = `<div class="q">${esc(q)}</div><div class="a"><p class="muted">Đang suy nghĩ…</p></div>`; $('#qaList').append(box);
   const a = box.querySelector('.a'); let got = false;
   try {
-    const text = await callAI({ brief: brief() + hdBrief(q), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q }, t => { got = !!t; a.innerHTML = md(t); });
+    const text = await callAI({ brief: brief() + hdBrief(q), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, style: $('#shortMode').checked ? 'thay' : '' }, t => { got = !!t; a.innerHTML = md(t); });
     history.push({ q, a: text }); a.insertAdjacentHTML('beforeend', byNote());
   } catch(e) { failAsk(box, q, e, got, ask); }
   finally { busy(false); }

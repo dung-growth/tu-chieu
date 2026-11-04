@@ -346,12 +346,25 @@ const TC = (() => {
       return { year: yy, gz: g, age: h.age.nominalAge, decadal: br(h.decadal.index), decadalGZ: h.decadal.heavenlyStem + ' ' + h.decadal.earthlyBranch, decadalMut: h.decadal.mutagen,
         tieuHan: h.age.earthlyBranch, yearly: br(h.yearly.index), yearlyMut: h.yearly.mutagen,
         yearlyNames: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, h.yearly.palaceNames[i]])),
-        stars: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, (h.yearly.stars[i] || []).map(s => ({ name: s.name, type: s.type }))])) };
+        stars: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, (h.yearly.stars[i] || []).map(s => ({ name: s.name, type: s.type }))])),
+        than: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, [(h.yearly.yearlyDecStar || {}).suiqian12, (h.yearly.yearlyDecStar || {}).jiangqian12].map(x => x && x[i]).filter(Boolean)])) };
+    };
+    // Lưu nguyệt (cách tính phổ biến ở Việt Nam): từ cung tiểu hạn đếm ngược tới tháng sinh âm lịch,
+    // rồi khởi giờ Tý tại đó đếm thuận tới giờ sinh, được cung tháng Giêng; các tháng sau đi thuận.
+    const hourIdx = idx % 12, bMonth = Math.abs(rd.lunarMonth);
+    const month = (yy, m) => {
+      const H = horo(yy), T = BR.indexOf(H.tieuHan), b = BR[(((T - (bMonth - 1) + hourIdx + m - 1) % 12) + 12) % 12];
+      const L0 = Lunar.fromYmd(yy, m, 1), L1 = m === 12 ? Lunar.fromYmd(yy + 1, 1, 1) : Lunar.fromYmd(yy, m + 1, 1);
+      const s0 = L0.getSolar(), s1 = L1.getSolar().next(-1), mid = Lunar.fromYmd(yy, m, 15).getSolar();
+      const hm = a.horoscope(new Date(mid.getYear(), mid.getMonth() - 1, mid.getDay(), 12));
+      return { m, branch: b, leap: LunarYear.fromYear(yy).getLeapMonth() === m, gz: gz(Lunar.fromYmd(yy, m, 15).getMonthInGanZhi()),
+        start: [s0.getYear(), s0.getMonth(), s0.getDay()], end: [s1.getYear(), s1.getMonth(), s1.getDay()], mut: hm.monthly.mutagen,
+        mstars: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, (hm.monthly.stars[i] || []).map(x => x.name.replace(/\(M\)$/, ''))])) };
     };
     return {
       menh: a.earthlyBranchOfSoulPalace, than: a.earthlyBranchOfBodyPalace, cuc: a.fiveElementsClass, soul: a.soul, body: a.body,
       lunar: `${rd.lunarDay}/${rd.lunarMonth}${rd.isLeap ? ' (nhuận)' : ''} năm ${yg}`, lunarYearGZ: yg, napAmNam: NAPAM[ly.getYearNaYin()] || ly.getYearNaYin(),
-      amDuong: (si % 2 === 0 ? 'Dương ' : 'Âm ') + (gender === 'nam' ? 'Nam' : 'Nữ'), tuan, triet, horo,
+      amDuong: (si % 2 === 0 ? 'Dương ' : 'Âm ') + (gender === 'nam' ? 'Nam' : 'Nữ'), tuan, triet, horo, month,
       chineseDate: a.chineseDate, time: a.time, zodiac: a.zodiac,
       palaces: a.palaces.map(p => ({
         name: p.name, stem: p.heavenlyStem, branch: p.earthlyBranch, isBody: p.isBodyPalace,

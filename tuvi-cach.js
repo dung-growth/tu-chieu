@@ -168,7 +168,48 @@ const TVC = (() => {
           basis: `đại hạn ${d.palace}: ${m.star} hóa ${hoa} vào cung ${m.palace}` }); }); });
 
     cach.sort((a, b) => b.w - a.w);
-    return { cach, decades, years, yearOf, checks };
+    const monthsYear = typeof Lunar !== 'undefined' ? Lunar.fromDate(new Date()).getYear() : nowYear;
+    return { cach, decades, years, yearOf, checks, monthsYear, months: months(t, monthsYear) };
+  }
+
+
+  /* ---- Lưu nguyệt: 12 tháng âm lịch của một năm ---- */
+  const W_BAD = { 'Địa Không':1.5,'Địa Kiếp':1.5,'Kình Dương':1.5,'Đà La':1.5,'Hỏa Tinh':1.5,'Linh Tinh':1.5,'Lưu Dương':1.2,'Lưu Đà':1.2,'Thiên Hình':1,'Kiếp Sát':1,'Tang Môn':1,'Bạch Hổ':1,'Điếu Khách':1,'Thiên Khốc':1,'Thiên Hư':1,'Cô Thần':1,'Quả Tú':1,'Đại Hao':1,'Tiểu Hao':1,'Phá Toái':1,'Tai Sát':1 };
+  const W_GOOD = { 'Lộc Tồn':1,'Tả Phù':1,'Hữu Bật':1,'Văn Xương':1,'Văn Khúc':1,'Thiên Khôi':1,'Thiên Việt':1,'Lưu Lộc':1,'Lưu Khôi':0.7,'Lưu Việt':0.7,'Lưu Xương':0.7,'Lưu Khúc':0.7,'Hồng Loan':0.5,'Thiên Hỷ':0.5,'Long Trì':0.5,'Phượng Các':0.5,'Giải Thần':0.5,'Thiên Giải':0.5,'Địa Giải':0.5,'Ân Quang':0.5,'Thiên Quý':0.5,'Thiên Đức':0.5,'Nguyệt Đức':0.5,'Long Đức':0.5,'Lưu Hỷ':0.5,'Lưu Loan':0.5 };
+  const TOPIC_M = { 'Mệnh':'bản thân, tinh thần', 'Phụ Mẫu':'cha mẹ, cấp trên, giấy tờ', 'Phúc Đức':'tâm trạng, chuyện họ hàng', 'Điền Trạch':'nhà cửa, chỗ ở', 'Quan Lộc':'công việc, học hành', 'Nô Bộc':'bạn bè, cộng sự', 'Thiên Di':'đi lại, chuyện bên ngoài', 'Tật Ách':'sức khỏe', 'Tài Bạch':'tiền bạc', 'Tử Nữ':'con cái, việc riêng', 'Phu Thê':'tình cảm, người yêu hoặc vợ chồng', 'Huynh Đệ':'anh em, đồng nghiệp' };
+  function months(t, yy) {
+    const byB = {}, starAt = {};
+    t.palaces.forEach(p => { byB[p.branch] = p; [...p.major, ...p.minor].forEach(x => starAt[x.name] = p.branch); });
+    let H; try { H = t.horo(yy); } catch (e) { return []; }
+    const out = [];
+    for (let m = 1; m <= 12; m++) {
+      let M; try { M = t.month(yy, m); } catch (e) { continue; }
+      const b = M.branch, ob = BR[(BR.indexOf(b) + 6) % 12], p = byB[b], o = byB[ob];
+      const look = (br, w) => {
+        const P = byB[br], names = [...P.minor.map(x => x.name), ...P.adj, ...(H.stars[br] || []).map(x => x.name), ...(H.than[br] || []), ...(M.mstars[br] || []).map(n => n + ' tháng')];
+        const base = n => n.replace(/ tháng$/, ''), bad = [...new Set(names.filter(n => W_BAD[base(n)]))], good = [...new Set(names.filter(n => W_GOOD[base(n)]))];
+        let sc = (good.reduce((t, n) => t + W_GOOD[base(n)], 0) - bad.reduce((t, n) => t + W_BAD[base(n)], 0)) * w;
+        P.major.forEach(x => { if (x.bright === 'Hạn') sc -= 0.5 * w; else if (['Miếu', 'Vượng'].includes(x.bright)) sc += 0.5 * w; });
+        return { bad, good, sc, major: P.major.map(x => x.name + (x.bright === 'Hạn' ? ' (hãm)' : '')) };
+      };
+      const A = look(b, 1), B = look(ob, 0.6);
+      const hoa = M.mut.map((n, k) => ({ hoa: MUT[k], star: n, at: starAt[n] })).filter(x => x.at === b || x.at === ob)
+        .map(x => ({ ...x, self: x.at === b }));
+      let sc = A.sc + B.sc;
+      hoa.forEach(x => sc += (x.hoa === 'Kỵ' ? -1.5 : 1.2) * (x.self ? 1 : 0.6));
+      const ky = (H.yearlyMut || [])[3]; if (ky && starAt[ky] === b) sc -= 1;
+      const verdict = sc <= -2.5 ? 'nặng' : sc >= 2.5 ? 'thuận' : 'bình';
+      const tp = TOPIC_M[p.name], to = TOPIC_M[o.name];
+      const list = (X) => [...X.major, ...X.bad, ...X.good].slice(0, 5).join(', ');
+      const hoaTxt = hoa.map(x => `${x.star} hóa ${x.hoa} (tháng) ${x.self ? 'ngay cung này' : 'chiếu từ đối cung'}`).join('; ');
+      const chot = verdict === 'nặng'
+        ? `${tp} dễ trục trặc${B.bad.length >= 2 ? `, ${to} cũng buồn` : ''}; tháng ảm đạm, nên giữ sức, tránh quyết lớn`
+        : verdict === 'thuận' ? `${tp} có cửa sáng${B.good.length >= 2 ? `, ${to} cũng được nâng` : ''}; tháng thuận, nên tận dụng`
+        : sc < 0 ? `${tp} có chút vướng, cần để ý; tháng bình, đừng vội` : `${tp} êm, không biến động lớn; tháng bình`;
+      out.push({ m, gz: M.gz, leap: M.leap, start: M.start, end: M.end, branch: b, palace: p.name, opp: o.name, A, B, hoa, verdict, score: Math.round(sc * 10) / 10,
+        line: `Rơi vào cung ${p.name} (${b})${list(A) ? ' có ' + list(A) : ', cung trống sao'}. Đối cung ${o.name}${list(B) ? ' có ' + list(B) : ' trống sao'}.${hoaTxt ? ' ' + hoaTxt + '.' : ''}`, chot });
+    }
+    return out;
   }
 
   // Tóm tắt gửi cho AI
@@ -180,8 +221,13 @@ const TVC = (() => {
     A.decades.slice(Math.max(0, ci - 1), ci < 0 ? 4 : ci + 4).forEach(d => L.push(`- ${d.range[0]}–${d.range[1]} tuổi (${d.years[0]}–${d.years[1]})${d.current ? ' ← HIỆN TẠI' : ''}: cung ${d.palace} (${d.gz}), chính tinh ${d.major.join(', ') || 'vô chính diệu'}${d.pattern ? `, tam phương thành cách ${d.pattern}` : ''}${d.tuanTriet.length ? `, có ${d.tuanTriet.join(' và ')}` : ''}. Tứ hóa đại hạn: ${d.mut.map(m => `${m.star} hóa ${m.hoa} vào ${m.palace}${m.song ? ' (SONG ' + m.hoa.toUpperCase() + ', trùng tứ hóa gốc)' : ''}${m.inSelf ? ' (ngay cung đại hạn)' : ''}`).join('; ')}.`));
     L.push('[TỬ VI: 3 NĂM TỚI]');
     A.years.forEach(y => L.push(`- ${y.year} ${y.gz} (${y.age} tuổi âm): lưu niên ở ${y.luuNien}${y.veMenh ? ' (lưu niên về đúng cung Mệnh)' : ''}, tiểu hạn ở ${y.tieuHan}${y.tamTai ? ', năm Tam Tai' : ''}. Lưu tứ hóa: ${y.mut.map(m => `${m.star} hóa ${m.hoa} vào ${m.palace}${m.chong ? ' (KỴ CHỒNG KỴ)' : ''}`).join('; ')}.`));
+    if (A.months && A.months.length) {
+      L.push(`[TỬ VI: 12 THÁNG ÂM NĂM ${A.monthsYear}] (lưu nguyệt: từ cung tiểu hạn đếm ngược tới tháng sinh, rồi đếm thuận tới giờ sinh ra tháng Giêng; xét cung tháng, đối cung, lưu tinh năm và tứ hóa tháng)`);
+      const d = x => x[2] + '/' + x[1];
+      A.months.forEach(x => L.push(`- Tháng ${x.m}${x.leap ? ' (có nhuận)' : ''} âm, ${x.gz} (${d(x.start)}–${d(x.end)} dương lịch): ${x.line} Đánh giá: ${x.verdict.toUpperCase()} → ${x.chot}.`));
+    }
     return L.join('\n');
   }
-  return { analyze, brief, STAR };
+  return { analyze, brief, months, STAR };
 })();
 if (typeof module !== 'undefined') module.exports = TVC;
