@@ -13,7 +13,7 @@
 //   RATE_LIMIT_PER_HOUR (tùy chọn) số lượt tối đa mỗi IP mỗi giờ, mặc định 8
 //   OWNER_CODE          (tùy chọn) mã của chủ trang; nhập mã này vào ô "Mã truy cập" thì không bị giới hạn lượt
 
-import { rules, askRules, hdRules, FOCUS } from '../prompt.js';
+import { rules, askRules, hdRules, thayRules, FOCUS } from '../prompt.js';
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
 const OR_MODELS = (process.env.OPENROUTER_MODELS || 'google/gemma-4-31b-it:free,nvidia/nemotron-3-super-120b-a12b:free')
@@ -166,7 +166,7 @@ export default async function handler(req, res) {
     const que = clip(b.que, 2000);
     const qText = que
       ? `Câu hỏi: ${clip(b.question, 400)}\n\n[QUẺ VỪA GIEO]\n${que}\n\nHãy luận câu hỏi này bằng quẻ trên, kết hợp các lá số đã có. Dùng Markdown, ba phần ngắn:\n### Quẻ nói gì\nÝ của quẻ chủ, hào động, quẻ hỗ (diễn biến bên trong), quẻ biến (kết cục), quan hệ Thể và Dụng theo Mai Hoa, gắn vào đúng câu hỏi.\n### Kết hợp lá số\nĐối chiếu với vận hiện tại trong bát tự, tử vi, chiêm tinh, thần số. Nói rõ phần so Thể với Nhật chủ là cách ghép hiện đại, không có trong sách Mai Hoa gốc.\n### Gợi ý\n2–3 việc cụ thể nên cân nhắc.\nGiọng gợi mở, không phán chắc thành hay bại, không dọa. Không chép dài kinh văn. Không tâng bốc, không tự gán hoàn cảnh người hỏi chưa nói. Nếu câu hỏi thiếu bối cảnh, kết bằng đúng một câu hỏi lại. Khoảng 350–550 từ.`
-      : `Câu hỏi: ${clip(b.question, 400)}\n\n${askRules()}`;
+      : `Câu hỏi: ${clip(b.question, 400)}\n\n${b.style === 'thay' ? thayRules() : askRules()}`;
     messages.push({ role: 'user', content: qText });
     maxTokens = 6144;
   }
