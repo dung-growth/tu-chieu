@@ -827,7 +827,7 @@ tr.cur td{background:var(--seal-soft)}
       <a href="#top">Về đầu trang</a>
     </nav>
   </div>
-  <div class="container"><p class="small" style="margin-top:20px;color:var(--ink-3)">© 2026 Tứ Chiếu</p></div>
+  <div class="container"><p class="small" style="margin-top:20px;color:var(--ink-3)">© 2026 Tứ Chiếu · Trang dùng thống kê ẩn danh (Vercel Web Analytics, không cookie) để đếm lượt xem. Ngày giờ sinh bạn nhập không được gửi vào thống kê.</p></div>
 </footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -2062,5 +2062,8 @@ run(false);
 })();
 </script>
 
+<!-- Vercel Web Analytics: đếm lượt xem ẩn danh, không cookie. Bật trong Vercel → Analytics -->
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
