@@ -87,7 +87,7 @@ async function* callProvider(p, messages, maxTokens, signal) {
     method: 'POST', signal,
     headers: { 'content-type': 'application/json', 'authorization': 'Bearer ' + process.env.OPENROUTER_API_KEY,
       'HTTP-Referer': 'https://tu-chieu.vercel.app', 'X-Title': 'Tu Chieu' },
-    body: JSON.stringify({ model: p.model, messages, stream: true, max_tokens: maxTokens, temperature: 0.7 })
+    body: JSON.stringify({ model: p.model, messages, stream: true, max_tokens: maxTokens, temperature: 0.7, reasoning: { effort: 'low' } }) // model biết suy nghĩ (Nemotron…) thì nghĩ ngắn để trả lời sớm
   });
   if (!r.ok) { const t = await r.text().catch(() => ''); throw Object.assign(new Error('openrouter ' + p.model + ' ' + r.status + ' ' + t.slice(0, 300)), { status: r.status }); }
   const strip = thinkFilter();
@@ -95,15 +95,16 @@ async function* callProvider(p, messages, maxTokens, signal) {
     if (d === '[DONE]') break;
     let ev; try { ev = JSON.parse(d); } catch { continue; }
     if (ev.error) throw Object.assign(new Error('openrouter stream error: ' + JSON.stringify(ev.error).slice(0, 200)), { mid: true });
-    const c = ev.choices?.[0]?.delta?.content; // bỏ qua delta.reasoning (phần suy nghĩ)
+    const dl = ev.choices?.[0]?.delta || {}, c = dl.content; // không hiện phần suy nghĩ (delta.reasoning)
     if (c) { const s = strip(c); if (s) yield s; }
+    else if (dl.reasoning || dl.reasoning_details) yield THINK; // báo là model vẫn đang chạy, chưa có chữ
   }
 }
 
 // Lý do một nguồn hỏng, viết cho người đọc
 function whyFailed(e, p) {
   const st = e.status, m = String(e.message || '');
-  if (e.timeout) return `quá ${Math.round(FIRST_TEXT_TIMEOUT / 1000)} giây chưa trả lời`;
+  if (e.timeout) return e.think ? `suy nghĩ quá ${Math.round(THINK_MAX_MS / 1000)} giây chưa viết ra chữ` : `quá ${Math.round(FIRST_TEXT_TIMEOUT / 1000)} giây chưa trả lời`;
   if (/trả về rỗng/.test(m)) return 'trả về rỗng';
   if (st === 429) return 'hết lượt';
   if (st === 401 || st === 403) return 'khóa sai hoặc chưa được bật';
@@ -116,6 +117,17 @@ function whyFailed(e, p) {
   return st ? 'lỗi ' + st : 'không kết nối được';
 }
 
+const THINK = { think: true }; // dấu hiệu model đang suy nghĩ (chưa có chữ để hiện)
+const THINK_MAX_MS = Number(process.env.AI_THINK_MAX_MS || 70000); // model đang suy nghĩ thì chờ chữ đầu tiên tối đa 70 giây
+// Lấy mẩu chữ thật đầu tiên. Mỗi lần chờ tối đa FIRST_TEXT_TIMEOUT; model còn đang suy nghĩ thì chờ tiếp, tổng không quá THINK_MAX_MS
+async function firstText_(gen) {
+  const t0 = Date.now();
+  for (;;) {
+    const r = await firstPiece(gen, FIRST_TEXT_TIMEOUT);
+    if (r.done || r.value !== THINK) return r;
+    if (Date.now() - t0 > THINK_MAX_MS) throw Object.assign(new Error('timeout (suy nghĩ quá lâu)'), { timeout: true, think: true });
+  }
+}
 // Lấy mẩu chữ đầu tiên, có hạn giờ
 function firstPiece(gen, ms) {
   let timer;
@@ -174,14 +186,17 @@ export default async function handler(req, res) {
   }
 
   // Thử lần lượt từng nguồn cho tới khi có chữ đầu tiên
+  const tStart = Date.now();
   let gen = null, first = null, used = null, lastErr = null; const tried = [];
   for (const p of list0) {
     const ctl = new AbortController();
     const g = callProvider(p, messages, maxTokens, ctl.signal);
     try {
-      const r = await firstPiece(g, FIRST_TEXT_TIMEOUT);
+      const t0 = Date.now(), r = await firstText_(g);
       if (r.done) throw new Error(p.model + ' trả về rỗng');
-      gen = g; first = r.value; used = p; break;
+      gen = g; first = r.value; used = p;
+      console.log('AI ok:', p.kind, p.model, 'chữ đầu sau', Date.now() - t0, 'ms'); // xem trong Vercel → Logs: model nào đã trả lời
+      break;
     } catch (e) {
       ctl.abort(); lastErr = e;
       console.error('AI fallback:', p.kind, p.model, e.status || '', e.message);
@@ -201,10 +216,13 @@ export default async function handler(req, res) {
   }
 
   res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no',
-    'X-AI-Model': encodeURIComponent(prettyName(used.model)), 'Access-Control-Expose-Headers': 'X-AI-Model' });
+    'X-AI-Model': encodeURIComponent(prettyName(used.model)),
+    // Chỉ chủ trang (nhập đúng OWNER_CODE) mới được biết thêm: model cụ thể và các nguồn đã hỏng trước đó
+    ...(owner ? { 'X-AI-Owner': encodeURIComponent(`${used.model} · chữ đầu sau ${((Date.now() - tStart) / 1000).toFixed(1)} giây${tried.length ? ' · đã bỏ qua: ' + tried.join('; ') : ''}`) } : {}),
+    'Access-Control-Expose-Headers': 'X-AI-Model, X-AI-Owner' });
   res.write(first);
   try {
-    for (;;) { const r = await gen.next(); if (r.done) break; res.write(r.value); }
+    for (;;) { const r = await gen.next(); if (r.done) break; if (r.value !== THINK) res.write(r.value); }
   } catch (e) {
     console.error('AI stream cut:', used.model, e.message);
     res.write('\u0000ERR:AI bị gián đoạn giữa chừng.');
