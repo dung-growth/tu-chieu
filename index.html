@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Lập cùng lúc Bát tự, Bản đồ sao, Tử vi, Thần số học và để AI đối chiếu các trường phái.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%231C1917%22/%3E%3Cg%20fill%3D%22%23FAF8F6%22%3E%3Cpath%20d%3D%22M32%209%2036%2028%2032%2032%2028%2028Z%22/%3E%3Cpath%20d%3D%22M55%2032%2036%2036%2032%2032%2036%2028Z%22%20opacity%3D%22.55%22/%3E%3Cpath%20d%3D%22M32%2055%2028%2036%2032%2032%2036%2036Z%22%20opacity%3D%22.55%22/%3E%3Cpath%20d%3D%22M9%2032%2028%2028%2032%2032%2028%2036Z%22%20opacity%3D%22.55%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%225.2%22%20fill%3D%22%23C8431B%22/%3E%3C/svg%3E">
 <title>Tứ Chiếu</title>
 <script>/* áp giao diện sáng/tối trước khi vẽ trang để không bị nháy */
 try { const t = localStorage.getItem('tuchieu:theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch(e) {}</script>
@@ -82,9 +83,7 @@ a{color:inherit}
 .topbar.scrolled{border-bottom-color:var(--line)}
 .topbar .container{display:flex;align-items:center;gap:24px;height:60px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:-.02em;flex:none}
-.logo{width:26px;height:26px;display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:4px;border-radius:7px;background:var(--ink)}
-.logo i{border-radius:2px;background:var(--paper)}
-.logo i:first-child{background:var(--seal)}
+.logo{width:28px;height:28px;flex:none;display:block}
 .nav{display:flex;gap:4px;margin-right:auto}
 .nav a{padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--ink-2);font-size:14px;font-weight:500;transition:color .15s var(--ease),background-color .15s var(--ease)}
 .nav a:hover{color:var(--ink);background:var(--line-2)}
@@ -611,7 +610,7 @@ tr.cur td{background:var(--seal-soft)}
   #printDoc *{animation:none!important;transition:none!important}
   .pd-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--ink);padding-bottom:8px;margin-bottom:14px}
   .pd-brand{font-weight:700;font-size:13pt;display:flex;gap:8px;align-items:center}
-  .pd-brand .logo{width:20px;height:20px;padding:3px;gap:2px}
+  .pd-brand .logo{width:20px;height:20px}
   .pd-date{font-size:9pt;color:var(--ink-2)}
   .pd-name{font-size:20pt;font-weight:700;letter-spacing:-.02em;margin:0}
   .pd-meta{color:var(--ink-2);font-size:10pt;margin:4px 0 14px}
@@ -636,7 +635,7 @@ tr.cur td{background:var(--seal-soft)}
 
 <header class="topbar" id="topbar">
   <div class="container">
-    <a class="brand" href="#top" aria-label="Tứ Chiếu, về đầu trang"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Tứ Chiếu</a>
+    <a class="brand" href="#top" aria-label="Tứ Chiếu, về đầu trang"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="var(--ink)"/><g fill="var(--paper)"><path d="M32 9 36 28 32 32 28 28Z"/><path d="M55 32 36 36 32 32 36 28Z" opacity=".55"/><path d="M32 55 28 36 32 32 36 36Z" opacity=".55"/><path d="M9 32 28 28 32 32 28 36Z" opacity=".55"/></g><circle cx="32" cy="32" r="5.2" fill="var(--seal)"/></svg>Tứ Chiếu</a>
     <nav class="nav" aria-label="Điều hướng chính">
       <a href="#lap">Lập lá số</a>
       <a href="#ket-qua">Kết quả</a>
@@ -819,7 +818,7 @@ tr.cur td{background:var(--seal-soft)}
 <footer class="footer">
   <div class="container">
     <div>
-      <a class="brand" href="#top"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Tứ Chiếu</a>
+      <a class="brand" href="#top"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="var(--ink)"/><g fill="var(--paper)"><path d="M32 9 36 28 32 32 28 28Z"/><path d="M55 32 36 36 32 32 36 28Z" opacity=".55"/><path d="M32 55 28 36 32 32 36 36Z" opacity=".55"/><path d="M9 32 28 28 32 32 28 36Z" opacity=".55"/></g><circle cx="32" cy="32" r="5.2" fill="var(--seal)"/></svg>Tứ Chiếu</a>
       <p>Các hệ thống diễn giải văn hóa, dùng để tự soi lại mình, không phải dự đoán khoa học.</p>
     </div>
     <nav aria-label="Liên kết cuối trang">
@@ -1524,7 +1523,7 @@ function buildPrint(){
   qa.querySelectorAll('.qa').forEach(x => x.classList.add('pd-qa'));
   const reading = $('#aiOut').cloneNode(true); reading.querySelectorAll('button').forEach(x => x.remove());
   $('#printDoc').innerHTML = `
-    <div class="pd-head"><span class="pd-brand"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Tứ Chiếu</span><span class="pd-date">Bản luận giải · ${now.toLocaleDateString('vi-VN')}</span></div>
+    <div class="pd-head"><span class="pd-brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="var(--ink)"/><g fill="var(--paper)"><path d="M32 9 36 28 32 32 28 28Z"/><path d="M55 32 36 36 32 32 36 28Z" opacity=".55"/><path d="M32 55 28 36 32 32 36 36Z" opacity=".55"/><path d="M9 32 28 28 32 32 28 36Z" opacity=".55"/></g><circle cx="32" cy="32" r="5.2" fill="var(--seal)"/></svg>Tứ Chiếu</span><span class="pd-date">Bản luận giải · ${now.toLocaleDateString('vi-VN')}</span></div>
     <h1 class="pd-name">${esc(i.name)}</h1>
     <p class="pd-meta">${i.gender==='nam'?'Nam':'Nữ'} · ${esc(i.timeLabel)}, ${fmtDate(i.date)} · ${esc(i.place)} (${gmt(i.tz)}) · Âm lịch ${R.bazi.lunarDate.d}/${R.bazi.lunarDate.m} ${esc(R.bazi.lunarDate.yearGZ)} · Trọng tâm: ${esc($('#focus').value)}</p>
     <h2 class="pd-h">Tóm tắt bốn lá số</h2>${printSummary()}
