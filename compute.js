@@ -329,12 +329,16 @@ const TC = (() => {
   }
 
   /* ---------- Tử vi (iztro) ---------- */
-  function tuvi(y, mo, d, h, mi, gender) {
+  function tuvi(y, mo, d, h, mi, gender, school) {
     const idx = h === 23 ? 12 : Math.floor((h + 1) / 2);
-    const a = iztro.astro.bySolar(`${y}-${mo}-${d}`, idx, gender === 'nam' ? '男' : '女', true, 'vi-VN');
+    // Trường phái Việt Nam: lịch âm Việt (múi +7) và cách an sao Việt (tuvi-vn.js); Trung Quốc: iztro nguyên bản
+    const VN = school !== 'cn' && typeof TVVN !== 'undefined';
+    const vl = VN ? TVVN.s2l(d, mo, y, 7) : null;
+    const a = VN ? iztro.astro.byLunar(`${vl.year}-${vl.month}-${vl.day}`, idx, gender === 'nam' ? '男' : '女', vl.leap, false, 'vi-VN')
+      : iztro.astro.bySolar(`${y}-${mo}-${d}`, idx, gender === 'nam' ? '男' : '女', true, 'vi-VN');
     let hs = null; try { hs = a.horoscope(new Date()); } catch (e) { }
     const star = s => ({ name: s.name, bright: s.brightness || '', mut: s.mutagen || '', type: s.type || '' });
-    const rd = a.rawDates.lunarDate, ly = Solar.fromYmd(y, mo, d).getLunar();
+    const rd = a.rawDates.lunarDate, ly = VN ? Lunar.fromYmd(vl.year, 6, 1) : Solar.fromYmd(y, mo, d).getLunar();
     const yg = gz(ly.getYearInGanZhi()), [ycan, ychi] = yg.split(' ');
     // Tuần: hai chi trống của tuần Giáp chứa năm sinh; Triệt: theo can năm
     const si = STEM_ORDER.indexOf(ycan), bi = BR.indexOf(ychi), start = ((bi - si) % 12 + 12) % 12;
@@ -343,11 +347,11 @@ const TC = (() => {
     const horo = yy => { // xem theo năm: đại hạn, tiểu hạn, lưu niên, lưu tứ hóa, lưu tinh
       const h = a.horoscope(new Date(yy, 6, 1)); const br = i => a.palaces[i].earthlyBranch;
       const g = gz(Solar.fromYmd(yy, 7, 1).getLunar().getYearInGanZhi());
-      return { year: yy, gz: g, age: h.age.nominalAge, decadal: br(h.decadal.index), decadalGZ: h.decadal.heavenlyStem + ' ' + h.decadal.earthlyBranch, decadalMut: h.decadal.mutagen,
-        tieuHan: h.age.earthlyBranch, yearly: br(h.yearly.index), yearlyMut: h.yearly.mutagen,
+      return { year: yy, gz: g, age: h.age.nominalAge, decadal: br(h.decadal.index), decadalGZ: h.decadal.heavenlyStem + ' ' + h.decadal.earthlyBranch, decadalMut: VN ? TVVN.tuHoa(h.decadal.heavenlyStem) : h.decadal.mutagen,
+        tieuHan: h.age.earthlyBranch, yearly: br(h.yearly.index), yearlyMut: VN ? TVVN.tuHoa(g.split(' ')[0]) : h.yearly.mutagen,
         yearlyNames: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, h.yearly.palaceNames[i]])),
-        stars: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, (h.yearly.stars[i] || []).map(s => ({ name: s.name, type: s.type }))])),
-        than: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, [(h.yearly.yearlyDecStar || {}).suiqian12, (h.yearly.yearlyDecStar || {}).jiangqian12].map(x => x && x[i]).filter(Boolean)])) };
+        stars: VN ? TVVN.luu(yy) : Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, (h.yearly.stars[i] || []).map(s => ({ name: s.name, type: s.type }))])),
+        than: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, VN ? [] : [(h.yearly.yearlyDecStar || {}).suiqian12, (h.yearly.yearlyDecStar || {}).jiangqian12].map(x => x && x[i]).filter(Boolean)])) };
     };
     // Lưu nguyệt (cách tính phổ biến ở Việt Nam): từ cung tiểu hạn đếm ngược tới tháng sinh âm lịch,
     // rồi khởi giờ Tý tại đó đếm thuận tới giờ sinh, được cung tháng Giêng; các tháng sau đi thuận.
@@ -358,21 +362,40 @@ const TC = (() => {
       const s0 = L0.getSolar(), s1 = L1.getSolar().next(-1), mid = Lunar.fromYmd(yy, m, 15).getSolar();
       const hm = a.horoscope(new Date(mid.getYear(), mid.getMonth() - 1, mid.getDay(), 12));
       return { m, branch: b, leap: LunarYear.fromYear(yy).getLeapMonth() === m, gz: gz(Lunar.fromYmd(yy, m, 15).getMonthInGanZhi()),
-        start: [s0.getYear(), s0.getMonth(), s0.getDay()], end: [s1.getYear(), s1.getMonth(), s1.getDay()], mut: hm.monthly.mutagen,
-        mstars: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, (hm.monthly.stars[i] || []).map(x => x.name.replace(/\(M\)$/, ''))])) };
+        start: [s0.getYear(), s0.getMonth(), s0.getDay()], end: [s1.getYear(), s1.getMonth(), s1.getDay()], mut: VN ? TVVN.tuHoa(gz(Lunar.fromYmd(yy, m, 15).getMonthInGanZhi()).split(' ')[0]) : hm.monthly.mutagen,
+        mstars: Object.fromEntries(a.palaces.map((p, i) => [p.earthlyBranch, VN ? [] : (hm.monthly.stars[i] || []).map(x => x.name.replace(/\(M\)$/, ''))])) };
     };
+    function vnPalaces() {
+      const pb = n => BR.indexOf(a.palaces.find(p => p.name === n).earthlyBranch) + 1;
+      const cucN = { 'Nhị': 2, 'Tam': 3, 'Tứ': 4, 'Ngũ': 5, 'Lục': 6 }[(a.fiveElementsClass.match(/(Nhị|Tam|Tứ|Ngũ|Lục)/i) || [])[1]] || 2;
+      const V = TVVN.place({ day: vl.day, month: vl.month, canNam: STEM_ORDER.indexOf(ycan) + 1, chiNam: BR.indexOf(ychi) + 1, gio: idx === 12 ? 1 : idx + 1, nam: gender === 'nam',
+        menh: BR.indexOf(a.earthlyBranchOfSoulPalace) + 1, than: BR.indexOf(a.earthlyBranchOfBodyPalace) + 1, cuc: cucN, noBoc: pb('Nô Bộc'), tatAch: pb('Tật Ách') });
+      const hoa = TVVN.tuHoa(ycan), MUT = ['Lộc', 'Quyền', 'Khoa', 'Kỵ'], mutOf = n => { const k = hoa.indexOf(n); return k >= 0 ? MUT[k] : ''; };
+      return a.palaces.map(p => { const L = V.stars[p.earthlyBranch] || [];
+        return { name: p.name, stem: p.heavenlyStem, branch: p.earthlyBranch, isBody: p.isBodyPalace,
+          major: L.filter(x => ['Tử Vi','Liêm Trinh','Thiên Đồng','Vũ Khúc','Thái Dương','Thiên Cơ','Thiên Phủ','Thái Âm','Tham Lang','Cự Môn','Thiên Tướng','Thiên Lương','Thất Sát','Phá Quân'].includes(x.name)).map(x => ({ name: x.name, bright: x.bright, mut: mutOf(x.name), type: 'major' })),
+          minor: L.filter(x => x.minor).map(x => ({ name: x.name, bright: x.bright, mut: mutOf(x.name), type: x.bad ? 'tough' : 'soft' })),
+          adj: L.filter(x => !x.minor && !['Tử Vi','Liêm Trinh','Thiên Đồng','Vũ Khúc','Thái Dương','Thiên Cơ','Thiên Phủ','Thái Âm','Tham Lang','Cự Môn','Thiên Tướng','Thiên Lương','Thất Sát','Phá Quân'].includes(x.name)).map(x => x.name),
+          adjBad: L.filter(x => x.bad && !x.minor).map(x => x.name),
+          decadal: p.decadal ? p.decadal.range : null, changsheng: V.changsheng[p.earthlyBranch], boshi: '', ages: p.ages }; });
+    }
+    // Lai nhân cung: cung (Dần → Hợi) có can trùng can năm sinh
+    const laiNhan = (() => { for (let k = 2; k < 12; k++) { const p = a.palaces.find(x => x.earthlyBranch === BR[k]); if (p && p.heavenlyStem === ycan) return p.name; } return ''; })();
+    const thanCu = (a.palaces.find(p => p.isBodyPalace) || {}).name || '';
     return {
+      laiNhan, thanCu, vnLunar: vl,
       menh: a.earthlyBranchOfSoulPalace, than: a.earthlyBranchOfBodyPalace, cuc: a.fiveElementsClass, soul: a.soul, body: a.body,
       lunar: `${rd.lunarDay}/${rd.lunarMonth}${rd.isLeap ? ' (nhuận)' : ''} năm ${yg}`, lunarYearGZ: yg, napAmNam: NAPAM[ly.getYearNaYin()] || ly.getYearNaYin(),
       amDuong: (si % 2 === 0 ? 'Dương ' : 'Âm ') + (gender === 'nam' ? 'Nam' : 'Nữ'), tuan, triet, horo, month,
       chineseDate: a.chineseDate, time: a.time, zodiac: a.zodiac,
-      palaces: a.palaces.map(p => ({
+      school: VN ? 'vn' : 'cn',
+      palaces: VN ? vnPalaces() : a.palaces.map(p => ({
         name: p.name, stem: p.heavenlyStem, branch: p.earthlyBranch, isBody: p.isBodyPalace,
         major: p.majorStars.map(star), minor: p.minorStars.map(star), adj: (p.adjectiveStars || []).map(s => s.name),
         decadal: p.decadal ? p.decadal.range : null, changsheng: p.changsheng12, boshi: p.boshi12, ages: p.ages
       })),
       decadalNow: hs && hs.decadal ? { name: hs.decadal.name, branch: hs.decadal.earthlyBranch, stem: hs.decadal.heavenlyStem, palaceNames: hs.decadal.palaceNames } : null,
-      yearlyNow: hs && hs.yearly ? { stem: hs.yearly.heavenlyStem, branch: hs.yearly.earthlyBranch, palaceNames: hs.yearly.palaceNames, mutagen: hs.yearly.mutagen } : null
+      yearlyNow: hs && hs.yearly ? { stem: hs.yearly.heavenlyStem, branch: hs.yearly.earthlyBranch, palaceNames: hs.yearly.palaceNames, mutagen: VN ? TVVN.tuHoa(hs.yearly.heavenlyStem) : hs.yearly.mutagen } : null
     };
   }
 
@@ -386,7 +409,7 @@ const TC = (() => {
       bazi: bazi(y, mo, d, h, mi, inp.gender),
       astro: nat,
       transits: transits(nat, now),
-      tuvi: tuvi(y, mo, d, h, mi, inp.gender)
+      tuvi: tuvi(y, mo, d, h, mi, inp.gender, inp.school)
     };
   }
   return { all, numerology, bazi, natal, transits, tuvi, SIGNS, SIGN_GLYPH, SIGN_EL, MODES, fmtDeg, yearGZ, tenGodOf, relations, strength, shensha, BR, lonOf };

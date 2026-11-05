@@ -41,7 +41,18 @@ const NGHIA = {
     'Âm Sát': 'Sao âm: tiểu nhân ngầm, lo âu.', 'Thiên Trù': 'Sao bếp: ăn uống, hưởng lộc ăn.', 'Phong Cáo': 'Sao danh: bằng cấp, giấy khen.',
     'Đài Phụ': 'Sao phò: người hỗ trợ, địa vị.', 'Thiên Nguyệt': 'Sao bệnh vặt: ốm đau nhẹ.', 'Thiên Vu': 'Sao huyền bí: trực giác, tâm linh.',
     'Không Vong': 'Sao trống: việc dễ dở dang, hụt hẫng.', 'Phi Liêm': 'Sao nhanh: tin đồn, thị phi đến nhanh.', 'Tuần Không': 'Tuần: chặn bớt tác dụng của các sao trong cung, cả tốt lẫn xấu.',
-    'Triệt Lộ': 'Triệt: chặn đứng tác dụng các sao trong cung, nặng ở nửa đầu đời.', 'Đào Hoa': 'Đào hoa: duyên, sức hút.'
+    'Triệt Lộ': 'Triệt: chặn đứng tác dụng các sao trong cung, nặng ở nửa đầu đời.', 'Đào Hoa': 'Đào hoa: duyên, sức hút.',
+    'Phượng Các': 'Sao tài hoa: duyên dáng, có gu.', 'Thiên Riêu': 'Sao đào hoa: duyên, sức hút; khi xấu thì đa nghi, dễ sa đà.', 'Thiên Y': 'Sao thầy thuốc: hợp nghề y, biết chăm sóc sức khỏe.',
+    'Thai Phụ': 'Sao phò: người hỗ trợ, địa vị, danh tiếng.', 'Địa Giải': 'Sao giải: gỡ rối việc nhà đất, giấy tờ.', 'Thiên La': 'Lưới trời: dễ vướng víu, bị bó buộc; người đứng vững thì thành đường riêng.',
+    'Địa Võng': 'Lưới đất: dễ vướng chuyện kiện tụng, bó buộc.', 'Lưu Hà': 'Sao nước: cẩn thận sông nước, máu huyết, tai nạn nhỏ.', 'Quốc Ấn': 'Sao ấn: quyền chức, con dấu, được giao trọng trách.',
+    'Đường Phù': 'Sao danh: địa vị, được trọng, có nhà cửa đàng hoàng.', 'Văn Tinh': 'Sao văn: học hành, chữ nghĩa, thi cử.', 'Đẩu Quân': 'Sao nghiêm: cứng rắn, khó gần, giữ nguyên tắc.',
+    'Thái Tuế': 'Sao Thái Tuế: lời nói có trọng lượng, cũng dễ thị phi, kiện cáo.', 'Thiếu Dương': 'Sao thông minh, vui vẻ, hay giúp người.', 'Thiếu Âm': 'Sao hiền hòa, kín đáo, được che chở.',
+    'Tang Môn': 'Sao tang: buồn phiền, chuyện tang chế, mất mát.', 'Quan Phù': 'Sao kiện: thị phi, giấy tờ, kiện tụng.', 'Tử Phù': 'Sao buồn: u sầu, chuyện không vui.', 'Tuế Phá': 'Sao phá: hao tán, va chạm, ngang bướng.',
+    'Long Đức': 'Sao đức: hiền lành, gặp dữ hóa lành.', 'Bạch Hổ': 'Sao hổ: tai nạn, máu huyết, tranh chấp; người có bản lĩnh thì quyết đoán.', 'Phúc Đức': 'Sao phúc: hưởng phúc ông bà, gặp may.',
+    'Điếu Khách': 'Sao điếu: tin buồn, lời nói ngang, hay can thiệp chuyện người.', 'Trực Phù': 'Sao trực: hay gặp chuyện thẳng thừng, va chạm cấp trên.',
+    'Bác Sĩ': 'Sao học: thông minh, chính trực.', 'Lực Sĩ': 'Sao sức: mạnh mẽ, có sức làm.', 'Thanh Long': 'Sao vui: hỷ sự, may mắn bất ngờ.', 'Tướng Quân': 'Sao uy: oai phong, cương quyết.',
+    'Tấu Thư': 'Sao văn: giỏi viết lách, tấu trình.', 'Hỷ Thần': 'Sao vui: hỷ sự, tin mừng.', 'Bệnh Phù': 'Sao bệnh: ốm vặt, mệt mỏi.', 'Phục Binh': 'Sao ngầm: tiểu nhân, bị ám hại ngầm.', 'Quan Phủ': 'Sao kiện: thị phi, quan tụng.',
+    'Lưu Thái Tuế': 'Thái Tuế của năm đang xem: chuyện thị phi, lời nói trong năm.', 'Lưu Lộc Tồn': 'Lộc của năm đang xem.'
   },
   bright: { 'Miếu': 'rất sáng, phát huy tốt nhất', 'Vượng': 'sáng, phát huy tốt', 'Đắc': 'khá, phát huy được', 'Lợi': 'tạm ổn', 'Bình': 'trung bình', 'Hạn': 'tối (hãm): cái hay bị giảm, cái dở lộ ra', 'Hãm': 'tối (hãm): cái hay bị giảm, cái dở lộ ra' },
   // Bát tự: thập thần

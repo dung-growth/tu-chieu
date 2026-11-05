@@ -107,9 +107,9 @@ const TVC = (() => {
     if (T !== M && ['Văn Xương', 'Văn Khúc'].every(n => [T, ...tpT.hop].some(b => has(b, n)))) add('Xương Khúc hội Thân', `cung Thân tại ${T}`, 'Bộ sao văn chương hội về cung Thân: nửa đời sau sống bằng chữ nghĩa, học thuật; đọc, viết, học là cách hồi phục.', 2);
     const tm = starAt['Thiên Mã'] && starAt['Thiên Mã'].b;
     if (tm && (has(tm, 'Lộc Tồn') || [...byB[tm].major, ...byB[tm].minor].some(s => s.mut === 'Lộc'))) add('Lộc Mã giao trì', `cung ${pname(tm)}`, 'Thiên Mã gặp Lộc: đi xa mà phát, tiền đến từ di chuyển, buôn bán, làm việc nhiều nơi.', 2);
-    if (has(M, 'Long Trì') && has(M, 'Phụng Các')) add('Long Phượng ở Mệnh', `Mệnh tại ${M}`, 'Tài hoa, nhạy với cái đẹp, chuộng sự chỉn chu và đồ có gu.', 1);
+    if (has(M, 'Long Trì') && (has(M, 'Phụng Các') || has(M, 'Phượng Các'))) add('Long Phượng ở Mệnh', `Mệnh tại ${M}`, 'Tài hoa, nhạy với cái đẹp, chuộng sự chỉn chu và đồ có gu.', 1);
     if (has(M, 'Hoa Cái')) add('Hoa Cái ở Mệnh', `Mệnh tại ${M}`, 'Có phong thái riêng; thích không gian riêng, dễ hợp nghệ thuật, tôn giáo, học thuật.', 1);
-    const dao = ['Hồng Loan', 'Thiên Hỷ', 'Hàm Trì', 'Thiên Diêu'].filter(n => has(M, n));
+    const dao = ['Hồng Loan', 'Thiên Hỷ', 'Hàm Trì', 'Đào Hoa', 'Thiên Diêu', 'Thiên Riêu'].filter(n => has(M, n));
     if (dao.length) add('Sao đào hoa ở Mệnh', `Mệnh có ${dao.join(', ')}`, 'Có duyên, dễ được để ý, nhiều khi không tự biết.', 1);
 
     // Tứ hóa gốc rơi vào các cung khác
@@ -174,8 +174,8 @@ const TVC = (() => {
 
 
   /* ---- Lưu nguyệt: 12 tháng âm lịch của một năm ---- */
-  const W_BAD = { 'Địa Không':1.5,'Địa Kiếp':1.5,'Kình Dương':1.5,'Đà La':1.5,'Hỏa Tinh':1.5,'Linh Tinh':1.5,'Lưu Dương':1.2,'Lưu Đà':1.2,'Thiên Hình':1,'Kiếp Sát':1,'Tang Môn':1,'Bạch Hổ':1,'Điếu Khách':1,'Thiên Khốc':1,'Thiên Hư':1,'Cô Thần':1,'Quả Tú':1,'Đại Hao':1,'Tiểu Hao':1,'Phá Toái':1,'Tai Sát':1 };
-  const W_GOOD = { 'Lộc Tồn':1,'Tả Phù':1,'Hữu Bật':1,'Văn Xương':1,'Văn Khúc':1,'Thiên Khôi':1,'Thiên Việt':1,'Lưu Lộc':1,'Lưu Khôi':0.7,'Lưu Việt':0.7,'Lưu Xương':0.7,'Lưu Khúc':0.7,'Hồng Loan':0.5,'Thiên Hỷ':0.5,'Long Trì':0.5,'Phượng Các':0.5,'Giải Thần':0.5,'Thiên Giải':0.5,'Địa Giải':0.5,'Ân Quang':0.5,'Thiên Quý':0.5,'Thiên Đức':0.5,'Nguyệt Đức':0.5,'Long Đức':0.5,'Lưu Hỷ':0.5,'Lưu Loan':0.5 };
+  const W_BAD = { 'Địa Không':1.5,'Địa Kiếp':1.5,'Kình Dương':1.5,'Đà La':1.5,'Hỏa Tinh':1.5,'Linh Tinh':1.5,'Lưu Dương':1.2,'Lưu Đà':1.2,'Thiên Hình':1,'Kiếp Sát':1,'Tang Môn':1,'Bạch Hổ':1,'Điếu Khách':1,'Thiên Khốc':1,'Thiên Hư':1,'Cô Thần':1,'Quả Tú':1,'Đại Hao':1,'Tiểu Hao':1,'Phá Toái':1,'Tai Sát':1,'Tuế Phá':0.7,'Thiên La':0.7,'Địa Võng':0.7,'Lưu Hà':0.7,'Lưu Kình Dương':1.2,'Lưu Đà La':1.2,'Lưu Tang Môn':1,'Lưu Bạch Hổ':1,'Lưu Thiên Khốc':0.7,'Lưu Thiên Hư':0.7 };
+  const W_GOOD = { 'Lộc Tồn':1,'Tả Phù':1,'Hữu Bật':1,'Văn Xương':1,'Văn Khúc':1,'Thiên Khôi':1,'Thiên Việt':1,'Lưu Lộc':1,'Lưu Khôi':0.7,'Lưu Việt':0.7,'Lưu Xương':0.7,'Lưu Khúc':0.7,'Hồng Loan':0.5,'Thiên Hỷ':0.5,'Long Trì':0.5,'Phượng Các':0.5,'Giải Thần':0.5,'Thiên Giải':0.5,'Địa Giải':0.5,'Ân Quang':0.5,'Thiên Quý':0.5,'Thiên Đức':0.5,'Nguyệt Đức':0.5,'Long Đức':0.5,'Lưu Hỷ':0.5,'Lưu Loan':0.5,'Lưu Lộc Tồn':1,'Phượng Các':0.5,'Thiên Y':0.5,'Quốc Ấn':0.7,'Đường Phù':0.5,'Thai Phụ':0.5,'Phong Cáo':0.5,'Văn Tinh':0.5,'Thanh Long':0.5,'Hỷ Thần':0.5,'Đào Hoa':0.3,'Thiếu Dương':0.5,'Thiếu Âm':0.5,'Phúc Đức':0.5 };
   const TOPIC_M = { 'Mệnh':'bản thân, tinh thần', 'Phụ Mẫu':'cha mẹ, cấp trên, giấy tờ', 'Phúc Đức':'tâm trạng, chuyện họ hàng', 'Điền Trạch':'nhà cửa, chỗ ở', 'Quan Lộc':'công việc, học hành', 'Nô Bộc':'bạn bè, cộng sự', 'Thiên Di':'đi lại, chuyện bên ngoài', 'Tật Ách':'sức khỏe', 'Tài Bạch':'tiền bạc', 'Tử Nữ':'con cái, việc riêng', 'Phu Thê':'tình cảm, người yêu hoặc vợ chồng', 'Huynh Đệ':'anh em, đồng nghiệp' };
   function months(t, yy) {
     const byB = {}, starAt = {};
@@ -195,12 +195,14 @@ const TVC = (() => {
       const A = look(b, 1), B = look(ob, 0.6);
       const hoa = M.mut.map((n, k) => ({ hoa: MUT[k], star: n, at: starAt[n] })).filter(x => x.at === b || x.at === ob)
         .map(x => ({ ...x, self: x.at === b }));
-      let sc = A.sc + B.sc;
+      // Lá số kiểu Việt liệt kê nhiều sao vòng (Thái Tuế, Bác Sĩ) hơn, phần lớn là sao xấu nhẹ: bù lại để thang Thuận/Bình/Ảm đạm tương đương hai trường phái
+      let sc = A.sc + B.sc + (t.school === 'vn' ? 1.2 : 0);
       hoa.forEach(x => sc += (x.hoa === 'Kỵ' ? -1.5 : 1.2) * (x.self ? 1 : 0.6));
       const ky = (H.yearlyMut || [])[3]; if (ky && starAt[ky] === b) sc -= 1;
       const verdict = sc <= -2.5 ? 'nặng' : sc >= 2.5 ? 'thuận' : 'bình';
       const tp = TOPIC_M[p.name], to = TOPIC_M[o.name];
-      const list = (X) => [...X.major, ...X.bad, ...X.good].slice(0, 5).join(', ');
+      const wB = n => (W_BAD[n.replace(/ tháng$/, '')] || 0) + (/^Lưu /.test(n) ? 0.3 : 0);
+      const list = (X) => [...X.major, ...[...X.bad].sort((a, b) => wB(b) - wB(a)), ...X.good].slice(0, 6).join(', ');
       const hoaTxt = hoa.map(x => `${x.star} hóa ${x.hoa} (tháng) ${x.self ? 'ngay cung này' : 'chiếu từ đối cung'}`).join('; ');
       const chot = verdict === 'nặng'
         ? `${tp} dễ trục trặc${B.bad.length >= 2 ? `, ${to} cũng buồn` : ''}; tháng ảm đạm, nên giữ sức, tránh quyết lớn`

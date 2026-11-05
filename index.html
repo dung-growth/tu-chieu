@@ -253,6 +253,27 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .lo-shu div.empty{color:var(--ink-3);background:var(--sunken);border-style:dashed}
 
 .qa-more{margin-top:10px}
+.seg{display:inline-flex;align-items:center;gap:4px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--sheet)}
+.seg span{padding:0 6px 0 8px;color:var(--ink-2)}
+.seg button{all:unset;cursor:pointer;font-size:13px;font-weight:500;padding:4px 12px;border-radius:999px;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)} .seg button:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.tv-cols sup.mb{font-size:9px;color:var(--ink-3);margin-left:1px}
+/* câu mồi tổng quan */
+.lens .hook{margin:2px 0 0;font-size:13.5px;line-height:1.5;color:var(--ink);padding:10px 12px;border-radius:var(--r-sm);background:var(--sunken)}
+.lens .hook b{color:var(--seal)}
+.lens-go{all:unset;cursor:pointer;align-self:flex-start;font-size:13.5px;font-weight:600;color:var(--seal);margin-top:auto;padding:2px 0}
+.lens-go:hover{text-decoration:underline} .lens-go:focus-visible,.hd-hook:focus-visible{outline:2px solid var(--seal);outline-offset:3px;border-radius:4px}
+.hd-hook{all:unset;box-sizing:border-box;display:block;width:100%;cursor:pointer;margin:12px 0 0;padding:12px 16px;border:1px dashed var(--line);border-radius:var(--r);font-size:14px;color:var(--ink-2);background:var(--sheet)}
+.hd-hook b{color:var(--ink)} .hd-hook:hover{border-color:var(--seal)} .hd-hook-go{color:var(--seal);font-weight:600;white-space:nowrap}
+/* các bước */
+.steps{list-style:none;margin:0 0 18px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;counter-reset:none}
+.steps button{all:unset;box-sizing:border-box;width:100%;height:100%;display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--sheet);cursor:pointer;transition:border-color .2s var(--ease),box-shadow .2s var(--ease)}
+.steps button:hover{border-color:var(--ink-3)} .steps button:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.st-n{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;background:var(--sunken);color:var(--ink-2)}
+.st-t{display:flex;flex-direction:column;gap:2px;min-width:0} .st-t b{font-size:14.5px} .st-t small{font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.steps .cur button{border-color:var(--seal);box-shadow:0 0 0 3px var(--seal-soft)} .steps .cur .st-n{background:var(--seal);color:var(--on-seal)}
+.steps .done .st-n{background:var(--jade);color:var(--on-jade);font-size:0} .steps .done .st-n::after{content:"✓";font-size:13px}
+@media (max-width:640px){.steps{gap:6px}.steps button{flex-direction:column;align-items:center;text-align:center;padding:10px 6px;gap:6px}.st-t small{display:none}.st-t b{font-size:13px}}
 /* khám phá beta */
 .beta{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:var(--seal-soft);color:var(--seal);margin-left:4px;vertical-align:1px}
 .lab-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -697,6 +718,11 @@ tr.cur td{background:var(--seal-soft)}
       <div class="section-head">
         <div><h2>Kết quả</h2><p>Bốn lá số của cùng một người, và phần AI đối chiếu.</p></div>
       </div>
+      <ol class="steps" id="steps" aria-label="Các bước xem">
+        <li><button type="button" data-step="1"><span class="st-n">1</span><span class="st-t"><b>Xem lá số</b><small>Tổng quan và 4 hệ ở các tab bên dưới</small></span></button></li>
+        <li><button type="button" data-step="2"><span class="st-n">2</span><span class="st-t"><b>AI luận giải</b><small>Bài đối chiếu cả 4 hệ, khoảng 1 phút</small></span></button></li>
+        <li><button type="button" data-step="3"><span class="st-n">3</span><span class="st-t"><b>Hỏi thêm</b><small>Hỏi AI, gieo quẻ, xem độ hợp, Khám phá</small></span></button></li>
+      </ol>
       <div id="result" aria-live="polite">
         <div class="tabs" role="tablist" aria-label="Kết quả">
           <button role="tab" id="t-sum" aria-selected="true" aria-controls="p-sum">Tổng quan</button>
@@ -811,6 +837,7 @@ tr.cur td{background:var(--seal-soft)}
 <script src="lib/lunar.js"></script>
 <script src="lib/astronomy.min.js"></script>
 <script src="lib/iztro.min.js"></script>
+<script src="tuvi-vn.js"></script>
 <script src="lib/marked.min.js"></script>
 <script src="lib/purify.min.js"></script>
 <script src="compute.js"></script>
@@ -1046,7 +1073,7 @@ function readInput(){
     date: $('#date').value, ...timeInfo(),
     place: custom ? `${$('#lat').value}, ${$('#lon').value}` : c[0],
     lat: custom ? +$('#lat').value : c[1], lon: custom ? +$('#lon').value : c[2], tz: effTz(c, $('#date').value, timeInfo().time),
-    ctx: $('#ctx').value.trim()
+    ctx: $('#ctx').value.trim(), school: tvSchool()
   };
 }
 $('#f').addEventListener('submit', e => { e.preventDefault(); run(true); });
@@ -1059,7 +1086,7 @@ function run(save){
   const y = +inp.date.slice(0,4); if (y < 1900 || y > 2100) { $('#p-sum').innerHTML = '<p class="err">Ngày sinh cần nằm trong khoảng 1900–2100.</p>'; return; }
   try { R = TC.all(inp); adjustForTime(R); R.tvc = R.tuvi ? TVC.analyze(R.tuvi, +inp.date.slice(0,4), new Date().getFullYear()) : null; } catch(err) { console.error(err); $('#p-sum').innerHTML = '<p class="err">Không lập được lá số với thông tin này. Kiểm tra lại ngày giờ sinh.</p>'; return; }
   if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, placeName:CITIES[+sel.value][0], placeGeo:CITIES[+sel.value][6] ? placeGeoOf(CITIES[+sel.value]) : null, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value })); } catch(e) {}
-  renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); renderLab(); resetAI();
+  renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); renderLab(); resetAI(); updateSteps();
   if (save) pulse(document.querySelector('.tabpanel:not([hidden])'));
   if (save) { show('t-sum'); $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'}); }
 }
@@ -1103,19 +1130,42 @@ function renderSummary(){
   <div class="lens-grid">
     <div class="lens"><span class="label">Bát tự</span><h3>Nhật chủ ${bazi.dayMaster} <span class="el-${bazi.dayMasterHanh}">${bazi.dayMasterHanh}</span></h3>
       <span class="small muted">${bazi.pillars.map(p=>p ? p.can+' '+p.chi : 'giờ ?').join(' · ')}</span>
-      <dl class="kv"><dt>Hành mạnh</dt><dd class="el-${strong}">${strong}</dd><dt>Hành thiếu</dt><dd>${lack.length?lack.map(x=>`<span class="el-${x}">${x}</span>`).join(', '):'Không thiếu'}</dd><dt>Đại vận hiện tại</dt><dd>${curDV()}</dd><dt>Thân</dt><dd>${bazi.strength.level} (${bazi.strength.ratio}%)</dd></dl></div>
+      <dl class="kv"><dt>Hành mạnh</dt><dd class="el-${strong}">${strong}</dd><dt>Hành thiếu</dt><dd>${lack.length?lack.map(x=>`<span class="el-${x}">${x}</span>`).join(', '):'Không thiếu'}</dd><dt>Đại vận hiện tại</dt><dd>${curDV()}</dd><dt>Thân</dt><dd>${bazi.strength.level} (${bazi.strength.ratio}%)</dd></dl>${hook('bz')}</div>
     <div class="lens"><span class="label">Bản đồ sao</span><h3>${sun.signGlyph}︎ ${TC.SIGNS[sun.signIdx]} · ${moon.signGlyph}︎ ${TC.SIGNS[moon.signIdx]}</h3>
-      <dl class="kv"><dt>Mặt Trời</dt><dd>${sun.sign}${F.hasHouses?', nhà '+sun.house:''}</dd><dt>Mặt Trăng</dt><dd>${F.moonRange&&F.moonRange.twoSigns?F.moonRange.signs.join(' hoặc '):moon.sign}${F.hasHouses?', nhà '+moon.house:''}</dd><dt>Cung Mọc</dt><dd>${F.hasHouses?astro.asc.sign:F.approxHouses?astro.asc.sign+' (ước lượng)':'Cần giờ sinh'}</dd><dt>Thiên Đỉnh</dt><dd>${F.hasHouses?astro.mc.sign:F.approxHouses?astro.mc.sign+' (ước lượng)':'Cần giờ sinh'}</dd></dl></div>
+      <dl class="kv"><dt>Mặt Trời</dt><dd>${sun.sign}${F.hasHouses?', nhà '+sun.house:''}</dd><dt>Mặt Trăng</dt><dd>${F.moonRange&&F.moonRange.twoSigns?F.moonRange.signs.join(' hoặc '):moon.sign}${F.hasHouses?', nhà '+moon.house:''}</dd><dt>Cung Mọc</dt><dd>${F.hasHouses?astro.asc.sign:F.approxHouses?astro.asc.sign+' (ước lượng)':'Cần giờ sinh'}</dd><dt>Thiên Đỉnh</dt><dd>${F.hasHouses?astro.mc.sign:F.approxHouses?astro.mc.sign+' (ước lượng)':'Cần giờ sinh'}</dd></dl>${hook('as')}</div>
     <div class="lens"><span class="label">Tử vi</span>${!tuvi ? '<h3>Chưa lập được</h3><p class="small muted" style="margin:0">Tử vi cần ít nhất canh giờ sinh để an cung Mệnh.</p></div>' : `<h3>Mệnh tại ${tuvi.menh}</h3>
-      <dl class="kv"><dt>Chính tinh</dt><dd>${menhP && menhP.major.length ? menhP.major.map(s=>s.name).join(', ') : 'Vô chính diệu'}</dd><dt>Cục</dt><dd>${esc(tuvi.cuc)}</dd><dt>Thân cư</dt><dd>${tuvi.than}</dd><dt>Đại hạn</dt><dd>${tuvi.decadalNow ? tuvi.decadalNow.stem+' '+tuvi.decadalNow.branch : '—'}</dd></dl></div>`}
+      <dl class="kv"><dt>Chính tinh</dt><dd>${menhP && menhP.major.length ? menhP.major.map(s=>s.name).join(', ') : 'Vô chính diệu'}</dd><dt>Cục</dt><dd>${esc(tuvi.cuc)}</dd><dt>Thân cư</dt><dd>${tuvi.than}</dd><dt>Đại hạn</dt><dd>${tuvi.decadalNow ? tuvi.decadalNow.stem+' '+tuvi.decadalNow.branch : '—'}</dd></dl>${hook('tv')}</div>`}
     <div class="lens"><span class="label">Thần số học</span><h3>Đường đời ${n.lifePath}</h3>
-      <dl class="kv"><dt>Sứ mệnh</dt><dd>${n.expression}</dd><dt>Linh hồn</dt><dd>${n.soul}</dd><dt>Nhân cách</dt><dd>${n.personality}</dd><dt>Năm cá nhân ${n.personalYears[0].year}</dt><dd>${n.personalYears[0].n}</dd></dl></div>
+      <dl class="kv"><dt>Sứ mệnh</dt><dd>${n.expression}</dd><dt>Linh hồn</dt><dd>${n.soul}</dd><dt>Nhân cách</dt><dd>${n.personality}</dd><dt>Năm cá nhân ${n.personalYears[0].year}</dt><dd>${n.personalYears[0].n}</dd></dl>${hook('nm')}</div>
   </div>
+  <button type="button" class="hd-hook" id="hdHook" data-go="t-lab" hidden></button>
   ${input.timeMode==='unknown' ? '<div class="warn">Không rõ giờ sinh: Thần số học đầy đủ; Bát tự còn 3 trụ (thiếu trụ giờ); Bản đồ sao tính theo 12 giờ trưa, không có cung Mọc và các nhà; Tử vi chưa lập được. Nếu biết khoảng giờ, chọn canh giờ để có thêm Tử vi và trụ giờ.</div>' : input.timeMode==='canh' ? '<div class="warn">Tính theo canh giờ: Bát tự và Tử vi đầy đủ. Bản đồ sao lấy giờ giữa canh nên cung Mọc và các nhà chỉ là ước lượng.</div>' : ''}
   <div class="panel" id="yearPanel"></div>
   <div class="callout"><p>Các lá số đã sẵn sàng. Để AI đọc tất cả và viết bài luận đối chiếu giữa các trường phái.</p><button class="btn-primary" type="button" id="sumAi">Mở luận giải AI</button></div>`;
   $('#sumAi').onclick = () => { show('t-ai'); $('#t-ai').focus(); };
+  $('#p-sum').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { show(b.dataset.go); go($('#result')); });
   renderYearPanel();
+}
+
+/* ---- Câu mồi ở Tổng quan: một điều cụ thể của người xem, kéo họ sang từng tab ---- */
+function hook(tab){
+  const y = new Date().getFullYear(), NAME = { bz: 'Bát tự', as: 'Bản đồ sao', tv: 'Tử vi', nm: 'Thần số học' };
+  let t = '';
+  try {
+    if (tab === 'bz') { const b = R.bazi, lack = Object.keys(b.count).filter(k => !b.count[k]), nx = b.daiVan.find(v => v.startYear > y);
+      t = `${b.strength.level}${lack.length ? ', thiếu ' + lack.join(', ') : ''}.` + (nx ? ` Năm <b>${nx.startYear}</b> bạn bước sang vận ${nx.thapThan} (${nx.gz}), mười năm khác hẳn hiện tại.` : ''); }
+    else if (tab === 'as') { const a = R.astro, s = a.points[0], m = a.points[1];
+      const tr = R.transits.find(x => x.end >= new Date()), mm = d => `${d.getMonth() + 1}/${d.getFullYear()}`;
+      t = (TC.SIGN_EL[s.signIdx] !== TC.SIGN_EL[m.signIdx] && !(R.flags.moonRange && R.flags.moonRange.twoSigns) ? `Mặt Trời ${s.sign} mà Mặt Trăng ${m.sign}: người ngoài thấy một kiểu, bên trong bạn kiểu khác.` : `Mặt Trời và Mặt Trăng cùng nhóm nguyên tố: trong ngoài như một.`)
+        + (tr ? ` Sắp tới: <b>${tr.mover} ${tr.aspect} ${tr.target}</b> từ ${mm(tr.start)}.` : ''); }
+    else if (tab === 'tv') { const A = R.tvc; if (!A) return '';
+      const L = Lunar.fromDate(new Date()), cm = A.monthsYear === L.getYear() && A.months.find(x => x.m === Math.abs(L.getMonth()));
+      const c = A.cach.find(x => !/^Mệnh /.test(x.name)) || A.cach[0];
+      t = (c ? `Lá số có <b>${esc(c.name)}</b> (${esc(c.where)}).` : '') + (cm ? ` Tháng ${cm.m} âm này rơi vào cung <b>${cm.palace}</b>: ${esc(cm.chot)}.` : ''); }
+    else if (tab === 'nm') { const n = R.numerology, py = n.personalYears[0], miss = Object.keys(n.grid).filter(k => !n.grid[k]);
+      t = `Năm ${py.year} là năm cá nhân <b>${py.n}</b>: ${(NUM_TEXT[py.n] || '').toLowerCase()}.` + (miss.length ? ` Ngày sinh thiếu số ${miss.slice(0, 3).join(', ')}${miss.length > 3 ? '…' : ''}: mỗi số thiếu là một bài học riêng.` : ''); }
+  } catch (e) { console.error(e); }
+  return t ? `<p class="hook">${t}</p><button type="button" class="lens-go" data-go="t-${tab}">Xem ${NAME[tab]} →</button>` : '';
 }
 function curDV(){ const y = new Date().getFullYear(); const d = R.bazi.daiVan.find(v => y >= v.startYear && y <= v.endYear); return d ? `${d.gz} (${d.thapThan})` : '—'; }
 
@@ -1276,6 +1326,14 @@ const BRIGHT = {'Miếu':'M','Vượng':'V','Đắc':'Đ','Lợi':'L','Bình':'B
 const HUNG = ['Thiên Hình','Thiên Khốc','Thiên Hư','Thiên Không','Cô Thần','Quả Tú','Phá Toái','Âm Sát','Kiếp Sát','Thiên Thương','Thiên Sứ','Không Vong','Phi Liêm','Đại Hao','Tiểu Hao'];
 const MUT_LIST = ['Lộc','Quyền','Khoa','Kỵ'];
 let tvYear = null, tvSel = null, tvFor = null;
+function tvSchool(){ try { return localStorage.getItem('tuchieu:school') === 'cn' ? 'cn' : 'vn'; } catch(e) { return 'vn'; } }
+function setSchool(v){
+  try { localStorage.setItem('tuchieu:school', v); } catch(e) {}
+  if (!R || !R.tuvi) return;
+  const i = R.input; i.school = v; const [y, mo, d] = i.date.split('-').map(Number), [h, mi] = i.time.split(':').map(Number);
+  R.tuvi = TC.tuvi(y, mo, d, h, mi, i.gender, v); R.tvc = TVC.analyze(R.tuvi, y, new Date().getFullYear());
+  renderSummary(); renderTuvi(); go($('#p-tv'));
+}
 function renderTuvi(){
   if (tvFor !== R) { tvFor = R; tvYear = null; }
   if (!R.tuvi) { $('#p-tv').innerHTML = needHourMsg('Lá số Tử vi'); return; }
@@ -1287,12 +1345,14 @@ function renderTuvi(){
   <div class="tv-bar">
     <label class="small" for="tvYear" style="font-weight:500">Xem năm</label>
     <select id="tvYear" style="width:auto">${years.join('')}</select>
+    <div class="seg" role="group" aria-label="Trường phái an sao"><span class="small" style="font-weight:500">An sao</span>${[['vn','Việt Nam'],['cn','Trung Quốc']].map(([v,n]) => `<button type="button" data-school="${v}" aria-pressed="${t.school===v}">${n}</button>`).join('')}</div>
     <div class="tv-legend small muted"><span><i class="lg lg-menh"></i>Cung Mệnh</span><span><i class="lg lg-dh"></i>Đại hạn</span><span><i class="lg lg-ln"></i>Lưu niên</span><span><i class="lg lg-th"></i>Tiểu hạn</span><span>Bấm vào một cung để xem tam phương tứ chính</span></div>
   </div>
   <div class="table-wrap"><div class="tv-grid" id="tvGrid"></div></div>
-  <p class="small muted">An sao theo thư viện iztro (Tử vi Đẩu số, âm lịch chuẩn Trung Quốc; có thể lệch với lịch Việt Nam ở một số ngày giáp ranh tháng). Độ sáng: M miếu, V vượng, Đ đắc, L lợi, B bình, H hãm. Cột trái là cát tinh, cột phải là sát tinh và sao xấu. Chữ xanh là lưu tinh của năm đang xem. Góc dưới mỗi ô: vòng Trường sinh, vòng Bác sĩ và tuổi đại hạn.</p>
+  <p class="small muted">${t.school === 'vn' ? 'An sao theo trường phái Việt Nam (Thái Thứ Lang, Thiên Lương), lịch âm Việt Nam; cách an sao chuyển từ dự án mã nguồn mở lasotuvi. Một vài sao phụ có sách an khác nhau.' : 'An sao theo thư viện iztro (Tử vi Đẩu số kiểu Trung Quốc, âm lịch chuẩn Trung Quốc; có thể lệch với lịch Việt Nam ở một số ngày giáp ranh tháng).'} Độ sáng: M miếu, V vượng, Đ đắc, L lợi, B bình, H hãm. Cột trái là cát tinh, cột phải là sát tinh và sao xấu. Chữ xanh là lưu tinh của năm đang xem. Góc dưới mỗi ô: vòng Trường sinh, vòng Bác sĩ và tuổi đại hạn.</p>
   <div id="tvMonths"></div>`;
   $('#tvYear').onchange = e => { tvYear = +e.target.value; drawTuvi(); };
+  $('#p-tv').querySelectorAll('[data-school]').forEach(b => b.onclick = () => { if (b.dataset.school !== R.tuvi.school) setSchool(b.dataset.school); });
   drawTuvi();
   if (R.tvc) $('#p-tv').insertAdjacentHTML('beforeend', tvcHTML(R.tvc));
 }
@@ -1301,12 +1361,13 @@ function menhCuc(m, c){ if (!m || !c) return ''; const SINH={'Mộc':'Hỏa','H�
   if (m === c) return 'Mệnh Cục bình hòa'; if (SINH[c] === m) return 'Cục sinh Mệnh (tốt)'; if (SINH[m] === c) return 'Mệnh sinh Cục'; if (KHAC[c] === m) return 'Cục khắc Mệnh'; return 'Mệnh khắc Cục'; }
 function drawTuvi(){
   const t = R.tuvi, H = t.horo(tvYear), grid = $('#tvGrid');
+  const ML = TVC.months(t, tvYear), thOf = {}; ML.forEach(x => thOf[x.branch] = (thOf[x.branch] ? thOf[x.branch] + ',' : 'Th.') + x.m);
   const byB = {}; t.palaces.forEach(p => byB[p.branch] = p);
   const mutOf = (name, list) => { const k = (list||[]).indexOf(name); return k >= 0 ? MUT_LIST[k] : ''; };
   const tip = (s, p) => `data-tip="star" data-key="${esc(s.name)}" data-ctx="${esc(p.name + '|' + (s.bright||'') + '|' + (s.mut||''))}"`;
   const starLine = (s, p) => { const el = MAJOR_EL[s.name]; const lm = mutOf(s.name, H.yearlyMut);
     return `<div class="tv-st"><span class="el-${el}" ${tip(s, p)}>${s.name}</span>${s.bright?`<sup title="${s.bright==='Hạn'?'Hãm':s.bright}">${BRIGHT[s.bright]||s.bright}</sup>`:''}${s.mut?`<span class="mut mut-${s.mut}" title="Hóa ${s.mut} gốc">${s.mut}</span>`:''}${lm?`<span class="mut-luu" title="Lưu niên hóa ${lm}">L.${lm}</span>`:''}</div>`; };
-  const minorName = (s, p) => { const lm = mutOf(s.name, H.yearlyMut); return `<span ${tip(s, p)}>${s.name}</span>${s.mut?`<span class="mut mut-${s.mut}">${s.mut}</span>`:''}${lm?`<span class="mut-luu">L.${lm}</span>`:''}`; };
+  const minorName = (s, p) => { const lm = mutOf(s.name, H.yearlyMut); return `<span ${tip(s, p)}>${s.name}</span>${s.bright && t.school==='vn'?`<sup class="mb">${BRIGHT[s.bright]||''}</sup>`:''}${s.mut?`<span class="mut mut-${s.mut}">${s.mut}</span>`:''}${lm?`<span class="mut-luu">L.${lm}</span>`:''}`; };
   const tt = {}; // Tuần/Triệt: đặt nhãn ở cạnh chung của hai cung
   const mark = (pair, label) => { const [a, b] = pair; const ia = LAYOUT.indexOf(a), ib = LAYOUT.indexOf(b); const first = Math.min(ia, ib), second = Math.max(ia, ib);
     const side = Math.floor(first/4) === Math.floor(second/4) ? 'right' : 'bottom'; const key = LAYOUT[first] + side; tt[key] = { b: LAYOUT[first], side, label: tt[key] ? tt[key].label + ' · ' + label : label }; };
@@ -1320,10 +1381,11 @@ function drawTuvi(){
       <div class="small">Âm lịch ${esc(t.lunar)} · ${esc(t.time.split(' ').slice(0,2).join(' '))}</div>
       <div class="small">Bản mệnh <b class="el-${m}">${t.napAmNam}</b> · <b>${esc(t.cuc)}</b> · ${menhCuc(m, c)}</div>
       <div class="small">Mệnh tại <b>${t.menh}</b> · Thân tại <b>${t.than}</b> · Mệnh chủ ${esc(t.soul)} · Thân chủ ${esc(t.body)}</div>
+      ${t.thanCu || t.laiNhan ? `<div class="small">${t.thanCu ? `Thân cư <b>${t.thanCu}</b>` : ''}${t.thanCu && t.laiNhan ? ' · ' : ''}${t.laiNhan ? `Lai nhân cung <b>${t.laiNhan}</b>` : ''}</div>` : ''}
       <div class="tv-year"><b>Năm ${H.year} ${H.gz}</b>, ${H.age} tuổi âm · Đại hạn ${H.decadalGZ}<br><span class="small">Lưu tứ hóa: ${H.yearlyMut.map((s,k)=>`${MUT_LIST[k]} ${s}`).join(', ')}</span></div></div>`; } return; }
     const p = byB[b]; if (!p) { cells += '<div class="tv-cell"></div>'; return; }
     const minors = [...p.minor.map(s=>({...s,adj:false})), ...p.adj.map(n=>({name:n,adj:true}))].filter(s=>s.name!=='Tuần Không'&&s.name!=='Triệt Lộ');
-    const bad = s => s.type === 'tough' || (s.adj && HUNG.includes(s.name));
+    const bad = s => s.type === 'tough' || (s.adj && (HUNG.includes(s.name) || (p.adjBad || []).includes(s.name)));
     const good = minors.filter(s=>!bad(s)), badS = minors.filter(bad);
     const luu = H.stars[b] || [];
     const flags = [b===H.decadal?'<span class="tf tf-dh">Đại hạn</span>':'', b===H.yearly?'<span class="tf tf-ln">Lưu niên</span>':'', b===H.tieuHan?'<span class="tf tf-th">Tiểu hạn</span>':''].join('');
@@ -1334,19 +1396,19 @@ function drawTuvi(){
       ${flags?`<div class="tv-flags">${flags}</div>`:''}
       <div class="tv-major">${p.major.length?p.major.map(s=>starLine(s,p)).join(''):'<span class="muted" style="font-weight:500">Vô chính diệu</span>'}</div>
       <div class="tv-cols"><div class="tv-good">${good.map(s=>minorName(s,p)).join('<br>')}</div><div class="tv-bad">${badS.map(s=>minorName(s,p)).join('<br>')}</div></div>
-      ${luu.length?`<div class="tv-luu">${luu.map(s=>s.name).join(' · ')}</div>`:''}
-      <div class="tv-foot"><span>${p.changsheng||''}${p.boshi?' · '+p.boshi:''}</span><span class="num">${p.decadal?p.decadal[0]+'–'+p.decadal[1]:''}</span></div></div>`;
+      ${luu.length?`<div class="tv-luu">${luu.map(s=>t.school==='vn'?s.name.replace(/^Lưu /,'L.'):s.name).join(' · ')}</div>`:''}
+      <div class="tv-foot"><span>${p.changsheng||''}${p.boshi?' · '+p.boshi:''}</span><span class="num">${thOf[b] ? `<span title="Tháng âm lịch năm ${tvYear} rơi vào cung này">${thOf[b]}</span> · ` : ''}${p.decadal?p.decadal[0]+'–'+p.decadal[1]:''}</span></div></div>`;
   });
   grid.innerHTML = cells + '<svg class="tv-lines" aria-hidden="true"></svg>';
-  renderMonths();
+  renderMonths(ML);
   grid.querySelectorAll('.tv-cell[data-b]').forEach(c => { const go = () => selectPalace(c.dataset.b === tvSel ? null : c.dataset.b); c.addEventListener('click', go); c.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); go(); } }); });
   selectPalace(tvSel);
 }
 
 /* ---- Vận 12 tháng âm lịch (lưu nguyệt) ---- */
-function renderMonths(){
+function renderMonths(ML){
   const box = $('#tvMonths'); if (!box) return;
-  const yy = tvYear, list = TVC.months(R.tuvi, yy); if (!list.length) { box.innerHTML = ''; return; }
+  const yy = tvYear, list = ML || TVC.months(R.tuvi, yy); if (!list.length) { box.innerHTML = ''; return; }
   const nowL = Lunar.fromDate(new Date()), cur = nowL.getYear() === yy ? Math.abs(nowL.getMonth()) : 0;
   const d = x => x[2] + '/' + x[1], LBL = { 'nặng': 'Ảm đạm', 'thuận': 'Thuận', 'bình': 'Bình' };
   box.innerHTML = `<div class="panel"><h3>Vận 12 tháng âm lịch năm ${yy}</h3>
@@ -1541,6 +1603,20 @@ function drawYear(y){
   $('#yrAsk').onclick = () => askAbout(`Năm ${y} (${g.can} ${g.chi}) của tôi thế nào? Nên tập trung vào điều gì, cẩn thận điều gì?`);
 }
 
+
+/* ---- Dải 3 bước: chỉ cho người xem bước tiếp theo ---- */
+function updateSteps(){
+  const done = { 1: !!R, 2: !!firstText }, cur = !R ? 1 : !firstText ? 2 : 3;
+  document.querySelectorAll('#steps li').forEach(li => { const n = +li.querySelector('button').dataset.step;
+    li.className = n === cur ? 'cur' : done[n] ? 'done' : ''; li.querySelector('button').setAttribute('aria-current', n === cur ? 'step' : 'false'); });
+}
+document.querySelectorAll('#steps button').forEach(b => b.onclick = () => {
+  const n = +b.dataset.step;
+  if (n === 1) { show('t-sum'); go($('#result')); }
+  else if (n === 2) { show('t-ai'); go($('#aiGo'), 'center'); $('#aiGo').focus({ preventScroll: true }); }
+  else { show('t-ai'); $('#chat').hidden = false; go($('#ask'), 'center'); $('#ask').focus({ preventScroll: true }); }
+});
+
 /* ---- Khám phá · Beta: khung chứa các hệ thử nghiệm. Thêm hệ mới = thêm một dòng vào LAB ---- */
 const LAB = [
   { id: 'hd', name: 'Human Design', render: () => renderHD() }
@@ -1614,6 +1690,7 @@ function renderHD(){
     <p class="small muted" style="margin:12px 0 0">Design là thời điểm Mặt Trời lùi 88° trước ngày sinh (${c.designDate.toLocaleDateString('vi-VN')}). Human Design là hệ thống hiện đại (từ 1987), Tứ Chiếu để riêng, không trộn vào bài luận 4 hệ. Muốn hỏi thêm thì hỏi AI, nhắc chữ "Human Design" trong câu hỏi.</p>
   </div>`;
   $('#hdAiGo').onclick = hdAI;
+  const hk = $('#hdHook'); if (hk) { hk.hidden = false; hk.innerHTML = `<span class="beta">Beta</span> Human Design nói bạn là <b>${T.vi}</b>${vary.type.size > 1 ? ' (chưa chắc)' : ''}, ra quyết định bằng ${HD.AUTH[c.authority].split(':')[0].toLowerCase()}. <span class="hd-hook-go">Xem trong Khám phá →</span>`; }
 }
 async function hdAI(){
   const out = $('#hdAiOut'), btn = $('#hdAiGo'), i = R.input, { c, vary } = R.hd, many = Object.entries(vary).filter(([, v]) => v.size > 1);
@@ -1840,7 +1917,7 @@ function brief(){
   L.push(`Tính chất: ${Object.entries(a.modes).map(([k,v])=>k+' '+v).join(', ')}. Lilith ${a.extra[0].text}${F.hasHour?` nhà ${a.extra[0].house}; Điểm may mắn ${a.extra[1].text} nhà ${a.extra[1].house}; Sao chủ lá số ${a.rulers[0].rulerName} ở ${a.rulers[0].inSign} nhà ${a.rulers[0].inHouse}`:''}.`);
   L.push(`Quá cảnh 18 tháng tới: ${tr.length?tr.map(x=>`${x.mover} ${x.aspect} ${x.target} ${x.start.toISOString().slice(0,10)}→${x.end.toISOString().slice(0,10)}`).join('; '):'không có'}.`);
   if (!t) L.push('\n[TỬ VI] Chưa lập được vì không rõ giờ sinh.');
-  else { L.push(`\n[TỬ VI] ${t.amDuong}, bản mệnh ${t.napAmNam}, ${t.cuc}. Tuần tại ${t.tuan.join('-')}, Triệt tại ${t.triet.join('-')}. Mệnh ${t.menh}, Thân ${t.than}, Mệnh chủ ${t.soul}, Thân chủ ${t.body}. Đại hạn hiện tại: ${t.decadalNow?t.decadalNow.stem+' '+t.decadalNow.branch:'?'}; tiểu hạn năm nay: ${t.yearlyNow?t.yearlyNow.stem+' '+t.yearlyNow.branch:'?'}.`);
+  else { L.push(`\n[TỬ VI] (an sao theo trường phái ${t.school === 'vn' ? 'Việt Nam: Thái Thứ Lang, lịch âm Việt; độ sáng và tứ hóa theo sách Việt' : 'Trung Quốc (iztro)'}${t.thanCu ? `; Thân cư ${t.thanCu}` : ''}${t.laiNhan ? `; Lai nhân cung ${t.laiNhan}` : ''}) ${t.amDuong}, bản mệnh ${t.napAmNam}, ${t.cuc}. Tuần tại ${t.tuan.join('-')}, Triệt tại ${t.triet.join('-')}. Mệnh ${t.menh}, Thân ${t.than}, Mệnh chủ ${t.soul}, Thân chủ ${t.body}. Đại hạn hiện tại: ${t.decadalNow?t.decadalNow.stem+' '+t.decadalNow.branch:'?'}; tiểu hạn năm nay: ${t.yearlyNow?t.yearlyNow.stem+' '+t.yearlyNow.branch:'?'}.`);
   t.palaces.forEach(p => L.push(`- ${p.name} (${p.stem} ${p.branch}${p.isBody?', Thân cư':''}; đại hạn ${p.decadal?p.decadal.join('-'):'?'}): chính tinh ${p.major.length?p.major.map(s=>s.name+(s.bright?' '+s.bright:'')+(s.mut?' hóa '+s.mut:'')).join(', '):'vô chính diệu'}; phụ tinh ${p.minor.map(s=>s.name+(s.mut?' hóa '+s.mut:'')).join(', ')||'—'}; ${p.adj.slice(0,8).join(', ')}`)); }
   if (R.tvc) L.push('\n' + TVC.brief(R.tvc));
   L.push(`\n[THẦN SỐ HỌC] Đường đời ${n.lifePath}, Sứ mệnh ${n.expression}, Linh hồn ${n.soul}, Nhân cách ${n.personality}, Trưởng thành ${n.maturity}, Ngày sinh ${n.birthday}, Thái độ ${n.attitude}. Năm cá nhân: ${n.personalYears.map(p=>p.year+'='+p.n).join(', ')}. Đỉnh cao: ${n.peaks.map(p=>`${p.age} tuổi (${p.year})=${p.n}`).join(', ')}. Số thiếu trong ngày sinh: ${Object.keys(n.grid).filter(k=>!n.grid[k]).join(', ')}. Mũi tên: ${n.arrows.map(a=>(a.kind==='full'?'mũi tên ':'mũi tên trống ')+a.name+' ('+a.nums.join('-')+')').join(', ')||'không có'}. Thử thách: ${n.challenges.join(', ')}. Nợ nghiệp: ${n.debts.map(d=>d.n+' ở '+d.where).join(', ')||'không có'}. Đam mê ẩn: ${n.passion.join(', ')}. Tháng cá nhân ${n.personalMonth.month}: ${n.personalMonth.n}.`);
@@ -1876,7 +1953,7 @@ $('#aiGo').onclick = async () => {
   $('#aiOut').innerHTML = '<p class="muted">Đang đọc bốn lá số và suy nghĩ…</p>'; $('#aiStatus').textContent = '';
   try {
     const text = await callAI({ brief: brief(), focus: $('#focus').value, ctx: readInput().ctx }, t => { $('#aiOut').innerHTML = md(t); });
-    firstText = lastText = text; $('#chat').hidden = false; $('#aiCopy').hidden = false; $('#aiPdf').hidden = false;
+    firstText = lastText = text; $('#chat').hidden = false; $('#aiCopy').hidden = false; $('#aiPdf').hidden = false; updateSteps();
     structureReading();
     $('#aiOut').insertAdjacentHTML('beforeend', byNote());
   } catch(e) {

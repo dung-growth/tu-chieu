@@ -9,6 +9,7 @@ index.html          giao diện + code trang
 compute.js          tính toán 4 trường phái (chạy trên trình duyệt người dùng)
 hd.js               Human Design: tính bodygraph (loại, thẩm quyền, hồ sơ, kênh, cổng) và vẽ SVG; nằm trong tab Khám phá · Beta (thêm hệ thử nghiệm mới bằng một dòng trong mảng LAB ở index.html), không trộn vào bài luận
 nghia.js            từ điển nghĩa ngắn cho khung "bấm vào xem nghĩa" (sao, cung, thập thần, hành tinh, con số)
+tuvi-vn.js          an sao Tử vi kiểu Việt Nam (Thái Thứ Lang): lịch âm Việt, độ sáng, tứ hóa, đủ sao phụ, vòng Thái Tuế/Bác Sĩ; mặc định, người xem đổi sang kiểu Trung Quốc (iztro) được. Chuyển từ lasotuvi (MIT, doanguyen)
 tuvi-cach.js        dò cách Tử vi (Thân cư, Tuần Triệt, Cơ Lương, Sát Phá Tham, Nhật Nguyệt…), đường đi đại hạn kèm tứ hóa, 3 năm tới (kèm vận 12 tháng âm lịch: lưu nguyệt tính từ cung tiểu hạn)
 iching.js           gieo quẻ Kinh Dịch theo Mai Hoa Dịch Số (năm, tháng, ngày, giờ âm lịch)
 prompt.js           bộ hướng dẫn luận giải, dùng chung cho máy chủ và nút "Sao chép lời nhắc"
