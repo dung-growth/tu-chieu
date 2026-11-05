@@ -7,7 +7,8 @@
 //   GEMINI_MODEL        (tùy chọn) mặc định gemini-3-flash-preview
 //   OPENROUTER_API_KEY  khóa tạo ở openrouter.ai → Keys; dùng các model miễn phí làm dự phòng
 //   OPENROUTER_MODELS   (tùy chọn) danh sách model, cách nhau bằng dấu phẩy, theo thứ tự ưu tiên.
-//                       Mặc định: google/gemma-4-31b-it:free,nvidia/nemotron-3-super-120b-a12b:free
+//                       Mặc định (11/2026): nvidia/nemotron-3.5-super-vl:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,openrouter/free
+//                       openrouter/free cuối cùng: OpenRouter tự chọn một model miễn phí còn rảnh.
 //   AI_ORDER            (tùy chọn) "gemini" (mặc định: Gemini trước) hoặc "openrouter" (OpenRouter trước)
 //   ACCESS_CODE         (tùy chọn) mã truy cập; nếu đặt thì chỉ ai nhập đúng mã mới dùng được AI
 //   RATE_LIMIT_PER_HOUR (tùy chọn) số lượt tối đa mỗi IP mỗi giờ, mặc định 8
@@ -16,7 +17,7 @@
 import { rules, askRules, hdRules, thayRules, FOCUS } from '../prompt.js';
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
-const OR_MODELS = (process.env.OPENROUTER_MODELS || 'google/gemma-4-31b-it:free,nvidia/nemotron-3-super-120b-a12b:free')
+const OR_MODELS = (process.env.OPENROUTER_MODELS || 'nvidia/nemotron-3.5-super-vl:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,openrouter/free')
   .split(',').map(s => s.trim()).filter(Boolean);
 const FIRST_TEXT_TIMEOUT = Number(process.env.AI_FIRST_TIMEOUT_MS || 25000); // chờ chữ đầu tiên tối đa 25 giây rồi chuyển nguồn khác
 const LIMIT = Number(process.env.RATE_LIMIT_PER_HOUR || 8);
@@ -25,7 +26,8 @@ const clip = (s, n) => String(s || '').slice(0, n);
 
 // Tên dễ đọc để hiện dưới câu trả lời
 const prettyName = id => /gemini/i.test(id) ? 'Gemini' : /gemma-4-31b/i.test(id) ? 'Gemma 4 31B' : /gemma/i.test(id) ? 'Gemma'
-  : /nemotron-3-super/i.test(id) ? 'Nemotron 3 Super' : /nemotron/i.test(id) ? 'Nemotron' : id.split('/').pop().replace(/:free$/, '');
+  : /nemotron-3\.5-super/i.test(id) ? 'Nemotron 3.5 Super' : /nemotron-3-ultra/i.test(id) ? 'Nemotron 3 Ultra' : /nemotron/i.test(id) ? 'Nemotron'
+  : id === 'openrouter/free' ? 'model miễn phí OpenRouter tự chọn' : id.split('/').pop().replace(/:free$/, '');
 
 // Danh sách nguồn theo thứ tự thử
 function providers() {
@@ -193,7 +195,8 @@ export default async function handler(req, res) {
       : lastErr?.timeout ? 'AI đang quá tải, thử lại sau ít phút.'
       : 'AI đang bận hoặc lỗi, thử lại sau.';
     // Ghi rõ đã thử những nguồn nào và vì sao hỏng, để chủ trang biết sửa chỗ nào
-    const note = ` (Đã thử ${tried.join('; ')}.${process.env.OPENROUTER_API_KEY ? '' : ' Chưa có dự phòng vì chưa cài OPENROUTER_API_KEY trên Vercel.'})`;
+    const orBusy = tried.some(x => !/^Gemini/.test(x) && /hết lượt/.test(x));
+    const note = ` (Đã thử ${tried.join('; ')}.${process.env.OPENROUTER_API_KEY ? '' : ' Chưa có dự phòng vì chưa cài OPENROUTER_API_KEY trên Vercel.'}${orBusy ? ' Model miễn phí trên OpenRouter hay báo hết lượt khi đông người dùng, hoặc khi tài khoản đã dùng hết 50 lượt miễn phí trong ngày (nạp một lần 10 USD thì lên 1.000 lượt/ngày).' : ''})`;
     return res.status(502).json({ error: msg + note });
   }
 
