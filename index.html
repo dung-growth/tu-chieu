@@ -252,6 +252,14 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .lo-shu div{height:64px;border:1px solid var(--line);border-radius:var(--r-sm);display:grid;place-items:center;font:600 17px var(--display);background:var(--sheet)}
 .lo-shu div.empty{color:var(--ink-3);background:var(--sunken);border-style:dashed}
 
+/* khám phá beta */
+.beta{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:var(--seal-soft);color:var(--seal);margin-left:4px;vertical-align:1px}
+.lab-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.lab-nav{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lab-pill{font:inherit;font-size:13.5px;font-weight:500;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--sheet);color:var(--ink-2);cursor:pointer;transition:all .2s var(--ease)}
+.lab-pill:hover{border-color:var(--ink-3);color:var(--ink)}
+.lab-pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.lab-soon{font-size:12.5px;color:var(--ink-3);padding:6px 10px;border:1px dashed var(--line);border-radius:999px}
 /* lưu nguyệt */
 .mo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
 .mo{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;background:var(--sheet);cursor:pointer;display:flex;flex-direction:column;gap:3px;transition:border-color .2s var(--ease),box-shadow .2s var(--ease)}
@@ -704,16 +712,22 @@ tr.cur td{background:var(--seal-soft)}
           <button role="tab" id="t-as" aria-selected="false" aria-controls="p-as">Bản đồ sao</button>
           <button role="tab" id="t-tv" aria-selected="false" aria-controls="p-tv">Tử vi</button>
           <button role="tab" id="t-nm" aria-selected="false" aria-controls="p-nm">Thần số học</button>
-          <button role="tab" id="t-hd" aria-selected="false" aria-controls="p-hd">Human Design</button>
           <button role="tab" id="t-hop" aria-selected="false" aria-controls="p-hop">Xem độ hợp</button>
           <button role="tab" id="t-ai" class="tab-ai" aria-selected="false" aria-controls="p-ai">Luận giải AI</button>
+          <button role="tab" id="t-lab" aria-selected="false" aria-controls="p-lab">Khám phá <span class="beta">Beta</span></button>
         </div>
         <div class="tabpanel" role="tabpanel" id="p-sum" aria-labelledby="t-sum"></div>
         <div class="tabpanel" role="tabpanel" id="p-bz" aria-labelledby="t-bz" hidden></div>
         <div class="tabpanel" role="tabpanel" id="p-as" aria-labelledby="t-as" hidden></div>
         <div class="tabpanel" role="tabpanel" id="p-tv" aria-labelledby="t-tv" hidden></div>
         <div class="tabpanel" role="tabpanel" id="p-nm" aria-labelledby="t-nm" hidden></div>
-        <div class="tabpanel" role="tabpanel" id="p-hd" aria-labelledby="t-hd" hidden></div>
+        <div class="tabpanel" role="tabpanel" id="p-lab" aria-labelledby="t-lab" hidden>
+          <div class="lab-head">
+            <p class="small muted" style="margin:0">Các hệ đang thử nghiệm, để riêng khỏi bài luận 4 hệ chính. Có thể còn thay đổi.</p>
+            <div class="lab-nav" id="labNav" role="group" aria-label="Chọn hệ thử nghiệm"></div>
+          </div>
+          <div id="labBody"></div>
+        </div>
         <div class="tabpanel" role="tabpanel" id="p-hop" aria-labelledby="t-hop" hidden>
           <div class="panel">
             <h3>Xem độ hợp với một người khác</h3>
@@ -1053,7 +1067,7 @@ function run(save){
   const y = +inp.date.slice(0,4); if (y < 1900 || y > 2100) { $('#p-sum').innerHTML = '<p class="err">Ngày sinh cần nằm trong khoảng 1900–2100.</p>'; return; }
   try { R = TC.all(inp); adjustForTime(R); R.tvc = R.tuvi ? TVC.analyze(R.tuvi, +inp.date.slice(0,4), new Date().getFullYear()) : null; } catch(err) { console.error(err); $('#p-sum').innerHTML = '<p class="err">Không lập được lá số với thông tin này. Kiểm tra lại ngày giờ sinh.</p>'; return; }
   if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, placeName:CITIES[+sel.value][0], placeGeo:CITIES[+sel.value][6] ? placeGeoOf(CITIES[+sel.value]) : null, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value })); } catch(e) {}
-  renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); renderHD(); resetAI();
+  renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); renderLab(); resetAI();
   if (save) pulse(document.querySelector('.tabpanel:not([hidden])'));
   if (save) { show('t-sum'); $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'}); }
 }
@@ -1570,6 +1584,19 @@ function renderChecks(){
 }
 
 
+/* ---- Khám phá · Beta: khung chứa các hệ thử nghiệm. Thêm hệ mới = thêm một dòng vào LAB ---- */
+const LAB = [
+  { id: 'hd', name: 'Human Design', render: () => renderHD() }
+];
+let labCur = 'hd';
+function renderLab(){
+  $('#labNav').innerHTML = LAB.map(x => `<button type="button" class="lab-pill" data-lab="${x.id}" aria-pressed="${x.id === labCur}">${x.name}</button>`).join('') + '<span class="lab-soon">Sắp có thêm</span>';
+  $('#labBody').innerHTML = LAB.map(x => `<div id="lab-${x.id}" ${x.id === labCur ? '' : 'hidden'}></div>`).join('');
+  LAB.forEach(x => x.render());
+  $('#labNav').querySelectorAll('.lab-pill').forEach(b => b.onclick = () => { labCur = b.dataset.lab;
+    $('#labNav').querySelectorAll('.lab-pill').forEach(o => o.setAttribute('aria-pressed', o === b));
+    LAB.forEach(x => $('#lab-' + x.id).hidden = x.id !== labCur); });
+}
 /* ---- Human Design (tab riêng, không đưa vào bài luận chính) ---- */
 function hdUTC(date, minutes, tz){ const [y, m, d] = date.split('-').map(Number); return new Date(Date.UTC(y, m - 1, d, 0, minutes) - tz * 3600e3); }
 function hdCompute(){
@@ -1592,7 +1619,7 @@ function hdBrief(q){
   return '\n\n' + HD.brief(c, many.length ? `KHÔNG CHẮC vì thiếu giờ sinh chính xác: ${many.map(([k, v]) => k + ' có thể là ' + [...v].join(' hoặc ')).join('; ')}.` : '');
 }
 function renderHD(){
-  try { R.hd = hdCompute(); } catch(e) { console.error(e); $('#p-hd').innerHTML = '<p class="err">Không tính được biểu đồ Human Design.</p>'; return; }
+  try { R.hd = hdCompute(); } catch(e) { console.error(e); $('#lab-hd').innerHTML = '<p class="err">Không tính được biểu đồ Human Design.</p>'; return; }
   const { c, unsure, vary } = R.hd, T = HD.TYPE[c.type];
   const maybe = k => vary[k].size > 1 ? ` <span class="tag alt" title="Đổi theo giờ sinh">chưa chắc</span>` : '';
   const alt = k => vary[k].size > 1 ? `<span class="d muted">Có thể là: ${[...vary[k]].join(', ')}</span>` : '';
@@ -1601,7 +1628,7 @@ function renderHD(){
   const row = (x, side) => `<td class="gd ${side}"><span data-tip="hd" data-key="gate:${x.gate}">${x.gate}.${x.line}</span>${unsure.has(x.gate) ? '?' : ''}</td>`;
   const warn = R.input.timeMode === 'unknown' ? '<p class="warn">Không rõ giờ sinh: Mặt Trăng đi khoảng 13° mỗi ngày nên vài cổng có thể khác (ô nét đứt, dấu ?). Phần gắn nhãn <b>chưa chắc</b> đổi theo giờ, đừng dựa vào.</p>'
     : R.input.timeMode === 'canh' ? '<p class="warn">Chỉ biết canh giờ: những cổng nét đứt hoặc có dấu ? có thể khác trong khoảng 2 tiếng đó.</p>' : '';
-  $('#p-hd').innerHTML = `${warn}
+  $('#lab-hd').innerHTML = `${warn}
   <div class="hd-top">
     <div class="ncard"><span class="label">Loại</span><span class="n">${T.vi}${maybe('type')}</span><span class="d">${c.type}</span>${alt('type')}</div>
     <div class="ncard"><span class="label">Chiến lược</span><span class="n">${T.strategy}</span><span class="d">Đúng hướng thấy: ${T.sig.toLowerCase()} · lệch hướng thấy: ${T.notSelf.toLowerCase()}</span></div>
