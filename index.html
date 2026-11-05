@@ -274,6 +274,7 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .steps .cur button{border-color:var(--seal);box-shadow:0 0 0 3px var(--seal-soft)} .steps .cur .st-n{background:var(--seal);color:var(--on-seal)}
 .steps .done .st-n{background:var(--jade);color:var(--on-jade);font-size:0} .steps .done .st-n::after{content:"✓";font-size:13px}
 @media (max-width:640px){.steps{gap:6px}.steps button{flex-direction:column;align-items:center;text-align:center;padding:10px 6px;gap:6px}.st-t small{display:none}.st-t b{font-size:13px}}
+.ai-by.ai-owner{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--ink-3);border-top:1px dashed var(--line);padding-top:6px;word-break:break-word}
 /* khám phá beta */
 .beta{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:var(--seal-soft);color:var(--seal);margin-left:4px;vertical-align:1px}
 .lab-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -1923,9 +1924,10 @@ function brief(){
   L.push(`\n[THẦN SỐ HỌC] Đường đời ${n.lifePath}, Sứ mệnh ${n.expression}, Linh hồn ${n.soul}, Nhân cách ${n.personality}, Trưởng thành ${n.maturity}, Ngày sinh ${n.birthday}, Thái độ ${n.attitude}. Năm cá nhân: ${n.personalYears.map(p=>p.year+'='+p.n).join(', ')}. Đỉnh cao: ${n.peaks.map(p=>`${p.age} tuổi (${p.year})=${p.n}`).join(', ')}. Số thiếu trong ngày sinh: ${Object.keys(n.grid).filter(k=>!n.grid[k]).join(', ')}. Mũi tên: ${n.arrows.map(a=>(a.kind==='full'?'mũi tên ':'mũi tên trống ')+a.name+' ('+a.nums.join('-')+')').join(', ')||'không có'}. Thử thách: ${n.challenges.join(', ')}. Nợ nghiệp: ${n.debts.map(d=>d.n+' ở '+d.where).join(', ')||'không có'}. Đam mê ẩn: ${n.passion.join(', ')}. Tháng cá nhân ${n.personalMonth.month}: ${n.personalMonth.n}.`);
   return L.join('\n');
 }
-let ctl = null, history = [], firstText = '', lastText = '', lastModel = '';
+let ctl = null, history = [], firstText = '', lastText = '', lastModel = '', lastOwner = '';
 // Ghi chú nhỏ khi câu trả lời đến từ model dự phòng (không phải Gemini)
-const byNote = () => lastModel && lastModel !== 'Gemini' ? `<p class="ai-by">Trả lời bởi ${esc(lastModel)}</p>` : '';
+// Người xem thường: chỉ ghi chú khi model dự phòng trả lời. Chủ trang (đã nhập OWNER_CODE): luôn hiện model, thời gian và các nguồn đã bỏ qua
+const byNote = () => lastOwner ? `<p class="ai-by ai-owner" title="Chỉ chủ trang thấy dòng này">Chủ trang · ${esc(lastModel)} · ${esc(lastOwner)}</p>` : lastModel && lastModel !== 'Gemini' ? `<p class="ai-by">Trả lời bởi ${esc(lastModel)}</p>` : '';
 const md = s => DOMPurify.sanitize(marked.parse(s || ''));
 const CODE_KEY = 'tuchieu:code';
 try { $('#code').value = localStorage.getItem(CODE_KEY) || ''; } catch(e) {}
@@ -1941,6 +1943,7 @@ async function callAI(payload, onText){
   const res = await fetch('/api/luangiai', { method:'POST', headers:{ 'Content-Type':'application/json', 'x-access-code': code }, body: JSON.stringify(payload), signal: ctl.signal });
   if (!res.ok) { let m = 'Máy chủ báo lỗi (' + res.status + ').'; try { m = (await res.json()).error || m; } catch(e) {} throw new Error(m); }
   try { lastModel = decodeURIComponent(res.headers.get('X-AI-Model') || ''); } catch(e) { lastModel = ''; }
+  try { lastOwner = decodeURIComponent(res.headers.get('X-AI-Owner') || ''); } catch(e) { lastOwner = ''; }
   const reader = res.body.getReader(); const dec = new TextDecoder(); let text = '';
   for (;;) { const { done, value } = await reader.read(); if (done) break; text += dec.decode(value, { stream:true }); onText(text); }
   if (text.includes('\u0000ERR:')) { const [ok, err] = text.split('\u0000ERR:'); onText(ok); throw Object.assign(new Error(err || 'AI bị gián đoạn.'), { partial: ok }); }

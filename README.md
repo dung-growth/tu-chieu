@@ -40,6 +40,7 @@ Phần lập lá số chạy hoàn toàn trên trình duyệt. Chỉ phần AI �
    | `RATE_LIMIT_PER_HOUR` | `8` | số lượt mỗi IP mỗi giờ |
 | `OWNER_CODE` | một mã riêng của chủ trang | nhập vào ô Mã truy cập thì không bị giới hạn lượt; đừng đưa mã này cho ai |
 | `OPENROUTER_API_KEY` | khóa tạo ở openrouter.ai → Keys | dự phòng miễn phí khi Gemini hết lượt hoặc lỗi |
+| `AI_THINK_MAX_MS` | `70000` | không cần đặt; model đang suy nghĩ thì chờ tối đa bấy nhiêu mili giây trước khi chuyển model khác |
 | `OPENROUTER_MODELS` | `nvidia/nemotron-3.5-super-vl:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,openrouter/free` | không cần đặt; thứ tự model dự phòng, model nào bị gỡ thì sửa ở đây |
 | `AI_ORDER` | `gemini` | đặt `openrouter` nếu muốn dùng OpenRouter trước Gemini |
 
