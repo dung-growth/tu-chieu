@@ -252,6 +252,7 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .lo-shu div{height:64px;border:1px solid var(--line);border-radius:var(--r-sm);display:grid;place-items:center;font:600 17px var(--display);background:var(--sheet)}
 .lo-shu div.empty{color:var(--ink-3);background:var(--sunken);border-style:dashed}
 
+.qa-more{margin-top:10px}
 /* khám phá beta */
 .beta{font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 5px;border-radius:4px;background:var(--seal-soft);color:var(--seal);margin-left:4px;vertical-align:1px}
 .lab-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -424,15 +425,6 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 @media (max-width:960px){ .yr-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
 @media (max-width:560px){ .yr-grid{grid-template-columns:1fr} }
 /* kiểm lại quá khứ */
-.chk-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
-.chk{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;display:flex;justify-content:space-between;gap:10px 16px;align-items:center;flex-wrap:wrap}
-.chk p{margin:0;font-size:14.5px;flex:1 1 300px} .chk small{display:block;color:var(--ink-3);font-size:12px;margin-top:3px}
-.chk-btns{display:flex;gap:6px}
-.chk-btns button{padding:7px 12px;font-size:13px;background:var(--sheet);border:1px solid var(--line);font-weight:500}
-.chk-btns button[aria-pressed=true][data-v=y]{background:var(--jade);color:var(--on-jade);border-color:var(--jade)}
-.chk-btns button[aria-pressed=true][data-v=p]{background:var(--ink-2);color:var(--paper);border-color:var(--ink-2)}
-.chk-btns button[aria-pressed=true][data-v=n]{background:var(--seal);color:var(--on-seal);border-color:var(--seal)}
-.chk-score{margin:10px 0 0;font-size:13.5px;color:var(--ink-2)}
 /* xem độ hợp */
 .hop-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 16px}
 .hop-score{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
@@ -779,7 +771,6 @@ tr.cur td{background:var(--seal-soft)}
               <div class="ai-out" id="aiOut"><p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p></div>
               <div id="chat" class="chat" hidden>
                 <div id="qaList"></div>
-                <label class="check small" for="shortMode" style="margin:0 0 6px"><input type="checkbox" id="shortMode" checked> Trả lời ngắn kiểu thầy (bỏ tick để đọc giải thích đầy đủ)</label>
                 <p class="chat-hint">Hỏi tiếp, hoặc gieo một quẻ Kinh Dịch (Mai Hoa Dịch Số, lấy năm, tháng, ngày, giờ âm lịch lúc bấm). Mỗi câu hỏi chỉ gieo một lần trong ngày.</p>
                 <div class="chat-row">
                   <input id="ask" placeholder="Hỏi thêm, ví dụ: năm 2027 có nên mở kinh doanh riêng không?">
@@ -1041,6 +1032,7 @@ function show(id){ tabs.forEach(t => { const on = t.id === id; t.setAttribute('a
 tabs.forEach((t,i) => { t.addEventListener('click', () => show(t.id)); t.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowLeft'){ const n = tabs[(i + (e.key==='ArrowRight'?1:-1) + tabs.length) % tabs.length]; n.focus(); show(n.id);} }); });
 
 let R = null;
+try { Object.keys(localStorage).filter(k => k.startsWith('tuchieu:check:')).forEach(k => localStorage.removeItem(k)); } catch(e) {}
 function timeInfo(){
   if (!$('#noTime').checked) return { time: $('#time').value || '12:00', timeMode: 'exact', timeLabel: $('#time').value || '12:00' };
   const k = $('#canh').value;
@@ -1121,10 +1113,9 @@ function renderSummary(){
   </div>
   ${input.timeMode==='unknown' ? '<div class="warn">Không rõ giờ sinh: Thần số học đầy đủ; Bát tự còn 3 trụ (thiếu trụ giờ); Bản đồ sao tính theo 12 giờ trưa, không có cung Mọc và các nhà; Tử vi chưa lập được. Nếu biết khoảng giờ, chọn canh giờ để có thêm Tử vi và trụ giờ.</div>' : input.timeMode==='canh' ? '<div class="warn">Tính theo canh giờ: Bát tự và Tử vi đầy đủ. Bản đồ sao lấy giờ giữa canh nên cung Mọc và các nhà chỉ là ước lượng.</div>' : ''}
   <div class="panel" id="yearPanel"></div>
-  <div class="panel" id="checkPanel" hidden></div>
   <div class="callout"><p>Các lá số đã sẵn sàng. Để AI đọc tất cả và viết bài luận đối chiếu giữa các trường phái.</p><button class="btn-primary" type="button" id="sumAi">Mở luận giải AI</button></div>`;
   $('#sumAi').onclick = () => { show('t-ai'); $('#t-ai').focus(); };
-  renderYearPanel(); renderChecks();
+  renderYearPanel();
 }
 function curDV(){ const y = new Date().getFullYear(); const d = R.bazi.daiVan.find(v => y >= v.startYear && y <= v.endYear); return d ? `${d.gz} (${d.thapThan})` : '—'; }
 
@@ -1550,40 +1541,6 @@ function drawYear(y){
   $('#yrAsk').onclick = () => askAbout(`Năm ${y} (${g.can} ${g.chi}) của tôi thế nào? Nên tập trung vào điều gì, cẩn thận điều gì?`);
 }
 
-/* ---- Kiểm lại quá khứ ---- */
-const CHECK_KEY = () => 'tuchieu:check:' + R.input.date + ':' + R.input.time;
-function checkAns(){ try { return JSON.parse(localStorage.getItem(CHECK_KEY()) || '{}'); } catch(e) { return {}; } }
-function checkList(){
-  if (!R) return [];
-  const by = +R.input.date.slice(0,4), nowY = new Date().getFullYear(), out = [...(R.tvc ? R.tvc.checks : [])];
-  const DV = { 'Chính Quan': 'áp lực, kỷ luật, trách nhiệm tăng lên rõ (học hành nghiêm, việc gò bó, có người quản chặt)', 'Thất Sát': 'nhiều áp lực, thử thách, phải gồng lên để vượt qua',
-    'Chính Tài': 'bạn bắt đầu tự kiếm tiền đều đặn, chuyện tiền chiếm nhiều tâm trí', 'Thiên Tài': 'tiền vào ra thất thường, có những khoản bất ngờ',
-    'Thực Thần': 'bạn được sống thoải mái, theo sở thích, sáng tạo nhiều', 'Thương Quan': 'bạn muốn thể hiện, hay đổi hướng hoặc va chạm với cấp trên, khuôn khổ',
-    'Chính Ấn': 'bạn học nhiều, được người lớn đỡ đầu', 'Thiên Ấn': 'bạn hướng vào bên trong, học kiểu riêng, hơi cô độc',
-    'Tỷ Kiên': 'bạn bè, người ngang hàng ảnh hưởng nhiều tới quyết định của bạn', 'Kiếp Tài': 'tiền dễ hao vì bạn bè, hùn hạp, cạnh tranh nhiều' };
-  const dv = R.bazi.daiVan.filter(v => v.endYear < nowY && v.startYear >= by + 10).slice(-1)[0];
-  if (dv && DV[dv.thapThan]) out.push({ id: 'bz-' + dv.startYear, school: 'Bát tự', text: `Giai đoạn ${dv.startYear}–${dv.endYear}, ${DV[dv.thapThan]}?`, basis: `đại vận ${dv.gz} (${dv.thapThan})` });
-  for (let y = nowY - 1; y >= Math.max(by + 15, nowY - 9); y--) if (personalYear(y) === 1) { out.push({ id: 'ns-' + y, school: 'Thần số học', text: `Năm ${y}, bạn có bắt đầu một điều mới quan trọng (việc mới, chỗ mới, mối quan hệ mới)?`, basis: 'năm cá nhân 1' }); break; }
-  return out.slice(0, 5);
-}
-function renderChecks(){
-  const list = checkList(), box = $('#checkPanel');
-  if (!list.length) { box.hidden = true; return; }
-  const ans = checkAns(); box.hidden = false;
-  const score = () => { const a = checkAns(), done = list.filter(c => a[c.id]); if (!done.length) return 'Trả lời vài câu để AI biết môn nào đoán trúng với bạn, bài luận sẽ sát hơn.';
-    const by = {}; done.forEach(c => { by[c.school] = by[c.school] || [0, 0]; by[c.school][1]++; if (a[c.id] === 'y') by[c.school][0]++; });
-    return 'Đã trả lời ' + done.length + '/' + list.length + ' câu. Trúng: ' + Object.entries(by).map(([k, [h, t]]) => `${k} ${h}/${t}`).join(', ') + '. AI sẽ dựa vào kết quả này khi luận.'; };
-  box.innerHTML = `<h3>Lá số đoán trúng tới đâu?</h3><p class="small muted" style="margin:4px 0 0">Vài điều lá số nói về quá khứ của bạn. Bạn tự kiểm xem có đúng không.</p>
-    <div class="chk-list">${list.map(c => `<div class="chk" data-id="${c.id}"><p>${esc(c.text)}<small>${c.school}: ${esc(c.basis)}</small></p>
-      <div class="chk-btns" role="group" aria-label="Đánh giá">${[['y','Đúng'],['p','Không hẳn'],['n','Sai']].map(([v,t]) => `<button type="button" data-v="${v}" aria-pressed="${ans[c.id]===v}">${t}</button>`).join('')}</div></div>`).join('')}</div>
-    <p class="chk-score" id="chkScore">${score()}</p>`;
-  box.querySelectorAll('.chk').forEach(row => row.querySelectorAll('button').forEach(btn => btn.onclick = () => {
-    const a = checkAns(), id = row.dataset.id; a[id] = a[id] === btn.dataset.v ? undefined : btn.dataset.v;
-    try { localStorage.setItem(CHECK_KEY(), JSON.stringify(a)); } catch(e) {}
-    row.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', a[id] === b.dataset.v)); $('#chkScore').textContent = score(); }));
-}
-
-
 /* ---- Khám phá · Beta: khung chứa các hệ thử nghiệm. Thêm hệ mới = thêm một dòng vào LAB ---- */
 const LAB = [
   { id: 'hd', name: 'Human Design', render: () => renderHD() }
@@ -1886,8 +1843,6 @@ function brief(){
   else { L.push(`\n[TỬ VI] ${t.amDuong}, bản mệnh ${t.napAmNam}, ${t.cuc}. Tuần tại ${t.tuan.join('-')}, Triệt tại ${t.triet.join('-')}. Mệnh ${t.menh}, Thân ${t.than}, Mệnh chủ ${t.soul}, Thân chủ ${t.body}. Đại hạn hiện tại: ${t.decadalNow?t.decadalNow.stem+' '+t.decadalNow.branch:'?'}; tiểu hạn năm nay: ${t.yearlyNow?t.yearlyNow.stem+' '+t.yearlyNow.branch:'?'}.`);
   t.palaces.forEach(p => L.push(`- ${p.name} (${p.stem} ${p.branch}${p.isBody?', Thân cư':''}; đại hạn ${p.decadal?p.decadal.join('-'):'?'}): chính tinh ${p.major.length?p.major.map(s=>s.name+(s.bright?' '+s.bright:'')+(s.mut?' hóa '+s.mut:'')).join(', '):'vô chính diệu'}; phụ tinh ${p.minor.map(s=>s.name+(s.mut?' hóa '+s.mut:'')).join(', ')||'—'}; ${p.adj.slice(0,8).join(', ')}`)); }
   if (R.tvc) L.push('\n' + TVC.brief(R.tvc));
-  const ck = checkList().filter(c => checkAns()[c.id]);
-  if (ck.length) L.push('\n[NGƯỜI XEM TỰ KIỂM QUÁ KHỨ] (môn nào trúng thì dựa nhiều hơn, môn nào sai thì nói thận trọng hơn)\n' + ck.map(c => `- ${c.school}, ${c.text} (căn cứ: ${c.basis}) → ${({y:'ĐÚNG',p:'KHÔNG HẲN',n:'SAI'})[checkAns()[c.id]]}`).join('\n'));
   L.push(`\n[THẦN SỐ HỌC] Đường đời ${n.lifePath}, Sứ mệnh ${n.expression}, Linh hồn ${n.soul}, Nhân cách ${n.personality}, Trưởng thành ${n.maturity}, Ngày sinh ${n.birthday}, Thái độ ${n.attitude}. Năm cá nhân: ${n.personalYears.map(p=>p.year+'='+p.n).join(', ')}. Đỉnh cao: ${n.peaks.map(p=>`${p.age} tuổi (${p.year})=${p.n}`).join(', ')}. Số thiếu trong ngày sinh: ${Object.keys(n.grid).filter(k=>!n.grid[k]).join(', ')}. Mũi tên: ${n.arrows.map(a=>(a.kind==='full'?'mũi tên ':'mũi tên trống ')+a.name+' ('+a.nums.join('-')+')').join(', ')||'không có'}. Thử thách: ${n.challenges.join(', ')}. Nợ nghiệp: ${n.debts.map(d=>d.n+' ở '+d.where).join(', ')||'không có'}. Đam mê ẩn: ${n.passion.join(', ')}. Tháng cá nhân ${n.personalMonth.month}: ${n.personalMonth.n}.`);
   return L.join('\n');
 }
@@ -1943,8 +1898,10 @@ async function ask(){
   const box = document.createElement('div'); box.className = 'qa'; box.innerHTML = `<div class="q">${esc(q)}</div><div class="a"><p class="muted">Đang suy nghĩ…</p></div>`; $('#qaList').append(box);
   const a = box.querySelector('.a'); let got = false;
   try {
-    const text = await callAI({ brief: brief() + hdBrief(q), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, style: $('#shortMode').checked ? 'thay' : '' }, t => { got = !!t; a.innerHTML = md(t); });
+    const text = await callAI({ brief: brief() + hdBrief(q), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, style: ask.long ? '' : 'thay' }, t => { got = !!t; a.innerHTML = md(t); });
     history.push({ q, a: text }); a.insertAdjacentHTML('beforeend', byNote());
+    if (!ask.long) { const more = document.createElement('button'); more.type = 'button'; more.className = 'btn-ghost btn-sm qa-more'; more.textContent = 'Giải thích kỹ hơn';
+      more.onclick = () => { more.remove(); ask.long = true; $('#ask').value = q; ask().finally(() => { ask.long = false; }); }; a.append(more); }
   } catch(e) { failAsk(box, q, e, got, ask); }
   finally { busy(false); }
 }
