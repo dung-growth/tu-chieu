@@ -321,6 +321,7 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .qm-ask textarea{width:100%;margin:8px 0}
 .qm-ask-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
 .qm-ask-row select{width:auto}
+.qm-chat{margin-top:16px;padding-top:12px;border-top:1px solid var(--line-2)} .qm-chat .qa{margin-bottom:12px}
 .qm-long{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line)}
 .qm-res{margin-top:16px} .qm-res .q{margin-bottom:12px}
 @media (max-width:560px){.qm-cell{font-size:12px;padding:6px;min-height:118px}.qm-top{font-size:10.5px}.qm-top .muted{display:none}}
@@ -1824,15 +1825,37 @@ async function qmAsk(){
     ${saved ? '<p class="small muted">Câu này đã hỏi hôm nay, dùng lại bàn cũ theo lệ "một việc không hỏi hai lần".</p>' : ''}
     <div class="qm-body"><div>${qmGrid(c, roles)}</div><div><div class="label" style="margin-bottom:6px">Máy chấm nhanh</div>${qmQuick(c, roles)}<div class="ai-out" id="qmHoiAi"></div></div></div></div>`;
   const a = $('#qmHoiAi');
-  if (saved && saved.answer) { a.innerHTML = md(saved.answer); qmMore(a, () => qmLong(c, q, topic, a)); return; }
+  if (saved && saved.answer) { a.innerHTML = md(saved.answer); qmMore(a, () => qmLong(c, q, topic, a)); qmChat(c, q, topic, saved.answer, saved.thread || []); return; }
   a.innerHTML = '<p class="muted">Đang luận bàn…</p>'; ctl = new AbortController(); busy(true); $('#qmGo').disabled = true;
   try {
     const text = await callAI({ mode: 'qm-hoi', brief: QM.brief(c, 'hoi', topic), question: q, topic: QM.TOPICS[topic].name, focus: $('#focus').value, ctx: readInput().ctx }, x => { a.innerHTML = md(x); });
     try { localStorage.setItem(QM_KEY(q, topic), JSON.stringify({ t, answer: text })); } catch(e) {}
     a.insertAdjacentHTML('beforeend', byNote());
     qmMore(a, () => qmLong(c, q, topic, a));
+    qmChat(c, q, topic, text, []);
   } catch(e) { if (e.name !== 'AbortError') a.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
   finally { busy(false); $('#qmGo').disabled = false; }
+}
+// Ô trả lời / hỏi tiếp ngay dưới câu trả lời Kỳ Môn, vẫn dùng đúng bàn đã lập
+function qmChat(c, q, topic, firstAns, thread){
+  const box = document.createElement('div'); box.className = 'qm-chat';
+  box.innerHTML = `<div class="qm-thread"></div><div class="chat-row"><input class="qm-fu" maxlength="300" placeholder="Trả lời câu hỏi của AI hoặc hỏi thêm về bàn này"><button type="button" class="btn-ghost qm-fu-go">Gửi</button></div>`;
+  $('#qmHoiOut .qm-res').append(box);
+  const list = box.querySelector('.qm-thread'), inp = box.querySelector('.qm-fu'), go = box.querySelector('.qm-fu-go');
+  const show = (fq, fa) => { const d = document.createElement('div'); d.className = 'qa'; d.innerHTML = `<div class="q">${esc(fq)}</div><div class="a">${fa ? md(fa) : '<p class="muted">Đang luận tiếp…</p>'}</div>`; list.append(d); return d.querySelector('.a'); };
+  thread.forEach(x => show(x.q, x.a));
+  const send = async () => {
+    const fu = inp.value.trim(); if (!fu) return; inp.value = '';
+    const a = show(fu); ctl = new AbortController(); busy(true); go.disabled = true;
+    try {
+      const history = [{ q, a: firstAns }, ...thread];
+      const text = await callAI({ mode: 'qm-hoi', brief: QM.brief(c, 'hoi', topic), question: q, topic: QM.TOPICS[topic].name, followup: fu, history, focus: $('#focus').value, ctx: readInput().ctx }, x => { a.innerHTML = md(x); });
+      thread.push({ q: fu, a: text }); a.insertAdjacentHTML('beforeend', byNote());
+      try { const k = QM_KEY(q, topic), sv = JSON.parse(localStorage.getItem(k) || '{}'); sv.thread = thread; localStorage.setItem(k, JSON.stringify(sv)); } catch(e) {}
+    } catch(e) { if (e.name !== 'AbortError') a.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+    finally { busy(false); go.disabled = false; }
+  };
+  go.onclick = send; inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
 }
 // Nút "Giải thích kỹ hơn": gọi lại AI với cùng bàn, bản dài (tốn thêm 1 lượt)
 function qmMore(box, fn){ const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-ghost btn-sm qa-more'; b.textContent = 'Giải thích kỹ hơn (thêm 1 lượt AI)'; b.onclick = () => { b.remove(); fn(); }; box.append(b); }
