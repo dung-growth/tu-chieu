@@ -241,9 +241,8 @@ export default async function handler(req, res) {
   }
 
   res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no',
-    'X-AI-Model': encodeURIComponent(prettyName(used.model)),
-    // Chỉ chủ trang (nhập đúng OWNER_CODE) mới được biết thêm: model cụ thể và các nguồn đã hỏng trước đó
-    ...(owner ? { 'X-AI-Owner': encodeURIComponent(`${used.model} · chữ đầu sau ${((Date.now() - tStart) / 1000).toFixed(1)} giây${tried.length ? ' · đã bỏ qua: ' + tried.join('; ') : ''}`) } : {}),
+    // Chỉ chủ trang (nhập đúng OWNER_CODE) mới được biết model nào trả lời và các nguồn đã hỏng trước đó
+    ...(owner ? { 'X-AI-Model': encodeURIComponent(prettyName(used.model)), 'X-AI-Owner': encodeURIComponent(`${used.model} · chữ đầu sau ${((Date.now() - tStart) / 1000).toFixed(1)} giây${tried.length ? ' · đã bỏ qua: ' + tried.join('; ') : ''}`) } : {}),
     'Access-Control-Expose-Headers': 'X-AI-Model, X-AI-Owner' });
   res.write(first);
   try {
