@@ -2098,7 +2098,8 @@ function brief(){
 let ctl = null, history = [], firstText = '', lastText = '', lastModel = '', lastOwner = '';
 // Ghi chú nhỏ khi câu trả lời đến từ model dự phòng (không phải Gemini)
 // Người xem thường: chỉ ghi chú khi model dự phòng trả lời. Chủ trang (đã nhập OWNER_CODE): luôn hiện model, thời gian và các nguồn đã bỏ qua
-const byNote = () => lastOwner ? `<p class="ai-by ai-owner" title="Chỉ chủ trang thấy dòng này">Chủ trang · ${esc(lastModel)} · ${esc(lastOwner)}</p>` : lastModel && lastModel !== 'Gemini' ? `<p class="ai-by">Trả lời bởi ${esc(lastModel)}</p>` : '';
+// Chỉ chủ trang (nhập đúng OWNER_CODE) mới thấy model nào đã trả lời; người xem thường không thấy gì
+const byNote = () => lastOwner ? `<p class="ai-by ai-owner" title="Chỉ chủ trang thấy dòng này">Chủ trang · ${esc(lastModel)} · ${esc(lastOwner)}</p>` : '';
 const md = s => DOMPurify.sanitize(marked.parse(s || ''));
 const CODE_KEY = 'tuchieu:code';
 try { $('#code').value = localStorage.getItem(CODE_KEY) || ''; } catch(e) {}
