@@ -101,6 +101,17 @@ async function* callProvider(p, messages, maxTokens, signal) {
   }
 }
 
+// Kỳ Môn hỏi việc: lượt đầu, hoặc người hỏi trả lời / hỏi thêm trên CÙNG một bàn
+function qmThread(b, ctx, brief) {
+  const first = [{ role: 'user', content: qmHoiRules(ctx, clip(b.question, 300), clip(b.topic, 40) || 'việc khác', !!b.long) + '\n\nDỮ LIỆU:\n' + brief }];
+  const fu = clip(b.followup, 400).trim(); if (!fu) return first;
+  const h = (Array.isArray(b.history) ? b.history : []).slice(-4);
+  if (!h.length) return first;
+  h.forEach((x, i) => { if (i) first.push({ role: 'user', content: clip(x.q, 400) }); first.push({ role: 'assistant', content: clip(x.a, 6000) || '...' }); });
+  first.push({ role: 'user', content: `Người hỏi trả lời hoặc hỏi thêm: "${fu}"\nDùng ĐÚNG bàn ở trên, không lập bàn mới, không thêm dữ liệu ngoài bàn. Trả lời theo cùng cách viết: kết luận trước, câu ngắn, căn cứ trong ngoặc. Tối đa khoảng 180 từ. Nếu vẫn thiếu bối cảnh thì hỏi lại đúng một câu.` });
+  return first;
+}
+
 // Lý do một nguồn hỏng, viết cho người đọc
 function whyFailed(e, p) {
   const st = e.status, m = String(e.message || '');
@@ -167,7 +178,7 @@ export default async function handler(req, res) {
   if ((b.mode === 'qm-menh' || b.mode === 'qm-hoi') && !brief.includes('[KỲ MÔN ĐỘN GIÁP · BÀN ĐÃ TÍNH SẴN]')) return res.status(400).json({ error: 'Thiếu dữ liệu bàn Kỳ Môn.' });
   if (b.mode === 'qm-hoi' && clip(b.question, 300).trim().length < 3) return res.status(400).json({ error: 'Chưa có câu hỏi.' });
   const messages = b.mode === 'qm-menh' ? [{ role: 'user', content: qmMenhRules(ctx, !!b.long) + '\n\nDỮ LIỆU:\n' + brief }]
-    : b.mode === 'qm-hoi' ? [{ role: 'user', content: qmHoiRules(ctx, clip(b.question, 300), clip(b.topic, 40) || 'việc khác', !!b.long) + '\n\nDỮ LIỆU:\n' + brief }]
+    : b.mode === 'qm-hoi' ? qmThread(b, ctx, brief)
     : b.mode === 'hd'
     ? [{ role: 'user', content: hdRules(ctx) + '\n\nDỮ LIỆU:\n' + brief }]
     : b.question && !firstText
