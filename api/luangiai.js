@@ -14,7 +14,7 @@
 //   RATE_LIMIT_PER_HOUR (tùy chọn) số lượt tối đa mỗi IP mỗi giờ, mặc định 8
 //   OWNER_CODE          (tùy chọn) mã của chủ trang; nhập mã này vào ô "Mã truy cập" thì không bị giới hạn lượt
 
-import { rules, askRules, hdRules, thayRules, FOCUS } from '../prompt.js';
+import { rules, askRules, hdRules, thayRules, qmHoiRules, qmMenhRules, FOCUS } from '../prompt.js';
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
 const OR_MODELS = (process.env.OPENROUTER_MODELS || 'nvidia/nemotron-3.5-super-vl:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,openrouter/free')
@@ -163,14 +163,20 @@ export default async function handler(req, res) {
 
   // Chưa có bài luận tổng mà hỏi thẳng: chỉ đưa dữ liệu lá số, không bắt viết bài luận
   const firstText = clip(b.first, 20000);
-  const messages = b.mode === 'hd'
+  // Kỳ Môn: bàn do trình duyệt tính sẵn bằng qimen.js; ở đây chỉ kiểm có đúng dữ liệu bàn rồi đưa AI đọc
+  if ((b.mode === 'qm-menh' || b.mode === 'qm-hoi') && !brief.includes('[KỲ MÔN ĐỘN GIÁP · BÀN ĐÃ TÍNH SẴN]')) return res.status(400).json({ error: 'Thiếu dữ liệu bàn Kỳ Môn.' });
+  if (b.mode === 'qm-hoi' && clip(b.question, 300).trim().length < 3) return res.status(400).json({ error: 'Chưa có câu hỏi.' });
+  const messages = b.mode === 'qm-menh' ? [{ role: 'user', content: qmMenhRules(ctx, !!b.long) + '\n\nDỮ LIỆU:\n' + brief }]
+    : b.mode === 'qm-hoi' ? [{ role: 'user', content: qmHoiRules(ctx, clip(b.question, 300), clip(b.topic, 40) || 'việc khác', !!b.long) + '\n\nDỮ LIỆU:\n' + brief }]
+    : b.mode === 'hd'
     ? [{ role: 'user', content: hdRules(ctx) + '\n\nDỮ LIỆU:\n' + brief }]
     : b.question && !firstText
     ? [{ role: 'user', content: `Dưới đây là DỮ LIỆU ĐÃ TÍNH SẴN của người hỏi (Bát tự, chiêm tinh, Tử vi, thần số học). Chỉ dùng dữ liệu này, không tự tính lại. Người hỏi chưa đọc bài luận tổng.${ctx ? `\nBối cảnh của người hỏi: "${ctx}".` : ''}\n\nDỮ LIỆU:\n` + brief },
        { role: 'assistant', content: 'Tôi đã đọc xong dữ liệu lá số. Bạn muốn hỏi gì?' }]
     : [{ role: 'user', content: rules(focus, ctx) + '\n\nDỮ LIỆU:\n' + brief }];
   let maxTokens = 12288;
-  if (b.mode === 'hd') maxTokens = 8192;
+  if (b.mode === 'hd' || b.mode === 'qm-menh') maxTokens = 8192;
+  else if (b.mode === 'qm-hoi') maxTokens = 6144;
   else if (b.question) {
     if (firstText) messages.push({ role: 'assistant', content: firstText });
     (Array.isArray(b.history) ? b.history.slice(-3) : []).forEach(h => {
