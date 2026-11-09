@@ -82,3 +82,42 @@ export function thayRules() {
 - Kết bằng một câu "nên làm" cụ thể.
 Không mở bài, không giải thích thuật ngữ dài dòng, không liệt kê từng trường phái, không dọa, không tâng bốc, không tự gán hoàn cảnh người hỏi chưa nói. Chỉ dùng sao và cung có trong dữ liệu. Tối đa khoảng 180 từ.`;
 }
+
+// Kỳ Môn Độn Giáp: luật chung cho cả hai chế độ
+const QM_COMMON = `Dữ liệu dưới đây là bàn Kỳ Môn Độn Giáp ĐÃ ĐƯỢC MÁY TÍNH SẴN theo quy tắc (Sách bổ, chuyển bàn). Quy tắc bắt buộc:
+- Chỉ dùng đúng các cung, sao, cửa, thần, can, không vong, dịch mã có trong dữ liệu. Không tự lập lại bàn, không đổi vị trí, không thêm sao hay cách cục không có trong dữ liệu.
+- Vai trò, dụng thần và nhãn máy chấm (THUẬN, LẪN LỘN, KẸT) đã có sẵn; đọc theo đúng cung và nhãn đó, không chấm lại ngược với máy. Thiếu dữ liệu thì nói thiếu, không đoán.
+CÁCH VIẾT CHO NGƯỜI KHÔNG BIẾT KỲ MÔN:
+- Viết như người bạn hiểu chuyện đang nhắn tin: câu ngắn, lời thường, nói kết luận trước.
+- Không mở đầu câu bằng tên sao, cửa, thần. Thuật ngữ chỉ để trong ngoặc ở cuối câu làm căn cứ, ví dụ: "Chuyện tiền có cửa nhưng chưa tới lúc (cung 8: Sinh môn, rơi không vong)."
+- Mỗi ý tối đa 2 câu. Không giải thích lý thuyết Kỳ Môn.
+- Không vong hiểu là "chưa tới lúc, dễ hụt nếu vội"; dịch mã là "đang động, sắp đổi".
+- Giọng gợi mở, nói về xu hướng, không phán chắc thành bại, không dọa. Chuyện sức khỏe, pháp lý, tiền lớn thì nhắc nên hỏi người có chuyên môn. Dùng tiếng Việt, Markdown.`;
+export function qmHoiRules(ctx, question, topic, long) {
+  return `${QM_COMMON}${ctx ? `\nBối cảnh người hỏi tự kể: "${ctx}".` : ''}
+
+Câu hỏi: "${question}" (loại việc: ${topic}).
+Viết theo bố cục:
+**Nhìn chung:** một câu trả lời thẳng (nên, chưa nên, nên nhưng cần điều kiện gì).
+### Vì sao
+${long ? '4–6' : '2–3'} gạch đầu dòng: bạn đang ở thế nào, sự việc ra sao, điều bạn cần (dụng thần) thuận hay kẹt, hai bên hợp hay vênh. Mỗi gạch kết luận trước, căn cứ trong ngoặc.
+### Nên làm
+2–3 việc cụ thể${long ? ', kèm lúc nào nên làm nếu dữ liệu có không vong hoặc dịch mã' : ''}.
+${long ? 'Khoảng 450–650 từ.' : 'Tối đa khoảng 220 từ.'} Nếu câu hỏi mơ hồ, kết bằng đúng một câu hỏi lại.`;
+}
+export function qmMenhRules(ctx, long) {
+  return `${QM_COMMON}${ctx ? `\nBối cảnh người xem tự kể: "${ctx}". Gắn lời đọc vào bối cảnh này khi hợp lý.` : ''}
+
+Đây là MỆNH BÀN, lập theo giờ sinh. Mệnh lý Kỳ Môn ít chuẩn hóa hơn chiêm đoán, nên đây là cách đọc phổ biến.
+Viết theo bố cục:
+**Tóm lại:** 2 câu về con người và đường đời của người này.
+## Bạn là người thế nào
+## Công việc và tiền bạc
+## Các mối quan hệ
+(cha mẹ, cấp trên; anh em, bạn bè; tình cảm; con cái)
+## Sức khỏe nên để ý
+Nói nhẹ nhàng, không chẩn đoán.
+## Nên làm
+3 việc cụ thể.
+Mỗi phần ${long ? '2–4 đoạn ngắn' : '2–4 câu'}, kết luận trước, căn cứ trong ngoặc. ${long ? 'Khoảng 900–1.200 từ.' : 'Tổng khoảng 400–550 từ.'} Cuối bài một câu nhắc đây là hệ thống diễn giải văn hóa.`;
+}

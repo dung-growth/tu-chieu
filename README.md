@@ -7,6 +7,7 @@ Lập cùng lúc Bát tự, Bản đồ sao, Tử vi, Thần số học từ ng�
 ```
 index.html          giao diện + code trang
 compute.js          tính toán 4 trường phái (chạy trên trình duyệt người dùng)
+qimen.js            Kỳ Môn Độn Giáp (Beta, tab Khám phá): Sách bổ, chuyển bàn, Thiên Cầm ký Khôn, giờ Việt Nam UTC+7. Engine tính bằng quy tắc, AI chỉ đọc bàn. Kiểm thử: npm run test:qimen (xem test/qimen/README.md)
 hd.js               Human Design: tính bodygraph (loại, thẩm quyền, hồ sơ, kênh, cổng) và vẽ SVG; nằm trong tab Khám phá · Beta (thêm hệ thử nghiệm mới bằng một dòng trong mảng LAB ở index.html), không trộn vào bài luận
 nghia.js            từ điển nghĩa ngắn cho khung "bấm vào xem nghĩa" (sao, cung, thập thần, hành tinh, con số)
 tuvi-vn.js          an sao Tử vi kiểu Việt Nam (Thái Thứ Lang): lịch âm Việt, độ sáng, tứ hóa, đủ sao phụ, vòng Thái Tuế/Bác Sĩ; mặc định, người xem đổi sang kiểu Trung Quốc (iztro) được. Chuyển từ lasotuvi (MIT, doanguyen)

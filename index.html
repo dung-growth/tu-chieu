@@ -297,6 +297,33 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .mo.open .mo-more{display:block} .mo.open{grid-column:1/-1;cursor:default}
 .mo-more p{margin:0 0 8px}
 #tvMonths:not(:empty){margin:16px 0}
+/* kỳ môn */
+.qm-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-bottom:16px}
+.qm-body{display:grid;grid-template-columns:minmax(300px,1.1fr) 1fr;gap:20px;align-items:start}
+@media (max-width:860px){.qm-body{grid-template-columns:1fr}}
+.qm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.qm-cell{border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 9px;display:flex;flex-direction:column;gap:2px;min-height:132px;background:var(--sheet);font-size:13.5px;min-width:0}
+.qm-mid{background:var(--sunken);justify-content:center;gap:3px;text-align:center}
+.qm-mid b{font-size:15px}
+.qm-top{display:flex;justify-content:space-between;gap:4px;font-size:12px;font-weight:600}
+.qm-flags{display:flex;gap:3px}
+.qm-kv,.qm-ma{font-size:10px;font-weight:700;padding:0 4px;border-radius:3px;background:var(--sunken);color:var(--ink-2)}
+.qm-ma{background:var(--jade-soft);color:var(--jade)}
+.qm-god{font-size:12px} .qm-star{font-weight:600} .qm-door{font-weight:600}
+.t-good{color:var(--jade)} .t-bad{color:var(--seal)} .t-mid{color:var(--gold)}
+.qm-stems{display:flex;justify-content:space-between;margin-top:auto;padding-top:4px;border-top:1px dashed var(--line-2);font-weight:600}
+.qm-roles{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.qm-roles span{font-size:10.5px;padding:1px 5px;border-radius:4px;background:var(--seal-soft);color:var(--seal);font-weight:600}
+.qm-legend{margin:10px 0 0}
+.qm-quick{margin:0;padding:0;list-style:none;display:grid;gap:10px;font-size:14.5px}
+.qm-v{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;margin-right:2px}
+.qm-v.v-good{background:var(--jade-soft);color:var(--jade)} .qm-v.v-bad{background:var(--seal-soft);color:var(--seal)} .qm-v.v-mid{background:var(--sunken);color:var(--ink-2)}
+.qm-ask textarea{width:100%;margin:8px 0}
+.qm-ask-row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.qm-ask-row select{width:auto}
+.qm-long{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line)}
+.qm-res{margin-top:16px} .qm-res .q{margin-bottom:12px}
+@media (max-width:560px){.qm-cell{font-size:12px;padding:6px;min-height:118px}.qm-top{font-size:10.5px}.qm-top .muted{display:none}}
 /* human design */
 .hd-svg{width:100%;max-width:400px;display:block;margin:0 auto}
 .hd-body-sil{fill:var(--sunken);stroke:var(--line);stroke-width:1}
@@ -845,6 +872,7 @@ tr.cur td{background:var(--seal-soft)}
 <script src="tuvi-cach.js"></script>
 <script src="nghia.js"></script>
 <script src="hd.js"></script>
+<script src="qimen.js"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
@@ -1619,11 +1647,12 @@ document.querySelectorAll('#steps button').forEach(b => b.onclick = () => {
 
 /* ---- Khám phá · Beta: khung chứa các hệ thử nghiệm. Thêm hệ mới = thêm một dòng vào LAB ---- */
 const LAB = [
-  { id: 'hd', name: 'Human Design', render: () => renderHD() }
+  { id: 'hd', name: 'Human Design', render: () => renderHD() },
+  { id: 'qm', name: 'Kỳ Môn', render: () => renderQM() }
 ];
 let labCur = 'hd';
 function renderLab(){
-  $('#labNav').innerHTML = LAB.map(x => `<button type="button" class="lab-pill" data-lab="${x.id}" aria-pressed="${x.id === labCur}">${x.name}</button>`).join('') + '<span class="lab-soon">Sắp có thêm</span>';
+  $('#labNav').innerHTML = LAB.map(x => `<button type="button" class="lab-pill" data-lab="${x.id}" aria-pressed="${x.id === labCur}">${x.name}</button>`).join('') + '';
   $('#labBody').innerHTML = LAB.map(x => `<div id="lab-${x.id}" ${x.id === labCur ? '' : 'hidden'}></div>`).join('');
   LAB.forEach(x => x.render());
   $('#labNav').querySelectorAll('.lab-pill').forEach(b => b.onclick = () => { labCur = b.dataset.lab;
@@ -1703,6 +1732,119 @@ async function hdAI(){
   finally { busy(false); btn.disabled = false; }
 }
 
+
+/* ---- Kỳ Môn Độn Giáp (Beta): bàn tính bằng qimen.js, AI chỉ đọc bàn đã tính ---- */
+const QM_ORDER = [4, 9, 2, 3, 5, 7, 8, 1, 6];   // lưới Lạc thư, Nam ở trên
+const qmTone = t => t === 'cát' ? 'good' : t === 'hung' ? 'bad' : 'mid';
+function qmGrid(c, roles){
+  const byP = {}; (roles || []).forEach(r => (byP[r.palace] = byP[r.palace] || []).push(r.label.split(' (')[0]));
+  const N = QM.NGHIA, tip = (k, txt, cls = '') => `<span class="${cls}" data-tip="qm" data-key="${k}">${txt}</span>`;
+  return `<div class="qm-grid" role="table" aria-label="Bàn Kỳ Môn chín cung">${QM_ORDER.map(p => {
+    const x = c.palaces[p];
+    if (p === 5) return `<div class="qm-cell qm-mid" role="cell"><span class="label">Trung cung</span>
+      <b>${c.dun} độn ${c.ju} cục</b><span class="small">${c.yuan} nguyên · tiết ${c.term.vi}</span>
+      <span class="small muted">${QM.vi(c.pillars.year)} · ${QM.vi(c.pillars.month)} · ${QM.vi(c.pillars.day)} · ${QM.vi(c.pillars.hour)}</span>
+      <span class="small">Trực phù ${QM.STAR_VI[c.zhifu.star]} → ${c.zhifu.palace} · Trực sử ${QM.DOOR_VI[c.zhishi.door]} → ${c.zhishi.palace}</span>
+      <span class="small muted">Địa bàn: ${tip('stem:' + x.earth[0], QM.vi(x.earth[0]))} (gửi Khôn)</span></div>`;
+    return `<div class="qm-cell" role="cell"><div class="qm-top">${tip('palace:' + p, `${x.name} <span class="muted">${p} · ${x.dir}</span>`, 'qm-pal')}
+        <span class="qm-flags">${x.kong.length ? `<span class="qm-kv" title="Không vong ${x.kong.join(', ')}">KV</span>` : ''}${x.ma ? '<span class="qm-ma" title="Dịch mã">Mã</span>' : ''}</span></div>
+      <div class="qm-god t-${qmTone(N.god[x.god][0])}">${tip('god:' + x.god, QM.GOD_VI[x.god])}</div>
+      <div class="qm-star t-${qmTone(N.star[x.star][0])}">${tip('star:' + x.star, QM.STAR_VI[x.star])}${x.qin ? ' <span class="small muted">+ Cầm</span>' : ''}</div>
+      <div class="qm-door t-${qmTone(N.door[x.door][0])}">${tip('door:' + x.door, QM.DOOR_VI[x.door])}</div>
+      <div class="qm-stems"><span title="Thiên bàn">${x.sky.map(s => tip('stem:' + s, QM.vi(s))).join(' ')}</span><span class="muted" title="Địa bàn">${x.earth.map(s => tip('stem:' + s, QM.vi(s))).join(' ')}</span></div>
+      ${byP[p] ? `<div class="qm-roles">${byP[p].map(r => `<span>${esc(r)}</span>`).join('')}</div>` : ''}</div>`; }).join('')}</div>
+  <p class="small muted qm-legend">Mỗi ô: thần ở trên, sao, cửa, can thiên bàn (đậm) và địa bàn (nhạt). Xanh là cát, đỏ là hung. KV: không vong. Bấm vào chữ để xem nghĩa.</p>`;
+}
+// Đọc nhanh viết sẵn: kết luận đời thường trước, căn cứ trong ngoặc. Không cần AI
+function qmQuick(c, roles){
+  const tone = v => v === 'Thuận' ? 'good' : v === 'Kẹt' ? 'bad' : 'mid';
+  return `<ul class="qm-quick">${roles.map(r => { const x = c.palaces[r.palace];
+    return `<li><span class="qm-v v-${tone(r.verdict)}">${r.verdict}</span> <b>${esc(r.label.split(' (')[0])}:</b> ${esc(QM.plain(r))}
+      <span class="small muted">(cung ${r.palace} ${x.name}: ${QM.DOOR_VI[x.door]}, ${QM.STAR_VI[x.star]}, ${QM.GOD_VI[x.god]}${x.kong.length ? ', không vong' : ''}${x.ma ? ', dịch mã' : ''})</span></li>`; }).join('')}</ul>`;
+}
+function qmBirth(){ // giờ sinh quy về giờ Việt Nam UTC+7
+  const i = R.input; if (i.timeMode === 'unknown') return null;
+  const [y, m, d] = i.date.split('-').map(Number), [h, mi] = i.time.split(':').map(Number);
+  return new Date(Date.UTC(y, m - 1, d, h, mi) - i.tz * 3600e3);
+}
+let qmMode = 'menh';
+function renderQM(){
+  const box = $('#lab-qm'); if (!box) return;
+  let menh = '';
+  const at = qmBirth();
+  if (!at) { R.qm = null; menh = '<p class="warn">Mệnh bàn Kỳ Môn cần giờ sinh (ít nhất là canh giờ). Chọn giờ sinh ở form rồi bấm Lập lá số.</p>'; }
+  else {
+    const c = QM.chartAt(at), roles = QM.roles(c, 'menh'); R.qm = { c, roles };
+    const conv = R.input.tz !== 7 ? `<p class="small muted">Giờ sinh đã quy đổi sang giờ Việt Nam (UTC+7): ${c.at}.</p>` : '';
+    menh = `${R.input.timeMode === 'canh' ? '<p class="warn">Chỉ biết canh giờ: bàn lập theo giữa canh. Trụ giờ đúng, nhưng nếu sinh sát giờ giao tiết khí thì cục có thể khác.</p>' : ''}${conv}
+      <div class="qm-body"><div class="panel">${qmGrid(c, roles)}</div>
+      <div class="panel hd-read"><div class="label" style="margin-bottom:6px">Đọc nhanh mệnh bàn</div>
+        <p class="small muted" style="margin:0 0 8px">Máy chấm theo lối đọc phổ biến: cửa là chính, sao và thần thêm bớt. Trong ngoặc là căn cứ trên bàn, bấm vào chữ trên bàn để xem nghĩa.</p>
+        ${qmQuick(c, roles)}
+        <div class="hd-ai"><div><b>Muốn đọc sâu hơn?</b><br><span class="small muted">AI đọc đúng bàn đã tính ở bên cạnh, không tự lập bàn. Tốn 1 lượt AI.</span></div><button type="button" class="btn-primary" id="qmAiGo">AI luận mệnh bàn</button></div>
+        <div id="qmAiOut" class="ai-out"></div></div></div>`;
+  }
+  const topics = Object.entries(QM.TOPICS).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
+  box.innerHTML = `<div class="qm-head"><div class="seg" role="group" aria-label="Chế độ Kỳ Môn">${[['menh','Mệnh bàn'],['hoi','Hỏi việc']].map(([v, n]) => `<button type="button" data-qm="${v}" aria-pressed="${qmMode === v}">${n}</button>`).join('')}</div>
+      <span class="small muted">Thời gia Kỳ Môn · Sách bổ · chuyển bàn · Thiên Cầm ký Khôn · giờ Việt Nam</span></div>
+    <div id="qmMenh" ${qmMode === 'menh' ? '' : 'hidden'}>${menh}</div>
+    <div id="qmHoi" ${qmMode === 'hoi' ? '' : 'hidden'}>
+      <div class="panel qm-ask"><label for="qmQ"><b>Câu hỏi của bạn</b></label>
+        <textarea id="qmQ" rows="2" maxlength="300" placeholder="Ví dụ: Tháng này có nên nhận lời mời làm việc ở công ty mới không?"></textarea>
+        <div class="qm-ask-row"><label class="small" for="qmTopic">Loại việc</label><select id="qmTopic">${topics}</select>
+          <button type="button" class="btn-primary" id="qmGo">Lập bàn theo giờ này và hỏi AI</button></div>
+        <p class="small muted" style="margin:6px 0 0">Bàn lập đúng thời điểm bạn bấm (giờ Việt Nam). Mỗi câu hỏi chỉ lập một bàn trong ngày; hỏi lại sẽ dùng bàn cũ.</p></div>
+      <div id="qmHoiOut"></div></div>`;
+  box.querySelectorAll('[data-qm]').forEach(b => b.onclick = () => { qmMode = b.dataset.qm; box.querySelectorAll('[data-qm]').forEach(o => o.setAttribute('aria-pressed', o === b)); $('#qmMenh').hidden = qmMode !== 'menh'; $('#qmHoi').hidden = qmMode !== 'hoi'; });
+  if ($('#qmAiGo')) $('#qmAiGo').onclick = qmMenhAI;
+  $('#qmGo').onclick = qmAsk;
+}
+async function qmMenhAI(){
+  const out = $('#qmAiOut'), btn = $('#qmAiGo'), i = R.input, { c } = R.qm;
+  out.innerHTML = '<p class="muted">Đang đọc mệnh bàn…</p>'; ctl = new AbortController(); busy(true); btn.disabled = true;
+  const head = `NGƯỜI XEM: ${i.gender === 'nam' ? 'Nam' : 'Nữ'}, sinh ${fmtDate(i.date)} ${i.timeMode === 'exact' ? i.time : i.timeLabel} tại ${i.place}.\n`;
+  try {
+    const long = qmMenhAI.long; qmMenhAI.long = false;
+    const text = await callAI({ mode: 'qm-menh', long, brief: head + QM.brief(c, 'menh'), focus: $('#focus').value, ctx: readInput().ctx }, t => { out.innerHTML = md(t); });
+    out.insertAdjacentHTML('beforeend', byNote());
+    if (!long) qmMore(out, () => { qmMenhAI.long = true; qmMenhAI(); });
+  } catch(e) { if (e.name !== 'AbortError') out.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { busy(false); btn.disabled = false; }
+}
+const QM_KEY = (q, topic) => 'tuchieu:qm:' + new Date().toISOString().slice(0, 10) + ':' + topic + ':' + q.toLowerCase().replace(/\s+/g, ' ').trim();
+async function qmAsk(){
+  const q = $('#qmQ').value.trim(), topic = $('#qmTopic').value, out = $('#qmHoiOut');
+  if (!q) { $('#qmQ').focus(); return; }
+  let saved = null; try { saved = JSON.parse(localStorage.getItem(QM_KEY(q, topic)) || 'null'); } catch(e) {}
+  // Lưu thời điểm lập bàn (không lưu bàn): mở lại thì tính lại đúng bàn đó
+  const t = saved ? saved.t : (() => { const d = new Date(Date.now() + 7 * 3600e3); return [d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate(), d.getUTCHours(), d.getUTCMinutes()]; })();
+  if (!saved) try { localStorage.setItem(QM_KEY(q, topic), JSON.stringify({ t })); } catch(e) {}
+  const c = QM.chart(...t, 7), roles = QM.roles(c, 'hoi', topic);
+  out.innerHTML = `<div class="panel qm-res"><div class="q"><b>Hỏi:</b> ${esc(q)} <span class="small muted">· ${QM.TOPICS[topic].name} · bàn lập lúc ${c.at}</span></div>
+    ${saved ? '<p class="small muted">Câu này đã hỏi hôm nay, dùng lại bàn cũ theo lệ "một việc không hỏi hai lần".</p>' : ''}
+    <div class="qm-body"><div>${qmGrid(c, roles)}</div><div><div class="label" style="margin-bottom:6px">Máy chấm nhanh</div>${qmQuick(c, roles)}<div class="ai-out" id="qmHoiAi"></div></div></div></div>`;
+  const a = $('#qmHoiAi');
+  if (saved && saved.answer) { a.innerHTML = md(saved.answer); qmMore(a, () => qmLong(c, q, topic, a)); return; }
+  a.innerHTML = '<p class="muted">Đang luận bàn…</p>'; ctl = new AbortController(); busy(true); $('#qmGo').disabled = true;
+  try {
+    const text = await callAI({ mode: 'qm-hoi', brief: QM.brief(c, 'hoi', topic), question: q, topic: QM.TOPICS[topic].name, focus: $('#focus').value, ctx: readInput().ctx }, x => { a.innerHTML = md(x); });
+    try { localStorage.setItem(QM_KEY(q, topic), JSON.stringify({ t, answer: text })); } catch(e) {}
+    a.insertAdjacentHTML('beforeend', byNote());
+    qmMore(a, () => qmLong(c, q, topic, a));
+  } catch(e) { if (e.name !== 'AbortError') a.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { busy(false); $('#qmGo').disabled = false; }
+}
+// Nút "Giải thích kỹ hơn": gọi lại AI với cùng bàn, bản dài (tốn thêm 1 lượt)
+function qmMore(box, fn){ const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-ghost btn-sm qa-more'; b.textContent = 'Giải thích kỹ hơn (thêm 1 lượt AI)'; b.onclick = () => { b.remove(); fn(); }; box.append(b); }
+async function qmLong(c, q, topic, a){
+  const more = document.createElement('div'); more.className = 'qm-long'; more.innerHTML = '<p class="muted">Đang viết bản giải thích kỹ…</p>'; a.append(more);
+  ctl = new AbortController(); busy(true);
+  try { await callAI({ mode: 'qm-hoi', long: true, brief: QM.brief(c, 'hoi', topic), question: q, topic: QM.TOPICS[topic].name, focus: $('#focus').value, ctx: readInput().ctx }, x => { more.innerHTML = md(x); }); more.insertAdjacentHTML('beforeend', byNote()); }
+  catch(e) { if (e.name !== 'AbortError') more.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+  finally { busy(false); }
+}
+function qmBriefFor(q){ return R && R.qm && /kỳ môn|ky mon|cửu cung|trực phù|trực sử/i.test(q) ? '\n\n' + QM.brief(R.qm.c, 'menh') : ''; }
+
 /* ---- Bấm vào sao, cung, thập thần, số… để xem nghĩa ---- */
 function askAbout(q){ closeTip(); show('t-ai'); $('#chat').hidden = false; $('#ask').value = q; go($('#ask'), 'center'); ask(); }
 function closeTip(){ const p = $('#tipPop'); if (!p.hidden) { p.hidden = true; if (closeTip.from) closeTip.from.focus({ preventScroll: true }); } }
@@ -1723,6 +1865,13 @@ function openTip(el){
   else if (kind === 'planet') { const [name, sg, house] = ctx; title = name; body = (NGHIA.planet[key] || '') + (sg ? ` Ở ${sg}: ${(NGHIA.sign[sg] || '').toLowerCase()}` : '') + (house ? ` Nhà ${house}: ${NGHIA.house[+house].toLowerCase()}` : '');
     sub = `${sg}${house ? ', nhà ' + house : ''}`; q = `${name} ở ${sg}${house ? ' nhà ' + house : ''} nói gì về tôi?`; }
   else if (kind === 'num') { title = `${ctx[0]}: số ${key}`; body = NGHIA.num[key] || ''; sub = 'Thần số học'; q = `${ctx[0]} số ${key} của tôi có ý nghĩa gì, nên tận dụng thế nào?`; }
+  else if (kind === 'qm') { const [what, id] = key.split(':'), N = QM.NGHIA;
+    if (what === 'star') { title = QM.STAR_VI[id]; sub = `Cửu tinh · ${id} · ${N.star[id][0]}`; body = N.star[id][1]; }
+    else if (what === 'door') { title = QM.DOOR_VI[id]; sub = `Bát môn · ${id} · ${N.door[id][0]}`; body = N.door[id][1]; }
+    else if (what === 'god') { title = QM.GOD_VI[id]; sub = `Bát thần · ${id} · ${N.god[id][0]}`; body = N.god[id][1]; }
+    else if (what === 'stem') { title = 'Can ' + QM.vi(id); sub = 'Thiên can trong Kỳ Môn · ' + id; body = N.stem[id] || ''; }
+    else if (what === 'palace') { title = 'Cung ' + id + ' ' + QM.PALACE[id][1]; sub = QM.PALACE[id][0] + ' · ' + QM.PALACE[id][2]; body = N.palace[id]; }
+    q = R.qm ? `${title} trong mệnh bàn Kỳ Môn của tôi nói gì?` : ''; }
   else if (kind === 'hd') { const [what, id] = key.split(':'); const c = R.hd && R.hd.c;
     if (what === 'gate') { const g = +id, a = c.active[g], ch = HD.CHANNELS.filter(x => x.includes(g)).map(x => x.slice().sort((m, n) => m - n).join('-'));
       title = 'Cổng ' + g; sub = `Trung tâm ${HD.CENTERS[HD.centerOfGate[g]].name}${a ? ' · ' + (a.p && a.d ? 'cả ý thức lẫn vô thức' : a.p ? 'ý thức (Personality)' : 'vô thức (Design)') : ' · không kích hoạt'}`;
@@ -1977,7 +2126,7 @@ async function ask(){
   const box = document.createElement('div'); box.className = 'qa'; box.innerHTML = `<div class="q">${esc(q)}</div><div class="a"><p class="muted">Đang suy nghĩ…</p></div>`; $('#qaList').append(box);
   const a = box.querySelector('.a'); let got = false;
   try {
-    const text = await callAI({ brief: brief() + hdBrief(q), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, style: ask.long ? '' : 'thay' }, t => { got = !!t; a.innerHTML = md(t); });
+    const text = await callAI({ brief: brief() + hdBrief(q) + qmBriefFor(q), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, style: ask.long ? '' : 'thay' }, t => { got = !!t; a.innerHTML = md(t); });
     history.push({ q, a: text }); a.insertAdjacentHTML('beforeend', byNote());
     if (!ask.long) { const more = document.createElement('button'); more.type = 'button'; more.className = 'btn-ghost btn-sm qa-more'; more.textContent = 'Giải thích kỹ hơn';
       more.onclick = () => { more.remove(); ask.long = true; $('#ask').value = q; ask().finally(() => { ask.long = false; }); }; a.append(more); }
