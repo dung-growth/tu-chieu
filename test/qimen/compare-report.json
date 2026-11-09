@@ -1,0 +1,291 @@
+{
+ "compared": 496,
+ "crashed": 0,
+ "full": 491,
+ "stat": {
+  "干支 ngày": {
+   "ok": 496,
+   "bad": 0
+  },
+  "干支 giờ": {
+   "ok": 496,
+   "bad": 0
+  },
+  "âm/dương độn": {
+   "ok": 496,
+   "bad": 0
+  },
+  "tam nguyên": {
+   "ok": 496,
+   "bad": 0
+  },
+  "cục số": {
+   "ok": 495,
+   "bad": 1
+  },
+  "tiết khí": {
+   "ok": 495,
+   "bad": 1
+  },
+  "trực phù": {
+   "ok": 495,
+   "bad": 1
+  },
+  "trực sử": {
+   "ok": 495,
+   "bad": 1
+  },
+  "địa bàn": {
+   "ok": 495,
+   "bad": 1
+  },
+  "thiên bàn": {
+   "ok": 491,
+   "bad": 5
+  },
+  "cửu tinh": {
+   "ok": 495,
+   "bad": 1
+  },
+  "bát môn": {
+   "ok": 495,
+   "bad": 1
+  },
+  "bát thần": {
+   "ok": 495,
+   "bad": 1
+  },
+  "không vong": {
+   "ok": 496,
+   "bad": 0
+  },
+  "dịch mã": {
+   "ok": 496,
+   "bad": 0
+  }
+ },
+ "cases": [
+  {
+   "t": [
+    2026,
+    9,
+    1,
+    16,
+    40
+   ],
+   "tag": "ngẫu nhiên",
+   "mine": {
+    "term": {
+     "name": "處暑",
+     "vi": "Xử thử",
+     "at": "10:18 23/08/2026"
+    },
+    "dun": "Âm",
+    "ju": 7,
+    "yuan": "Hạ",
+    "day": "戊寅",
+    "hour": "庚申",
+    "xunPalace": 2,
+    "notes": [
+     "Can giờ ở cung giữa: Trực phù ký sang Khôn 2.",
+     "Trực sử đếm tới cung giữa: ký sang Khôn 2."
+    ]
+   },
+   "refJu": "陰遁七局下元",
+   "refTerm": "處暑",
+   "diff": [
+    {
+     "f": "thiên bàn",
+     "mine": "坤:癸 離:丙 巽:辛 震:壬 艮:乙 坎:丁 乾:己 兌:戊",
+     "ref": "坤:丁 離:己 巽:戊 震:癸 艮:丙 坎:辛 乾:壬 兌:乙"
+    }
+   ],
+   "cause": "Lỗi của kinqimen: thiên bàn của nó không đi theo vị trí sao của chính nó (nhánh xử lý can giờ ở cung giữa). Engine giữ quy tắc 9: can thiên bàn đi theo sao."
+  },
+  {
+   "t": [
+    1966,
+    9,
+    1,
+    16,
+    4
+   ],
+   "tag": "ngẫu nhiên",
+   "mine": {
+    "term": {
+     "name": "處暑",
+     "vi": "Xử thử",
+     "at": "22:17 23/08/1966"
+    },
+    "dun": "Âm",
+    "ju": 7,
+    "yuan": "Hạ",
+    "day": "癸亥",
+    "hour": "庚申",
+    "xunPalace": 2,
+    "notes": [
+     "Can giờ ở cung giữa: Trực phù ký sang Khôn 2.",
+     "Trực sử đếm tới cung giữa: ký sang Khôn 2."
+    ]
+   },
+   "refJu": "陰遁七局下元",
+   "refTerm": "處暑",
+   "diff": [
+    {
+     "f": "thiên bàn",
+     "mine": "坤:癸 離:丙 巽:辛 震:壬 艮:乙 坎:丁 乾:己 兌:戊",
+     "ref": "坤:丁 離:己 巽:戊 震:癸 艮:丙 坎:辛 乾:壬 兌:乙"
+    }
+   ],
+   "cause": "Lỗi của kinqimen: thiên bàn của nó không đi theo vị trí sao của chính nó (nhánh xử lý can giờ ở cung giữa). Engine giữ quy tắc 9: can thiên bàn đi theo sao."
+  },
+  {
+   "t": [
+    2026,
+    5,
+    21,
+    8,
+    36
+   ],
+   "tag": "ngẫu nhiên",
+   "mine": {
+    "term": {
+     "name": "立夏",
+     "vi": "Lập hạ",
+     "at": "19:48 05/05/2026"
+    },
+    "dun": "Dương",
+    "ju": 4,
+    "yuan": "Thượng",
+    "day": "乙未",
+    "hour": "庚辰",
+    "xunPalace": 5,
+    "notes": [
+     "Tuần thủ ở cung giữa: Trực phù là Thiên Cầm (đi theo Thiên Nhuế ở Khôn), Trực sử là Tử môn."
+    ]
+   },
+   "refJu": "陽遁五局上元",
+   "refTerm": "小滿",
+   "diff": [
+    {
+     "f": "cục số",
+     "mine": 4,
+     "ref": "五"
+    },
+    {
+     "f": "tiết khí",
+     "mine": "立夏",
+     "ref": "小滿"
+    },
+    {
+     "f": "trực phù",
+     "mine": "禽@6",
+     "ref": "心@兌"
+    },
+    {
+     "f": "trực sử",
+     "mine": "死@2",
+     "ref": "開@震"
+    },
+    {
+     "f": "địa bàn",
+     "mine": "中:己 乾:庚 兌:辛 艮:壬 離:癸 坎:丁 坤:丙 震:乙 巽:戊",
+     "ref": "中:戊 乾:己 兌:庚 艮:辛 離:壬 坎:癸 坤:丁 震:丙 巽:乙"
+    },
+    {
+     "f": "thiên bàn",
+     "mine": "兌:癸 乾:丙 艮:庚 震:丁 離:乙 坤:戊",
+     "ref": "兌:己 乾:癸 艮:丙 震:乙 離:丁 坤:庚"
+    },
+    {
+     "f": "cửu tinh",
+     "mine": "兌:英 乾:禽 坎:柱 艮:心 震:蓬 巽:任 離:沖 坤:輔",
+     "ref": "兌:心 乾:蓬 坎:任 艮:沖 震:輔 巽:英 離:禽 坤:柱"
+    },
+    {
+     "f": "bát môn",
+     "mine": "震:傷 巽:杜 離:景 坤:死 兌:驚 乾:開 坎:休 艮:生",
+     "ref": "震:開 巽:休 離:生 坤:傷 兌:杜 乾:景 坎:死 艮:驚"
+    },
+    {
+     "f": "bát thần",
+     "mine": "兌:九天 乾:值符 坎:螣蛇 艮:太陰 震:六合 巽:白虎 離:玄武 坤:九地",
+     "ref": "兌:值符 乾:螣蛇 坎:太陰 艮:六合 震:白虎 巽:玄武 離:九地 坤:九天"
+    }
+   ],
+   "cause": "Sát giờ giao tiết khí (dưới 1 phút): kinqimen tính giờ giao sớm hơn; lunar-javascript và astronomy-engine cùng cho kết quả như engine."
+  },
+  {
+   "t": [
+    2025,
+    6,
+    21,
+    10,
+    35
+   ],
+   "tag": "trước giao tiết",
+   "mine": {
+    "term": {
+     "name": "芒種",
+     "vi": "Mang chủng",
+     "at": "17:56 05/06/2025"
+    },
+    "dun": "Dương",
+    "ju": 9,
+    "yuan": "Hạ",
+    "day": "辛酉",
+    "hour": "癸巳",
+    "xunPalace": 2,
+    "notes": [
+     "Can giờ ở cung giữa: Trực phù ký sang Khôn 2."
+    ]
+   },
+   "refJu": "陽遁九局下元",
+   "refTerm": "芒種",
+   "diff": [
+    {
+     "f": "thiên bàn",
+     "mine": "坤:庚 兌:丙 乾:丁 坎:己 艮:乙 震:辛 巽:壬 離:戊",
+     "ref": "坤:丁 兌:己 乾:乙 坎:辛 艮:壬 震:戊 巽:庚 離:丙"
+    }
+   ],
+   "cause": "Lỗi của kinqimen: thiên bàn của nó không đi theo vị trí sao của chính nó (nhánh xử lý can giờ ở cung giữa). Engine giữ quy tắc 9: can thiên bàn đi theo sao."
+  },
+  {
+   "t": [
+    2041,
+    11,
+    22,
+    6,
+    56
+   ],
+   "tag": "sau giao tiết",
+   "mine": {
+    "term": {
+     "name": "小雪",
+     "vi": "Tiểu tuyết",
+     "at": "06:49 22/11/2041"
+    },
+    "dun": "Âm",
+    "ju": 2,
+    "yuan": "Hạ",
+    "day": "己未",
+    "hour": "丁卯",
+    "xunPalace": 2,
+    "notes": [
+     "Can giờ ở cung giữa: Trực phù ký sang Khôn 2."
+    ]
+   },
+   "refJu": "陰遁二局下元",
+   "refTerm": "小雪",
+   "diff": [
+    {
+     "f": "thiên bàn",
+     "mine": "坤:戊 離:庚 巽:丙 震:乙 艮:辛 坎:己 乾:癸 兌:壬",
+     "ref": "坤:己 離:癸 巽:壬 震:戊 艮:庚 坎:丙 乾:乙 兌:辛"
+    }
+   ],
+   "cause": "Lỗi của kinqimen: thiên bàn của nó không đi theo vị trí sao của chính nó (nhánh xử lý can giờ ở cung giữa). Engine giữ quy tắc 9: can thiên bàn đi theo sao."
+  }
+ ]
+}
