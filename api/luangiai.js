@@ -108,7 +108,15 @@ function qmThread(b, ctx, brief) {
   const h = (Array.isArray(b.history) ? b.history : []).slice(-4);
   if (!h.length) return first;
   h.forEach((x, i) => { if (i) first.push({ role: 'user', content: clip(x.q, 400) }); first.push({ role: 'assistant', content: clip(x.a, 6000) || '...' }); });
-  first.push({ role: 'user', content: `Người hỏi trả lời hoặc hỏi thêm: "${fu}"\nDùng ĐÚNG bàn ở trên, không lập bàn mới, không thêm dữ liệu ngoài bàn. Trả lời theo cùng cách viết: kết luận trước, câu ngắn, căn cứ trong ngoặc. Tối đa khoảng 180 từ. Nếu vẫn thiếu bối cảnh thì hỏi lại đúng một câu.` });
+  const asked = /\?\s*$/.test(String(h[h.length - 1].a || '').replace(/[*_\s]+$/g, ''));
+  first.push({ role: 'user', content: `${asked ? 'Đây là câu trả lời cho câu bạn vừa hỏi lại' : 'Người hỏi nói thêm hoặc hỏi tiếp'}: "${fu}"
+Câu hỏi gốc: "${clip(b.question, 300)}".
+Cách trả lời lượt này:
+- Ghép thông tin mới với câu hỏi gốc${asked ? ' và câu bạn vừa hỏi (ví dụ người hỏi đáp "đúng" nghĩa là xác nhận điều bạn vừa hỏi)' : ''}. Câu đầu nói nhận định giờ ra sao: rõ hơn, nghiêng về có hay không, hay đổi so với lượt trước.
+- Chỉ đưa căn cứ MỚI trên bàn, hoặc một căn cứ cũ nhưng đọc lại theo thông tin mới. Không lặp lại các ý, câu, lời khuyên đã nói.
+- Không dùng tiêu đề, không theo bố cục lượt trước. Viết 1–3 đoạn ngắn, tối đa khoảng 150 từ.
+- Dùng ĐÚNG bàn ở trên, không lập bàn mới, không thêm dữ liệu ngoài bàn. Căn cứ để trong ngoặc.
+- KHÔNG hỏi lại thêm câu nào. Nếu bàn không trả lời được ý mới này thì nói thẳng là bàn không cho thấy.` });
   return first;
 }
 
