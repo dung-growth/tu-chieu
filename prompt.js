@@ -97,13 +97,14 @@ export function qmHoiRules(ctx, question, topic, long) {
   return `${QM_COMMON}${ctx ? `\nBối cảnh người hỏi tự kể: "${ctx}".` : ''}
 
 Câu hỏi: "${question}" (loại việc: ${topic}).
-Viết theo bố cục:
-**Nhìn chung:** một câu trả lời thẳng (nên, chưa nên, nên nhưng cần điều kiện gì).
-### Vì sao
-${long ? '4–6' : '2–3'} gạch đầu dòng: bạn đang ở thế nào, sự việc ra sao, điều bạn cần (dụng thần) thuận hay kẹt, hai bên hợp hay vênh. Mỗi gạch kết luận trước, căn cứ trong ngoặc.
-### Nên làm
-2–3 việc cụ thể${long ? ', kèm lúc nào nên làm nếu dữ liệu có không vong hoặc dịch mã' : ''}.
-${long ? 'Khoảng 450–650 từ.' : 'Tối đa khoảng 220 từ.'} Nếu câu hỏi mơ hồ, kết bằng đúng một câu hỏi lại.`;
+${/Tự nhận/.test(topic) ? 'Người hỏi chưa chọn loại việc: tự xác định câu hỏi thuộc loại nào, chỉ dùng dụng thần của loại đó trong danh sách đã tính sẵn, và ghi rõ đã dùng cái nào trong ngoặc.\n' : ''}CÁCH TRẢ LỜI (bám đúng câu hỏi, không theo khuôn):
+- Câu đầu tiên trả lời THẲNG đúng điều được hỏi, dùng lại chữ của người hỏi. Câu hỏi có/không thì mở bằng "Nghiêng về có", "Nghiêng về không" hoặc "Bàn chưa đủ rõ để nói". Câu hỏi "nên hay không" thì nói nên, chưa nên, hoặc nên với điều kiện gì.
+- Câu hỏi về một người cụ thể (có phải người này không, họ nghĩ gì, có quay lại không): bàn không gọi được tên ai. Hãy so dấu hiệu trên bàn với chi tiết người hỏi đưa ra (xa hay gần, mới hay cũ, đang động hay đứng yên, chủ động hay bị động) rồi nói khớp hay không khớp, và nêu một dấu hiệu ngoài đời để người hỏi tự kiểm.
+- Sau câu đầu, ${long ? '4–6' : '2–3'} ý căn cứ, mỗi ý gắn với chi tiết trong câu hỏi, kết luận trước, thuật ngữ trong ngoặc. Không đưa ý chung chung kiểu "duyên chưa tới" nếu không gắn được vào câu hỏi.
+- Kết bằng 1–2 việc cụ thể nên làm${long ? ', kèm lúc nào nên làm nếu dữ liệu có không vong hoặc dịch mã' : ''}.
+- Không dùng tiêu đề cố định. Có thể in đậm câu đầu.
+- Chỉ hỏi lại khi câu hỏi quá mơ hồ đến mức không biết đang hỏi chuyện gì; khi đó vẫn trả lời phần đọc được trước, rồi hỏi đúng một câu ở cuối. Câu hỏi đã đủ hiểu thì không hỏi lại.
+${long ? 'Khoảng 450–650 từ.' : 'Tối đa khoảng 200 từ.'}`;
 }
 export function qmMenhRules(ctx, long) {
   return `${QM_COMMON}${ctx ? `\nBối cảnh người xem tự kể: "${ctx}". Gắn lời đọc vào bối cảnh này khi hợp lý.` : ''}

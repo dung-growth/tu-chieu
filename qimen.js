@@ -166,6 +166,7 @@ const QM = (() => {
 
   /* ---------- Vai trò (dụng thần) theo cách dùng phổ biến ---------- */
   const TOPICS = {
+    auto: { name: 'Tự nhận theo câu hỏi', auto: true, stems: [] },
     tai: { name: 'Tiền bạc, làm ăn', door: '生', stems: ['戊'] }, viec: { name: 'Công việc, sự nghiệp', door: '開', stems: [] },
     tinh: { name: 'Tình cảm, hôn nhân', god: '六合', stems: ['乙', '庚'] }, suckhoe: { name: 'Sức khỏe', star: '芮', stems: ['乙'], star2: '心' },
     dixa: { name: 'Đi xa, xuất hành', door: '開', ma: true, stems: [] }, kien: { name: 'Giấy tờ, kiện tụng', door: '驚', door2: '景', stems: [] },
@@ -185,6 +186,7 @@ const QM = (() => {
       put('tinh', 'Tình cảm (Lục Hợp)', findGod(c, '六合'), 'thần'); put('khoe', 'Sức khỏe (Thiên Nhuế)', findStar(c, '芮'), 'sao');
     } else {
       put('su', 'Sự việc (can giờ ' + vi(P.hour[0]) + ')', skyPalaceOf(c, P.hour[0], P.hour), 'can giờ');
+      if (topic === 'auto') return R; // chưa chọn loại việc: brief liệt kê dụng thần của mọi loại việc, AI chọn theo câu hỏi
       const T = TOPICS[topic] || TOPICS.khac, k = 'dt-' + (topic || 'khac');
       if (T.door) put(k, `Dụng thần: ${DOOR_VI[T.door]}`, findDoor(c, T.door), 'cửa'); if (T.door2) put(k, `Dụng thần: ${DOOR_VI[T.door2]}`, findDoor(c, T.door2), 'cửa');
       if (T.god) put(k, `Dụng thần: ${GOD_VI[T.god]}`, findGod(c, T.god), 'thần');
@@ -234,8 +236,17 @@ const QM = (() => {
       const st = NGHIA.star[x.star][0], dr = NGHIA.door[x.door][0], gd = NGHIA.god[x.god][0];
       L.push(`- Cung ${p} ${x.name} (${x.dir}): thiên bàn ${x.sky.map(vi).join('+')}, địa bàn ${x.earth.map(vi).join('+')}; sao ${STAR_VI[x.star]}${x.qin ? ' (kèm Thiên Cầm)' : ''} [${st}]; cửa ${DOOR_VI[x.door]} [${dr}]; thần ${GOD_VI[x.god]} [${gd}]${x.kong.length ? '; KHÔNG VONG (' + x.kong.join(', ') + ')' : ''}${x.ma ? '; DỊCH MÃ' : ''}.`);
     }
+    const line = x => `${x.label} → cung ${x.palace}, máy chấm ${x.verdict.toUpperCase()}${x.kong ? ', không vong' : ''}${x.ma ? ', dịch mã' : ''}`;
     const r = roles(c, mode, topic);
-    L.push((mode === 'menh' ? 'Vai trò trên mệnh bàn' : `Loại việc: ${(TOPICS[topic] || TOPICS.khac).name}. Dụng thần`) + ' (máy đã xác định cung và chấm nhanh, cửa là chính): ' + r.map(x => `${x.label} → cung ${x.palace}, máy chấm ${x.verdict.toUpperCase()}${x.kong ? ', không vong' : ''}${x.ma ? ', dịch mã' : ''}`).join('; ') + '.');
+    if (mode !== 'menh' && topic === 'auto') {
+      L.push('Người hỏi không chọn loại việc. Vai trò chung (máy đã xác định cung và chấm nhanh, cửa là chính): ' + r.map(line).join('; ') + '.');
+      L.push('Dụng thần đã tính sẵn cho từng loại việc. Chỉ dùng loại hợp với câu hỏi:');
+      Object.keys(TOPICS).filter(k => k !== 'auto' && k !== 'khac').forEach(k => {
+        const d = roles(c, 'hoi', k).filter(x => x.k !== 'ban' && x.k !== 'su');
+        if (d.length) L.push(`- ${TOPICS[k].name}: ` + d.map(line).join('; ') + '.');
+      });
+    } else L.push((mode === 'menh' ? 'Vai trò trên mệnh bàn' : `Loại việc: ${(TOPICS[topic] || TOPICS.khac).name}. Dụng thần`) + ' (máy đã xác định cung và chấm nhanh, cửa là chính): ' + r.map(line).join('; ') + '.');
+    if (mode !== 'menh' && (topic === 'auto' || topic === 'tinh')) L.push('Cách đọc tình cảm: can Ất thường ứng phía nữ, can Canh ứng phía nam; Lục Hợp là chuyện giữa hai người; cung có dịch mã là người ở xa hoặc đang đi lại.');
     const fy = []; if (c.fuyin.star) fy.push('sao phục ngâm'); if (c.fuyin.door) fy.push('cửa phục ngâm'); if (c.fanyin.star) fy.push('sao phản ngâm'); if (c.fanyin.door) fy.push('cửa phản ngâm');
     if (fy.length) L.push('Đặc biệt: ' + fy.join(', ') + '.');
     if (c.notes.length) L.push('Ghi chú an bàn: ' + c.notes.join(' '));
