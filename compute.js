@@ -153,6 +153,7 @@ const TC = (() => {
   function bazi(y, mo, d, h, mi, gender) {
     const lunar = Solar.fromYmdHms(y, mo, d, h, mi, 0).getLunar();
     const e = lunar.getEightChar();
+    e.setSect(1); // quy ước đổi ngày lúc 23:00: từ 23:00 tới 23:59 là giờ Tý của ngày hôm sau, đổi cả trụ ngày lẫn trụ giờ
     const cols = ['Year', 'Month', 'Day', 'Time'];
     const pillars = cols.map(c => {
       const s = e['get' + c]();
@@ -226,9 +227,15 @@ const TC = (() => {
     let dv = lonOf(body, d2) - lonOf(body, d1); if (dv > 180) dv -= 360; if (dv < -180) dv += 360; return dv;
   }
   function obliquity(date) { const T = (Astronomy.MakeTime(date).tt) / 36525; return 23.4392911 - 0.0130042 * T; }
-  function trueNode(date) { // mean node (đủ chính xác cho mục đích diễn giải, sai lệch < 1.5°)
-    const T = Astronomy.MakeTime(date).tt / 36525;
-    return norm(125.04452 - 1934.136261 * T);
+  // La Hầu: giao điểm thật (osculating) của quỹ đạo Mặt Trăng trên hoàng đạo của ngày.
+  // Lấy vị trí Mặt Trăng lúc t và vận tốc (sai phân ±1 giờ), mômen động lượng h = r × v; giao điểm lên là hướng z × h.
+  // Kiểm: 2000-01-01 12:00 TT ra 123,95° (bảng thông dụng: 123°57′); lệch so với giao điểm trung bình tối đa khoảng 1,9°.
+  function trueNode(date) {
+    const P = t => { const q = Astronomy.EclipticGeoMoon(new Date(date.getTime() + t)), la = q.lat * rad, lo = q.lon * rad;
+      return [q.dist * Math.cos(la) * Math.cos(lo), q.dist * Math.cos(la) * Math.sin(lo), q.dist * Math.sin(la)]; };
+    const r = P(0), a = P(-3600e3), b = P(3600e3), v = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+    const h = [r[1] * v[2] - r[2] * v[1], r[2] * v[0] - r[0] * v[2], r[0] * v[1] - r[1] * v[0]];
+    return norm(Math.atan2(h[0], -h[1]) / rad);
   }
   function houses(date, lat, lon) {
     const eps = obliquity(date) * rad, phi = lat * rad;
@@ -330,7 +337,10 @@ const TC = (() => {
 
   /* ---------- Tử vi (iztro) ---------- */
   function tuvi(y, mo, d, h, mi, gender, school) {
-    const idx = h === 23 ? 12 : Math.floor((h + 1) / 2);
+    // Quy ước đổi ngày lúc 23:00 (giống Bát tự và Kỳ Môn): sinh 23:00–23:59 tính như giờ Tý sớm của ngày dương hôm sau.
+    // Lấy ngày dương kế tiếp rồi đổi lịch lại (không cộng ngày âm, để đúng cuối tháng âm và đêm giao thừa).
+    if (h === 23) { const n = new Date(Date.UTC(y, mo - 1, d + 1)); y = n.getUTCFullYear(); mo = n.getUTCMonth() + 1; d = n.getUTCDate(); h = 0; }
+    const idx = Math.floor((h + 1) / 2);
     // Trường phái Việt Nam: lịch âm Việt (múi +7) và cách an sao Việt (tuvi-vn.js); Trung Quốc: iztro nguyên bản
     const VN = school !== 'cn' && typeof TVVN !== 'undefined';
     const vl = VN ? TVVN.s2l(d, mo, y, 7) : null;

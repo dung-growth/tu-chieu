@@ -304,6 +304,7 @@ body.sheet-open{overflow:hidden}
 }
 
 
+.ty-note{margin:0 0 4px;padding:10px 14px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:var(--r-sm);background:var(--sheet);font-size:13.5px;line-height:1.5;color:var(--ink-2)} .ty-note b{color:var(--ink)}
 /* thần số */
 .num-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .ncard{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm);transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .2s var(--ease)}
@@ -1216,9 +1217,18 @@ function run(save){
   const y = +inp.date.slice(0,4); if (y < 1900 || y > 2100) { $('#p-sum').innerHTML = '<p class="err">Ngày sinh cần nằm trong khoảng 1900–2100.</p>'; return; }
   try { R = TC.all(inp); adjustForTime(R); R.tvc = R.tuvi ? TVC.analyze(R.tuvi, +inp.date.slice(0,4), new Date().getFullYear()) : null; } catch(err) { console.error(err); $('#p-sum').innerHTML = '<p class="err">Không lập được lá số với thông tin này. Kiểm tra lại ngày giờ sinh.</p>'; return; }
   if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, placeName:CITIES[+sel.value][0], placeGeo:CITIES[+sel.value][6] ? placeGeoOf(CITIES[+sel.value]) : null, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value })); } catch(e) {}
-  renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); renderLab(); resetAI(); updateSteps();
+  renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); renderLab(); resetAI(); updateSteps(); tyNote();
   if (save) pulse(document.querySelector('.tabpanel:not([hidden])'));
   if (save) { show('t-sum'); $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'}); }
+}
+
+// Sinh 23:00–23:59: Bát tự, Tử vi, Kỳ Môn tính sang giờ Tý ngày hôm sau (quy ước đổi ngày lúc 23:00). Ghi rõ để người quen cách khác không tưởng tính sai.
+function tyNote(){
+  document.querySelectorAll('.ty-note').forEach(x => x.remove());
+  const i = R && R.input; if (!i || i.timeMode !== 'exact' || !/^23:/.test(i.time)) return;
+  const [y, m, d] = i.date.split('-').map(Number), n = new Date(Date.UTC(y, m - 1, d + 1)), dd = x => String(x).padStart(2, '0');
+  const html = `<p class="ty-note">${i.time} được tính là <b>giờ Tý ngày ${dd(n.getUTCDate())}/${dd(n.getUTCMonth() + 1)}/${n.getUTCFullYear()}</b>, theo quy ước đổi ngày lúc 23:00, cho Bát tự, Tử vi và Kỳ Môn. Bản đồ sao và thần số học vẫn tính đúng ${i.time} ngày ${dd(d)}/${dd(m)}/${y}. Có trường phái giữ ngày tới 0 giờ nên một số trang khác có thể ra trụ ngày khác.</p>`;
+  ['#p-sum', '#p-bz', '#p-tv'].forEach(sel => { const p = $(sel); if (p) p.insertAdjacentHTML('afterbegin', html); });
 }
 
 // Khi không có giờ chính xác: bỏ những gì phụ thuộc giờ
@@ -1326,7 +1336,7 @@ function renderBazi(){
       <div class="strength"><span class="st-level">${st.level}</span><span class="muted num">${st.ratio}% phe trợ</span></div>
       <div class="meter" role="img" aria-label="Phe trợ ${st.ratio}%"><span class="zone weak">Nhược</span><span class="zone mid">Trung hòa</span><span class="zone strong">Vượng</span><i style="left:${Math.min(98,Math.max(2,st.ratio))}%"></i></div>
       <p class="small" style="margin:12px 0 0">Nhật chủ <b>${dm.can} <span class="el-${dm.canHanh}">${dm.canHanh}</span></b>, sinh tháng ${b.pillars[1].chi} (<span class="el-${st.monthH}">${st.monthH}</span>): <b>${st.deLenh?'đắc lệnh':'thất lệnh'}</b>. Phe trợ (cùng hành và hành sinh ra Nhật chủ) được ${st.support}/${st.total} điểm. ${helpTxt}</p>
-      <p class="small muted" style="margin:8px 0 0">Cách tính đơn giản: thiên can 1 điểm, tàng can 0,6/0,3/0,1, chi tháng nhân đôi. Thầy có thể kết luận khác khi xét cách cục.</p>
+      <p class="small muted" style="margin:8px 0 0">Thang điểm tham khảo do Tứ Chiếu tự đặt, không phải một phép cổ: thiên can 1 điểm, tàng can 0,6/0,3/0,1, chi tháng nhân đôi. Thầy có thể kết luận khác khi xét cách cục.</p>
     </div>
     <div class="panel"><h3>Ngũ hành</h3><div class="bars" style="margin-top:12px">${Object.entries(b.countFull).map(([k,v])=>`
       <div class="bar"><span class="el-${k}" style="font-weight:600">${k}</span><div class="track"><div class="fill" style="width:${(v/total*100).toFixed(0)}%;background:${EL_COLOR[k]}"></div></div><span class="num muted">${(v/total*100).toFixed(0)}%</span></div>`).join('')}</div>
@@ -1432,7 +1442,7 @@ function renderAstro(){
       ${a.points.map(p=>`<tr><td><span style="color:${SIGN_COL[p.signIdx%4]}">${p.glyph}︎</span> <span data-tip="planet" data-key="${p.key}" data-ctx="${p.name}|${p.sign}|${F.hasHour?p.house:''}">${p.name}</span></td><td class="num">${p.key==='Moon'&&F.moonRange ? `${F.moonRange.from} → ${F.moonRange.to}` : p.text} ${p.retro&&p.key!=='Node'?'<span class="retro">℞</span>':''}</td><td class="num">${F.hasHour ? p.house+(F.approxHouses?'?':'') : '—'}</td></tr>`).join('')}
       ${a.extra.filter(e=>F.hasHour||e.key!=='PoF').map(p=>`<tr><td class="muted">${p.glyph}︎ <span data-tip="planet" data-key="${p.key}" data-ctx="${p.name}|${p.sign}|${F.hasHour?p.house:''}">${p.name}</span></td><td class="num">${p.text}</td><td class="num">${F.hasHour ? p.house : '—'}</td></tr>`).join('')}
       </tbody></table></div>
-      <p class="small muted" style="margin:10px 0 0">Hoàng đạo nhiệt đới, hệ nhà Placidus. ℞ là nghịch hành. La Hầu và Lilith tính theo vị trí trung bình.${F.hasHour?` Điểm may mắn tính theo công thức sinh ${a.extra[1].dayBirth?'ban ngày':'ban đêm'}.`:''}</p></div>
+      <p class="small muted" style="margin:10px 0 0">Hoàng đạo nhiệt đới, hệ nhà Placidus. ℞ là nghịch hành. La Hầu là giao điểm thật của quỹ đạo Mặt Trăng; Lilith tính theo vị trí trung bình.${F.hasHour?` Điểm may mắn tính theo công thức sinh ${a.extra[1].dayBirth?'ban ngày':'ban đêm'}.`:''}</p></div>
     ${F.hasHour ? `<div class="panel"><h3>12 nhà và chủ tinh</h3><div class="table-wrap"><table><thead><tr><th>Nhà</th><th>Cung đầu nhà</th><th>Chủ tinh</th><th>Chủ tinh nằm ở</th></tr></thead><tbody>
       ${a.rulers.map(r=>`<tr><td class="num"><b>${r.house}</b></td><td>${r.sign}</td><td>${r.rulerName}${r.trad?` <span class="muted">(cổ điển: ${r.trad})</span>`:''}</td><td>${r.inSign}, nhà ${r.inHouse}</td></tr>`).join('')}
       </tbody></table></div></div>` : `<div class="panel"><h3>12 nhà và chủ tinh</h3><p class="muted small">Cần giờ sinh để tính các nhà.</p></div>`}
@@ -1463,7 +1473,7 @@ function setSchool(v){
   if (!R || !R.tuvi) return;
   const i = R.input; i.school = v; const [y, mo, d] = i.date.split('-').map(Number), [h, mi] = i.time.split(':').map(Number);
   R.tuvi = TC.tuvi(y, mo, d, h, mi, i.gender, v); R.tvc = TVC.analyze(R.tuvi, y, new Date().getFullYear());
-  renderSummary(); renderTuvi(); go($('#p-tv'));
+  renderSummary(); renderTuvi(); tyNote(); go($('#p-tv'));
 }
 function renderTuvi(){
   if (tvFor !== R) { tvFor = R; tvYear = null; }
@@ -2272,6 +2282,7 @@ function brief(){
   const L = [];
   const F = R.flags;
   L.push(`NGƯỜI XEM: ${i.gender==='nam'?'Nam':'Nữ'} · Sinh ${i.timeMode==='exact'?i.time:i.timeLabel} ${fmtDate(i.date)} (${gmt(i.tz)}) tại ${i.place} · Hôm nay: ${new Date().toLocaleDateString('vi-VN')}`);
+  if (i.timeMode === 'exact' && /^23:/.test(i.time)) L.push('Lưu ý: sinh sau 23:00 nên Bát tự, Tử vi, Kỳ Môn đã tính sang giờ Tý ngày hôm sau (quy ước đổi ngày lúc 23:00); Bản đồ sao vẫn tính đúng giờ đã nhập. Không tự tính lại theo cách khác.');
   if (i.timeMode==='unknown') L.push('KHÔNG RÕ GIỜ SINH: không có trụ giờ, cung Mọc, các nhà chiêm tinh và lá số Tử vi. Không được luận hay suy đoán các phần này; nói rõ phần nào thiếu vì không có giờ sinh.');
   if (i.timeMode==='canh') L.push('CHỈ BIẾT CANH GIỜ: cung Mọc và các nhà chiêm tinh chỉ là ước lượng, luận thận trọng hoặc bỏ qua.');
   L.push(`\n[BÁT TỰ] Tứ trụ: ${b.pillars.filter(Boolean).map((p,k)=>`${['Năm','Tháng','Ngày','Giờ'][k]} ${p.can} ${p.chi} (can: ${k===2?'Nhật chủ':p.thapThanCan}; tàng: ${p.tangCan.join('/')} = ${p.thapThanChi.join('/')}; nạp âm ${p.napAm})`).join(' | ')}`);
