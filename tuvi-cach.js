@@ -51,73 +51,73 @@ const TVC = (() => {
     const pname = b => byB[b] ? byB[b].name : b;
     const M = t.menh, T = t.than, tpM = tamPhuong(M), tpCells = [M, ...tpM.hop, tpM.xung];
     const inTP = name => tpCells.some(b => has(b, name));
-    const cach = []; const add = (name, where, text, w = 2) => cach.push({ name, where, text, w });
+    const cach = []; const add = (name, where, text, w = 2, o = {}) => cach.push({ name, where, text, w, at: o.at || M, stars: o.stars || [], tone: o.tone || 'trung' });
 
     // Mệnh và Thân
     const mStars = byB[M].major;
-    if (!mStars.length) add('Mệnh vô chính diệu', `Mệnh tại ${M}`, `Mệnh không có chính tinh: dễ thích nghi, chịu ảnh hưởng nhiều từ cung xung chiếu (${pname(tpM.xung)}: ${majors(tpM.xung).join(', ') || 'cũng trống'}); đời nhiều thay đổi.${has(M, 'Tuần Không') || has(M, 'Triệt Lộ') || has(M, 'Địa Không') || has(M, 'Địa Kiếp') ? ' Có Tuần/Triệt hoặc Không Kiếp đóng Mệnh, sách xưa lại coi là cách tốt.' : ''}`, 3);
+    if (!mStars.length) add('Mệnh vô chính diệu', `Mệnh tại ${M}`, `Mệnh không có chính tinh: dễ thích nghi, chịu ảnh hưởng nhiều từ cung xung chiếu (${pname(tpM.xung)}: ${majors(tpM.xung).join(', ') || 'cũng trống'}); đời nhiều thay đổi.${has(M, 'Tuần Không') || has(M, 'Triệt Lộ') || has(M, 'Địa Không') || has(M, 'Địa Kiếp') ? ' Có Tuần/Triệt hoặc Không Kiếp đóng Mệnh, sách xưa lại coi là cách tốt.' : ''}`, 3, { stars: [], tone: 'trung' });
     mStars.forEach(s => { const lvl = SANG.includes(s.bright) ? 'sáng' : TOI.includes(s.bright) ? 'tối (hãm)' : 'bình';
-      add(`Mệnh ${s.name}${s.bright ? ' ' + (s.bright === 'Hạn' ? 'Hãm' : s.bright) : ''}`, `Mệnh tại ${M}`, `${s.name} là ${STAR[s.name] || ''}. Ở đây sao ${lvl}${lvl.startsWith('tối') ? ': cái hay vẫn còn nhưng phải trả giá nhiều hơn' : ''}.`, 3);
-      if (s.mut) add(`Mệnh có ${s.name} hóa ${s.mut}`, `Mệnh tại ${M}`, MUT_MENH[s.mut], 3); });
+      add(`Mệnh ${s.name}${s.bright ? ' ' + (s.bright === 'Hạn' ? 'Hãm' : s.bright) : ''}`, `Mệnh tại ${M}`, `${s.name} là ${STAR[s.name] || ''}. Ở đây sao ${lvl}${lvl.startsWith('tối') ? ': cái hay vẫn còn nhưng phải trả giá nhiều hơn' : ''}.`, 3, { stars: [s.name], tone: SANG.includes(s.bright) ? 'tot' : TOI.includes(s.bright) ? 'luuy' : 'trung' });
+      if (s.mut) add(`Mệnh có ${s.name} hóa ${s.mut}`, `Mệnh tại ${M}`, MUT_MENH[s.mut], 3, { stars: [s.name], tone: s.mut === 'Kỵ' ? 'luuy' : 'tot' }); });
     const thanP = byB[T];
-    if (THAN_CU[thanP.name]) add(thanP.name === 'Mệnh' ? 'Thân Mệnh đồng cung' : `Thân cư ${thanP.name}`, `Thân tại ${T}`, THAN_CU[thanP.name] + (thanP.major.length ? ` Chính tinh ở cung Thân: ${thanP.major.map(s => s.name).join(', ')}.` : ''), 3);
+    if (THAN_CU[thanP.name]) add(thanP.name === 'Mệnh' ? 'Thân Mệnh đồng cung' : `Thân cư ${thanP.name}`, `Thân tại ${T}`, THAN_CU[thanP.name] + (thanP.major.length ? ` Chính tinh ở cung Thân: ${thanP.major.map(s => s.name).join(', ')}.` : ''), 3, { at: T, stars: thanP.major.map(s => s.name), tone: 'trung' });
 
     // Tuần, Triệt (gộp khi cùng đóng một chỗ)
     const sameTT = t.tuan.join() === t.triet.join();
     (sameTT ? [['Tuần Triệt', t.tuan]] : [['Tuần', t.tuan], ['Triệt', t.triet]]).forEach(([n, pair]) => {
       const hitM = pair.includes(M), hitT = pair.includes(T);
       if (hitM || hitT) add(`${n} đóng ${hitM && hitT ? 'Mệnh và Thân' : hitM ? 'Mệnh' : 'Thân'}`, `${n} tại ${pair.join('–')}`,
-        `${n} "chặn" những gì nằm dưới nó, chặn cả tốt lẫn xấu. Cái có sẵn ở ${hitM ? 'Mệnh' : 'cung Thân'} bị chặn một đoạn nên thời trẻ phải tự xoay, ít được che chở; người xưa nói "nghiệp tới sớm". ${n === 'Triệt' ? 'Triệt thường nặng ở nửa đầu đời, nhẹ dần sau khoảng 30 tuổi.' : n === 'Tuần' ? 'Tuần thường dai dẳng hơn nhưng nhẹ tay hơn Triệt.' : 'Tuần và Triệt cùng đóng một chỗ nên tác dụng chặn càng rõ; Triệt nặng ở nửa đầu đời, Tuần kéo dài hơn nhưng nhẹ tay hơn.'}`, 3); });
+        `${n} "chặn" những gì nằm dưới nó, chặn cả tốt lẫn xấu. Cái có sẵn ở ${hitM ? 'Mệnh' : 'cung Thân'} bị chặn một đoạn nên thời trẻ phải tự xoay, ít được che chở; người xưa nói "nghiệp tới sớm". ${n === 'Triệt' ? 'Triệt thường nặng ở nửa đầu đời, nhẹ dần sau khoảng 30 tuổi.' : n === 'Tuần' ? 'Tuần thường dai dẳng hơn nhưng nhẹ tay hơn Triệt.' : 'Tuần và Triệt cùng đóng một chỗ nên tác dụng chặn càng rõ; Triệt nặng ở nửa đầu đời, Tuần kéo dài hơn nhưng nhẹ tay hơn.'}`, 3, { at: hitM ? M : T, stars: [], tone: 'luuy' }); });
 
     // Các cách lớn theo tam phương tứ chính của Mệnh
     const cnt = names => names.filter(inTP).length;
-    if (cnt(['Thất Sát', 'Phá Quân', 'Tham Lang']) === 3) add('Sát Phá Tham', 'tam phương Mệnh', 'Đời nhiều biến động, khai phá, phá cũ dựng mới; thăng trầm lớn. Hợp tự làm chủ, kinh doanh, những nghề phải xông pha.', 3);
-    if (cnt(['Thất Sát', 'Phá Quân', 'Tham Lang']) < 3 && cnt(['Tử Vi', 'Thiên Phủ', 'Vũ Khúc', 'Thiên Tướng']) >= 3) add('Tử Phủ Vũ Tướng', 'tam phương Mệnh', 'Cách của sự ổn định và quyền chức: hợp tổ chức lớn, quản lý, tài chính; đời ít sóng gió hơn người.', 3);
-    if (cnt(['Thiên Cơ', 'Thái Âm', 'Thiên Đồng', 'Thiên Lương']) >= 3) add('Cơ Nguyệt Đồng Lương', 'tam phương Mệnh', 'Người làm bằng đầu óc, hợp tổ chức, hệ thống, chuyên môn. Câu phú "Cơ Nguyệt Đồng Lương tác lại nhân": dễ làm người làm công, giữ vị trí chuyên môn, hành chính, kế hoạch.', 2);
+    if (cnt(['Thất Sát', 'Phá Quân', 'Tham Lang']) === 3) add('Sát Phá Tham', 'tam phương Mệnh', 'Đời nhiều biến động, khai phá, phá cũ dựng mới; thăng trầm lớn. Hợp tự làm chủ, kinh doanh, những nghề phải xông pha.', 3, { stars: ['Thất Sát', 'Phá Quân', 'Tham Lang'], tone: 'trung' });
+    if (cnt(['Thất Sát', 'Phá Quân', 'Tham Lang']) < 3 && cnt(['Tử Vi', 'Thiên Phủ', 'Vũ Khúc', 'Thiên Tướng']) >= 3) add('Tử Phủ Vũ Tướng', 'tam phương Mệnh', 'Cách của sự ổn định và quyền chức: hợp tổ chức lớn, quản lý, tài chính; đời ít sóng gió hơn người.', 3, { stars: ['Tử Vi', 'Thiên Phủ', 'Vũ Khúc', 'Thiên Tướng'], tone: 'tot' });
+    if (cnt(['Thiên Cơ', 'Thái Âm', 'Thiên Đồng', 'Thiên Lương']) >= 3) add('Cơ Nguyệt Đồng Lương', 'tam phương Mệnh', 'Người làm bằng đầu óc, hợp tổ chức, hệ thống, chuyên môn. Câu phú "Cơ Nguyệt Đồng Lương tác lại nhân": dễ làm người làm công, giữ vị trí chuyên môn, hành chính, kế hoạch.', 2, { stars: ['Thiên Cơ', 'Thái Âm', 'Thiên Đồng', 'Thiên Lương'], tone: 'trung' });
     const coLuong = (has(M, 'Thiên Cơ') && has(M, 'Thiên Lương')) || (has(M, 'Thiên Lương') && has(tpM.xung, 'Thiên Cơ')) || (has(M, 'Thiên Cơ') && has(tpM.xung, 'Thiên Lương'));
-    if (coLuong) add('Cơ Lương', 'Mệnh và cung xung chiếu', 'Sách nói "Cơ Lương gia hội, thiện đàm binh": giỏi bày mưu tính kế, vạch đường cho người khác. Mạnh nhất ở vai tham mưu, chiến lược, cố vấn.', 3);
-    if ((has(M, 'Cự Môn') && inTP('Thái Dương')) || (has(M, 'Thái Dương') && inTP('Cự Môn'))) add('Cự Nhật', 'tam phương Mệnh', 'Lời nói có sức nặng: hợp nghề dùng lời như luật, dạy học, truyền thông, bán hàng tư vấn. Thái Dương sáng thì nói ra được người nghe, tối thì phải nói nhiều mới được tin.', 2);
+    if (coLuong) add('Cơ Lương', 'Mệnh và cung xung chiếu', 'Sách nói "Cơ Lương gia hội, thiện đàm binh": giỏi bày mưu tính kế, vạch đường cho người khác. Mạnh nhất ở vai tham mưu, chiến lược, cố vấn.', 3, { stars: ['Thiên Cơ', 'Thiên Lương'], tone: 'tot' });
+    if ((has(M, 'Cự Môn') && inTP('Thái Dương')) || (has(M, 'Thái Dương') && inTP('Cự Môn'))) add('Cự Nhật', 'tam phương Mệnh', 'Lời nói có sức nặng: hợp nghề dùng lời như luật, dạy học, truyền thông, bán hàng tư vấn. Thái Dương sáng thì nói ra được người nghe, tối thì phải nói nhiều mới được tin.', 2, { stars: ['Cự Môn', 'Thái Dương'], tone: 'tot' });
     const tuPhu = BR.find(b => has(b, 'Tử Vi') && has(b, 'Thiên Phủ'));
-    if (tuPhu) add('Tử Phủ đồng cung', `cung ${pname(tuPhu)}`, tuPhu === M ? 'Tử Phủ cùng đóng Mệnh: phú quý, có uy, sống đàng hoàng; cần Tả Hữu, Khôi Việt mới phát hết.' : `Đế tinh và kho cùng nằm ở cung ${pname(tuPhu)}: phần đời ứng với cung này được che chở, vững vàng.`, tuPhu === M ? 3 : 1);
+    if (tuPhu) add('Tử Phủ đồng cung', `cung ${pname(tuPhu)}`, tuPhu === M ? 'Tử Phủ cùng đóng Mệnh: phú quý, có uy, sống đàng hoàng; cần Tả Hữu, Khôi Việt mới phát hết.' : `Đế tinh và kho cùng nằm ở cung ${pname(tuPhu)}: phần đời ứng với cung này được che chở, vững vàng.`, tuPhu === M ? 3 : 1, { at: tuPhu, stars: ['Tử Vi', 'Thiên Phủ'], tone: 'tot' });
 
     // Nhật Nguyệt
     const nB = starAt['Thái Dương'] && starAt['Thái Dương'].b, tB = starAt['Thái Âm'] && starAt['Thái Âm'].b;
     if (nB && tB && (tpCells.includes(nB) || tpCells.includes(tB))) {
       const ns = bright('Thái Dương'), ts = bright('Thái Âm');
-      if (TOI.includes(ns) && TOI.includes(ts)) add('Nhật Nguyệt phản bối', `Thái Dương ở ${pname(nB)}, Thái Âm ở ${pname(tB)}`, 'Mặt Trời và Mặt Trăng cùng tối: "khó trước, thành sau". Đi làm công dễ bỏ sức nhiều mà tiếng không tương xứng, tiền vào ra thất thường. Hóa giải quen thuộc là làm ngược số đông: làm với nước ngoài, làm ca khác, làm hậu trường, làm sản phẩm của riêng mình.', 3);
-      else if (SANG.includes(ns) && SANG.includes(ts)) add('Nhật Nguyệt tịnh minh', `Thái Dương ở ${pname(nB)}, Thái Âm ở ${pname(tB)}`, 'Mặt Trời và Mặt Trăng cùng sáng: đời sáng sủa, dễ được nâng đỡ, danh và lợi đều thuận.', 3);
+      if (TOI.includes(ns) && TOI.includes(ts)) add('Nhật Nguyệt phản bối', `Thái Dương ở ${pname(nB)}, Thái Âm ở ${pname(tB)}`, 'Mặt Trời và Mặt Trăng cùng tối: "khó trước, thành sau". Đi làm công dễ bỏ sức nhiều mà tiếng không tương xứng, tiền vào ra thất thường. Hóa giải quen thuộc là làm ngược số đông: làm với nước ngoài, làm ca khác, làm hậu trường, làm sản phẩm của riêng mình.', 3, { stars: ['Thái Dương', 'Thái Âm'], tone: 'luuy' });
+      else if (SANG.includes(ns) && SANG.includes(ts)) add('Nhật Nguyệt tịnh minh', `Thái Dương ở ${pname(nB)}, Thái Âm ở ${pname(tB)}`, 'Mặt Trời và Mặt Trăng cùng sáng: đời sáng sủa, dễ được nâng đỡ, danh và lợi đều thuận.', 3, { stars: ['Thái Dương', 'Thái Âm'], tone: 'tot' });
     }
 
     // Sát tinh và cát tinh quanh Mệnh
-    if (has(M, 'Kình Dương')) add('Kình Dương ở Mệnh', `Mệnh tại ${M}`, TU_MO.includes(M) ? 'Kình Dương đắc địa: quả quyết, dám nói dám cắt; hiền với người nhưng không nhân nhượng với việc làm ẩu.' : 'Kình Dương không đắc địa: nóng, thẳng, dễ va chạm; nên học cách hạ giọng trước khi quyết.', 2);
-    if (has(M, 'Đà La')) add('Đà La ở Mệnh', `Mệnh tại ${M}`, TU_MO.includes(M) ? 'Đà La đắc địa: lì, bền, theo việc tới cùng.' : 'Đà La: hay chậm, dây dưa, nghĩ đi nghĩ lại; được cái bền.', 2);
-    if (has(M, 'Hỏa Tinh') || has(M, 'Linh Tinh')) add('Hỏa Linh ở Mệnh', `Mệnh tại ${M}`, 'Tính nhanh, nóng, bộc phát; làm việc theo cơn cảm hứng.', 1);
+    if (has(M, 'Kình Dương')) add('Kình Dương ở Mệnh', `Mệnh tại ${M}`, TU_MO.includes(M) ? 'Kình Dương đắc địa: quả quyết, dám nói dám cắt; hiền với người nhưng không nhân nhượng với việc làm ẩu.' : 'Kình Dương không đắc địa: nóng, thẳng, dễ va chạm; nên học cách hạ giọng trước khi quyết.', 2, { stars: ['Kình Dương'], tone: TU_MO.includes(M) ? 'trung' : 'luuy' });
+    if (has(M, 'Đà La')) add('Đà La ở Mệnh', `Mệnh tại ${M}`, TU_MO.includes(M) ? 'Đà La đắc địa: lì, bền, theo việc tới cùng.' : 'Đà La: hay chậm, dây dưa, nghĩ đi nghĩ lại; được cái bền.', 2, { stars: ['Đà La'], tone: TU_MO.includes(M) ? 'trung' : 'luuy' });
+    if (has(M, 'Hỏa Tinh') || has(M, 'Linh Tinh')) add('Hỏa Linh ở Mệnh', `Mệnh tại ${M}`, 'Tính nhanh, nóng, bộc phát; làm việc theo cơn cảm hứng.', 1, { stars: ['Hỏa Tinh', 'Linh Tinh'], tone: 'luuy' });
     [[M, 'Mệnh'], [T, 'Thân']].forEach(([b, lbl]) => { if (b === M && lbl === 'Thân') return;
-      if (has(b, 'Địa Không') || has(b, 'Địa Kiếp')) add(`Không Kiếp ở ${lbl}`, `${lbl} tại ${b}`, 'Nghĩ khác người, lúc lên lúc xuống, tiền đến nhanh đi nhanh. Hợp nghề sáng tạo, công nghệ, nghiên cứu, tâm linh; không hợp đầu cơ.', 2); });
-    if (has(M, 'Lộc Tồn')) add('Lộc Tồn ở Mệnh, Kình Đà giáp', `Mệnh tại ${M}`, 'Có lộc ăn, cẩn trọng, biết giữ của; bị Kình Đà kẹp hai bên nên hay lo nghĩ, ít người chia sẻ.', 2);
+      if (has(b, 'Địa Không') || has(b, 'Địa Kiếp')) add(`Không Kiếp ở ${lbl}`, `${lbl} tại ${b}`, 'Nghĩ khác người, lúc lên lúc xuống, tiền đến nhanh đi nhanh. Hợp nghề sáng tạo, công nghệ, nghiên cứu, tâm linh; không hợp đầu cơ.', 2, { at: b, stars: ['Địa Không', 'Địa Kiếp'], tone: 'luuy' }); });
+    if (has(M, 'Lộc Tồn')) add('Lộc Tồn ở Mệnh, Kình Đà giáp', `Mệnh tại ${M}`, 'Có lộc ăn, cẩn trọng, biết giữ của; bị Kình Đà kẹp hai bên nên hay lo nghĩ, ít người chia sẻ.', 2, { stars: ['Lộc Tồn'], tone: 'tot' });
     const pair = (a, b, label, text) => {
-      if ((has(tpM.giap[0], a) && has(tpM.giap[1], b)) || (has(tpM.giap[0], b) && has(tpM.giap[1], a))) add(`${label} giáp Mệnh`, 'hai cung kề Mệnh', text + ' Hai bên Mệnh có người đỡ.', 2);
-      else if (inTP(a) && inTP(b)) add(`${label} chiếu Mệnh`, 'tam phương Mệnh', text, 2);
-      else if (inTP(a) || inTP(b)) add(`${inTP(a) ? a : b} chiếu Mệnh`, 'tam phương Mệnh', text, 1);
+      if ((has(tpM.giap[0], a) && has(tpM.giap[1], b)) || (has(tpM.giap[0], b) && has(tpM.giap[1], a))) add(`${label} giáp Mệnh`, 'hai cung kề Mệnh', text + ' Hai bên Mệnh có người đỡ.', 2, { stars: [a, b], tone: 'tot' });
+      else if (inTP(a) && inTP(b)) add(`${label} chiếu Mệnh`, 'tam phương Mệnh', text, 2, { stars: [a, b], tone: 'tot' });
+      else if (inTP(a) || inTP(b)) add(`${inTP(a) ? a : b} chiếu Mệnh`, 'tam phương Mệnh', text, 1, { stars: [a, b], tone: 'tot' });
     };
     pair('Tả Phù', 'Hữu Bật', 'Tả Hữu', 'Được giúp đỡ, có người phò, làm việc nhóm tốt.');
     pair('Văn Xương', 'Văn Khúc', 'Xương Khúc', 'Văn chương, học hành, chữ nghĩa; giỏi diễn đạt.');
     pair('Thiên Khôi', 'Thiên Việt', 'Khôi Việt', 'Quý nhân, dễ được người trên nâng đỡ, thuận thi cử, thăng tiến.');
     const tpT = tamPhuong(T);
-    if (T !== M && ['Văn Xương', 'Văn Khúc'].every(n => [T, ...tpT.hop].some(b => has(b, n)))) add('Xương Khúc hội Thân', `cung Thân tại ${T}`, 'Bộ sao văn chương hội về cung Thân: nửa đời sau sống bằng chữ nghĩa, học thuật; đọc, viết, học là cách hồi phục.', 2);
+    if (T !== M && ['Văn Xương', 'Văn Khúc'].every(n => [T, ...tpT.hop].some(b => has(b, n)))) add('Xương Khúc hội Thân', `cung Thân tại ${T}`, 'Bộ sao văn chương hội về cung Thân: nửa đời sau sống bằng chữ nghĩa, học thuật; đọc, viết, học là cách hồi phục.', 2, { at: T, stars: ['Văn Xương', 'Văn Khúc'], tone: 'tot' });
     const tm = starAt['Thiên Mã'] && starAt['Thiên Mã'].b;
-    if (tm && (has(tm, 'Lộc Tồn') || [...byB[tm].major, ...byB[tm].minor].some(s => s.mut === 'Lộc'))) add('Lộc Mã giao trì', `cung ${pname(tm)}`, 'Thiên Mã gặp Lộc: đi xa mà phát, tiền đến từ di chuyển, buôn bán, làm việc nhiều nơi.', 2);
-    if (has(M, 'Long Trì') && (has(M, 'Phụng Các') || has(M, 'Phượng Các'))) add('Long Phượng ở Mệnh', `Mệnh tại ${M}`, 'Tài hoa, nhạy với cái đẹp, chuộng sự chỉn chu và đồ có gu.', 1);
-    if (has(M, 'Hoa Cái')) add('Hoa Cái ở Mệnh', `Mệnh tại ${M}`, 'Có phong thái riêng; thích không gian riêng, dễ hợp nghệ thuật, tôn giáo, học thuật.', 1);
+    if (tm && (has(tm, 'Lộc Tồn') || [...byB[tm].major, ...byB[tm].minor].some(s => s.mut === 'Lộc'))) add('Lộc Mã giao trì', `cung ${pname(tm)}`, 'Thiên Mã gặp Lộc: đi xa mà phát, tiền đến từ di chuyển, buôn bán, làm việc nhiều nơi.', 2, { at: tm, stars: ['Thiên Mã', 'Lộc Tồn', 'Hóa Lộc'], tone: 'tot' });
+    if (has(M, 'Long Trì') && (has(M, 'Phụng Các') || has(M, 'Phượng Các'))) add('Long Phượng ở Mệnh', `Mệnh tại ${M}`, 'Tài hoa, nhạy với cái đẹp, chuộng sự chỉn chu và đồ có gu.', 1, { stars: ['Long Trì', 'Phượng Các', 'Phụng Các'], tone: 'tot' });
+    if (has(M, 'Hoa Cái')) add('Hoa Cái ở Mệnh', `Mệnh tại ${M}`, 'Có phong thái riêng; thích không gian riêng, dễ hợp nghệ thuật, tôn giáo, học thuật.', 1, { stars: ['Hoa Cái'], tone: 'trung' });
     const dao = ['Hồng Loan', 'Thiên Hỷ', 'Hàm Trì', 'Đào Hoa', 'Thiên Diêu', 'Thiên Riêu'].filter(n => has(M, n));
-    if (dao.length) add('Sao đào hoa ở Mệnh', `Mệnh có ${dao.join(', ')}`, 'Có duyên, dễ được để ý, nhiều khi không tự biết.', 1);
+    if (dao.length) add('Sao đào hoa ở Mệnh', `Mệnh có ${dao.join(', ')}`, 'Có duyên, dễ được để ý, nhiều khi không tự biết.', 1, { stars: dao, tone: 'trung' });
 
     // Tứ hóa gốc rơi vào các cung khác
     t.palaces.forEach(p => [...p.major, ...p.minor].forEach(s => {
       if (!s.mut || p.branch === M) return;
       const key = p.name;
-      if (s.mut === 'Lộc' && ['Tài Bạch', 'Điền Trạch', 'Quan Lộc'].includes(key)) add(`${s.name} hóa Lộc ở ${key}`, `cung ${key}`, key === 'Điền Trạch' ? 'Kho tiền thật nằm ở nhà đất, tài sản cố định: tiền để trong ví thì bay, đổ vào tài sản thì ở lại.' : key === 'Tài Bạch' ? 'Tiền có nguồn, dễ kiếm.' : 'Nghề nghiệp có lộc, việc mang lại tiền.', 2);
-      if (s.mut === 'Kỵ' && ['Phu Thê', 'Tài Bạch', 'Quan Lộc', 'Thiên Di', 'Phúc Đức'].includes(key)) add(`${s.name} hóa Kỵ ở ${key}`, `cung ${key}`, `Điểm vướng của đời nằm ở cung ${key}: chuyện ở đây hay phải làm đi làm lại, cần nhiều kiên nhẫn.${['Văn Khúc', 'Văn Xương', 'Cự Môn'].includes(s.name) ? ' Sao này hóa Kỵ thì vướng ở lời nói, giấy tờ.' : ''}`, 2);
+      if (s.mut === 'Lộc' && ['Tài Bạch', 'Điền Trạch', 'Quan Lộc'].includes(key)) add(`${s.name} hóa Lộc ở ${key}`, `cung ${key}`, key === 'Điền Trạch' ? 'Kho tiền thật nằm ở nhà đất, tài sản cố định: tiền để trong ví thì bay, đổ vào tài sản thì ở lại.' : key === 'Tài Bạch' ? 'Tiền có nguồn, dễ kiếm.' : 'Nghề nghiệp có lộc, việc mang lại tiền.', 2, { at: p.branch, stars: [s.name], tone: 'tot' });
+      if (s.mut === 'Kỵ' && ['Phu Thê', 'Tài Bạch', 'Quan Lộc', 'Thiên Di', 'Phúc Đức'].includes(key)) add(`${s.name} hóa Kỵ ở ${key}`, `cung ${key}`, `Điểm vướng của đời nằm ở cung ${key}: chuyện ở đây hay phải làm đi làm lại, cần nhiều kiên nhẫn.${['Văn Khúc', 'Văn Xương', 'Cự Môn'].includes(s.name) ? ' Sao này hóa Kỵ thì vướng ở lời nói, giấy tờ.' : ''}`, 2, { at: p.branch, stars: [s.name], tone: 'luuy' });
     }));
 
     // Đường đi đại hạn

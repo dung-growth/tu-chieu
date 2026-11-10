@@ -242,6 +242,68 @@ th{font-size:12px;color:var(--ink-2);font-weight:600;letter-spacing:.02em}
 .tag{font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:4px;background:var(--seal);color:var(--on-seal)}
 .tag.alt{background:var(--jade);color:var(--on-jade)}
 
+
+/* tử vi: tab con, cách cục hai trục, nét tính cách, thẻ chi tiết */
+.tv-els{margin-top:2px} .tv-els b{font-weight:600;margin:0 2px}
+.tv-sub{display:flex;gap:4px;flex-wrap:wrap;margin:18px 0 12px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--sunken);width:max-content;max-width:100%}
+.tv-sub button{font:inherit;font-size:14px;font-weight:500;border:0;background:none;color:var(--ink-2);padding:7px 14px;border-radius:999px;cursor:pointer}
+.tv-sub button[aria-selected=true]{background:var(--sheet);color:var(--ink);font-weight:600;box-shadow:var(--shadow-sm)}
+@media (max-width:560px){.tv-sub{width:auto;border-radius:12px}.tv-sub button{flex:1 1 45%;padding:8px 6px;font-size:13.5px}}
+.cc-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.cc-group{margin-top:14px} .cc-group>.label{margin-bottom:6px}
+.cc-row{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--ink-3);border-radius:var(--r-sm);background:var(--sheet);cursor:pointer;margin-bottom:8px;transition:border-color .2s var(--ease),box-shadow .2s var(--ease)}
+.cc-row:hover,.cc-row:focus-visible{box-shadow:var(--shadow);border-color:var(--ink-3)} .cc-row:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.cc-row.cc-tot{border-left-color:var(--jade)} .cc-row.cc-luuy{border-left-color:var(--seal)}
+.cc-n{font-weight:600;font-size:15px} .cc-u{font-size:13px;font-weight:600;color:var(--ink-2);text-align:right} .cc-m{grid-column:1/-1}
+.cc-row .ubar{grid-column:1} .cc-row .cc-u{grid-column:2}
+.tchip{font-size:12px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--sunken);color:var(--ink-2);justify-self:end}
+.tchip.t-tot{background:var(--jade-soft);color:var(--jade)} .tchip.t-luuy{background:var(--seal-soft);color:var(--seal)}
+.t-tot{color:var(--jade)} .t-luuy{color:var(--seal)}
+.ubar{position:relative;display:block;height:8px;border-radius:99px;background:var(--line-2);overflow:hidden;min-width:0}
+.ubar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--ink-3)}
+.ubar.u-tot i{background:var(--jade)} .ubar.u-luuy i{background:var(--seal)}
+.ubar b{position:absolute;top:0;bottom:0;width:2px;background:var(--sheet);opacity:.9}
+.ubar.big{height:10px;margin:12px 0 4px}
+.tr-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px 22px}
+.tr-group>.label{margin:6px 0 2px}
+.tr-row{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:92px 1fr 96px;gap:12px;align-items:center;padding:9px 6px;border-bottom:1px solid var(--line-2);cursor:pointer;border-radius:6px}
+.tr-row:hover{background:var(--sunken)} .tr-row:focus-visible{outline:2px solid var(--seal);outline-offset:1px}
+.tr-n{font-size:14.5px;font-weight:500}
+.tr-track{position:relative;height:6px;border-radius:99px;background:var(--line-2)}
+.tr-track b{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--line)} .tr-track b[style*="50%"]{background:var(--ink-3)}
+.tr-fill{position:absolute;top:0;bottom:0;background:color-mix(in srgb,var(--ink-3) 45%,transparent);border-radius:99px}
+.tr-dot{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ink-2);border:2px solid var(--sheet);box-shadow:0 0 0 1px var(--ink-3)}
+.tr-dot.hi{background:var(--jade);box-shadow:0 0 0 1px var(--jade)} .tr-dot.lo{background:var(--seal);box-shadow:0 0 0 1px var(--seal)}
+.tr-v{display:flex;flex-direction:column;align-items:flex-end;line-height:1.25} .tr-v b{font-size:14px}
+.sheet{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center}
+.sheet[hidden]{display:none}
+.sheet-bg{position:absolute;inset:0;background:rgba(20,17,15,.45);animation:fade .15s var(--ease)}
+.sheet-card{position:relative;width:min(560px,calc(100vw - 32px));max-height:min(86vh,820px);overflow:auto;background:var(--sheet);color:var(--ink);border-radius:18px;padding:22px 22px 18px;box-shadow:var(--shadow-lg);animation:rise .2s var(--ease)}
+.sheet-grip{display:none;width:40px;height:4px;border-radius:9px;background:var(--line);margin:-8px auto 12px}
+.sheet-x{position:absolute;top:10px;right:10px;width:36px;height:36px;padding:0;font-size:24px;line-height:1;color:var(--ink-2);background:none;border:0;cursor:pointer;border-radius:50%}
+.sheet-x:hover{background:var(--sunken)}
+.sheet-close{width:100%;margin-top:16px;border-radius:999px}
+.sheet-body h3{font-size:22px;margin:0;padding-right:36px} .sheet-body h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);margin:20px 0 6px}
+.sheet-body p{line-height:1.6;margin:10px 0}
+.sh-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.sh-score{display:flex;flex-direction:column;align-items:flex-end;text-align:right;margin-right:32px;flex-shrink:0} .sh-score b{font-size:22px;line-height:1.1} .sh-score .small{color:var(--ink-2)}
+.sh-big{font-size:17px;line-height:1.55!important}
+.sh-rows{display:flex;flex-direction:column}
+.sh-row{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:14.5px}
+.sh-lv{font-size:13px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:6px} .sh-lv.good{color:var(--jade)} .sh-lv.bad{color:var(--seal)}
+.lv{display:inline-flex;gap:2px} .lv i{width:7px;height:12px;border-radius:2px;background:var(--line)} .good .lv i.on{background:var(--jade)} .bad .lv i.on{background:var(--seal)}
+.br-tag{font-size:12px;padding:1px 7px;border:1px solid var(--line);border-radius:6px;color:var(--ink-2)}
+.sh-why{margin-top:16px} .sh-why summary{cursor:pointer;font-weight:600;font-size:15px;padding:6px 0}
+.sh-act{margin-top:16px}
+body.sheet-open{overflow:hidden}
+@media (max-width:560px){
+  .sheet{align-items:flex-end}
+  .sheet-card{width:100%;max-height:88vh;border-radius:18px 18px 0 0;padding:18px 18px 16px}
+  .sheet-grip{display:block}
+  .tr-row{grid-template-columns:84px 1fr 82px;gap:10px}
+}
+
+
 /* thần số */
 .num-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .ncard{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm);transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .2s var(--ease)}
@@ -657,6 +719,42 @@ tr.cur td{background:var(--seal-soft)}
   .ai-by{font-size:8.5pt}
   .rd-body{display:block!important} .rd-toggle{all:unset;display:block;font-weight:700;font-size:13pt;margin:14px 0 6px} .rd-toggle::after{display:none} .rd-quick{background:#FBF3EF;padding:6px 12px;border-radius:6px;break-inside:avoid}
 }
+
+/* tử vi trên điện thoại: cả lá số vừa một màn hình, chữ nhỏ mà vẫn đọc được; bấm vào ô để xem đầy đủ trong thẻ chi tiết */
+@media (max-width:640px){
+  .tv-grid{min-width:0;gap:3px}
+  .tv-cell{padding:5px 4px 4px;font-size:10.5px;gap:2px;min-height:118px;border-radius:6px}
+  .tv-head{flex-direction:column;gap:0;align-items:flex-start}
+  .tv-name{font-size:9.5px;letter-spacing:.02em} .tv-gz{font-size:9.5px;color:var(--ink-2)}
+  .tv-name .tag{font-size:8.5px;padding:0 3px}
+  .tv-flags,.tv-luu,.tv-bs,.tv-th,.mut-luu{display:none}
+  .tv-st{font-size:11.5px;line-height:1.25} .tv-st sup{font-size:8px;margin-left:1px}
+  .mut{font-size:8.5px;padding:0 3px;margin-left:2px}
+  .tv-major .muted{font-size:10px}
+  .tv-cols{grid-template-columns:1fr;gap:2px;font-size:10.5px;line-height:1.3}
+  .tv-bad{text-align:left;border-left:2px solid var(--seal);padding-left:3px}
+  .tv-bad:empty{display:none}
+  .tv-cols sup.mb{font-size:7.5px}
+  .tv-foot{font-size:9.5px;flex-direction:column;gap:0}
+  .tv-center{padding:8px 6px;gap:3px;font-size:11px}
+  .tv-center h3{font-size:15px} .tv-center .small{font-size:10.5px;line-height:1.35} .tv-center .label{font-size:9px}
+  .tv-center .tv-year{font-size:10.5px;margin-top:3px;padding-top:5px}
+  .tt{font-size:8.5px;padding:1px 5px}
+  .tv-cell.th{outline-width:1.5px;outline-offset:-1px}
+}
+
+
+/* điện thoại: thanh tab kết quả chia 2 hàng thay vì phải vuốt ngang; trụ Bát tự xếp nhãn trên giá trị; chữ trên vòng bản đồ sao to hơn */
+@media (max-width:560px){
+  .tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;gap:2px;overflow:visible}
+  .tabs [role=tab]{white-space:normal;padding:8px 4px;font-size:13px;line-height:1.25;text-align:center}
+  .tabs [role=tab] .beta{display:none}
+  .pkv{grid-template-columns:1fr;gap:0;font-size:13px;text-align:center}
+  .pkv dt{font-size:11.5px;margin-top:6px} .pkv dd{text-align:center;line-height:1.4}
+  .wheel text[font-size="10"]{font-size:17px} .wheel text[font-size="10.5"]{font-size:16px}
+  .wheel{overflow:visible} .wheel text[font-size="12"]{font-size:17px} .wheel text[font-size="12"][font-weight="700"]{font-size:14px}
+  .meter .zone{white-space:nowrap;font-size:11px} .wheel text[font-size="21"]{font-size:27px} .wheel text[font-size="16"]{font-size:21px} .wheel text[font-size="22"]{font-size:27px}
+}
 </style>
 </head>
 <body>
@@ -860,6 +958,7 @@ tr.cur td{background:var(--seal-soft)}
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div id="printDoc" aria-hidden="true"></div>
+<div id="sheet" class="sheet" hidden><div class="sheet-bg" data-close></div><div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><span class="sheet-grip" aria-hidden="true"></span><button type="button" class="sheet-x" aria-label="Đóng" data-close>×</button><div class="sheet-body"></div><button type="button" class="btn-ghost sheet-close" data-close>Đóng</button></div></div>
 <div id="tipPop" class="tip-pop" role="dialog" aria-labelledby="tipTitle" hidden><button type="button" class="tip-x" aria-label="Đóng">×</button><div class="tip-body"></div></div>
 
 <script src="lib/lunar.js"></script>
@@ -871,6 +970,8 @@ tr.cur td{background:var(--seal-soft)}
 <script src="compute.js"></script>
 <script src="iching.js"></script>
 <script src="tuvi-cach.js"></script>
+<script src="tuvi-pho-q.js"></script>
+<script src="tuvi-pho.js"></script>
 <script src="nghia.js"></script>
 <script src="hd.js"></script>
 <script src="qimen.js"></script>
@@ -1354,7 +1455,8 @@ const MAJOR_EL = {'Tử Vi':'Thổ','Thiên Cơ':'Mộc','Thái Dương':'Hỏa'
 const BRIGHT = {'Miếu':'M','Vượng':'V','Đắc':'Đ','Lợi':'L','Bình':'B','Hạn':'H','Hãm':'H'};
 const HUNG = ['Thiên Hình','Thiên Khốc','Thiên Hư','Thiên Không','Cô Thần','Quả Tú','Phá Toái','Âm Sát','Kiếp Sát','Thiên Thương','Thiên Sứ','Không Vong','Phi Liêm','Đại Hao','Tiểu Hao'];
 const MUT_LIST = ['Lộc','Quyền','Khoa','Kỵ'];
-let tvYear = null, tvSel = null, tvFor = null;
+let tvYear = null, tvSel = null, tvFor = null, tvSub = 'cach';
+const TV_SUB = [['cach', 'Cách cục'], ['tinh', 'Nét tính cách'], ['van', 'Đại hạn, 3 năm tới'], ['thang', '12 tháng']];
 function tvSchool(){ try { return localStorage.getItem('tuchieu:school') === 'cn' ? 'cn' : 'vn'; } catch(e) { return 'vn'; } }
 function setSchool(v){
   try { localStorage.setItem('tuchieu:school', v); } catch(e) {}
@@ -1375,15 +1477,19 @@ function renderTuvi(){
     <label class="small" for="tvYear" style="font-weight:500">Xem năm</label>
     <select id="tvYear" style="width:auto">${years.join('')}</select>
     <div class="seg" role="group" aria-label="Trường phái an sao"><span class="small" style="font-weight:500">An sao</span>${[['vn','Việt Nam'],['cn','Trung Quốc']].map(([v,n]) => `<button type="button" data-school="${v}" aria-pressed="${t.school===v}">${n}</button>`).join('')}</div>
-    <div class="tv-legend small muted"><span><i class="lg lg-menh"></i>Cung Mệnh</span><span><i class="lg lg-dh"></i>Đại hạn</span><span><i class="lg lg-ln"></i>Lưu niên</span><span><i class="lg lg-th"></i>Tiểu hạn</span><span>Bấm vào một cung để xem tam phương tứ chính</span></div>
+    <div class="tv-legend small muted"><span><i class="lg lg-menh"></i>Cung Mệnh</span><span><i class="lg lg-dh"></i>Đại hạn</span><span><i class="lg lg-ln"></i>Lưu niên</span><span><i class="lg lg-th"></i>Tiểu hạn</span><span>Bấm vào một cung để xem thế cung và tam phương tứ chính</span></div>
   </div>
   <div class="table-wrap"><div class="tv-grid" id="tvGrid"></div></div>
   <p class="small muted">${t.school === 'vn' ? 'An sao theo trường phái Việt Nam (Thái Thứ Lang, Thiên Lương), lịch âm Việt Nam; cách an sao chuyển từ dự án mã nguồn mở lasotuvi. Một vài sao phụ có sách an khác nhau.' : 'An sao theo thư viện iztro (Tử vi Đẩu số kiểu Trung Quốc, âm lịch chuẩn Trung Quốc; có thể lệch với lịch Việt Nam ở một số ngày giáp ranh tháng).'} Độ sáng: M miếu, V vượng, Đ đắc, L lợi, B bình, H hãm. Cột trái là cát tinh, cột phải là sát tinh và sao xấu. Chữ xanh là lưu tinh của năm đang xem. Góc dưới mỗi ô: vòng Trường sinh, vòng Bác sĩ và tuổi đại hạn.</p>
-  <div id="tvMonths"></div>`;
+  <div class="tv-sub" role="tablist" aria-label="Phần đọc thêm của lá số">${TV_SUB.map(([k, n]) => `<button type="button" role="tab" id="tvs-t-${k}" aria-controls="tvs-${k}" aria-selected="${tvSub === k}" data-tvs="${k}">${n}</button>`).join('')}</div>
+  ${TV_SUB.map(([k]) => `<div id="tvs-${k}" role="tabpanel" aria-labelledby="tvs-t-${k}" ${tvSub === k ? '' : 'hidden'}>${k === 'thang' ? '<div id="tvMonths"></div>' : ''}</div>`).join('')}`;
+  $('#p-tv').querySelectorAll('[data-tvs]').forEach(b => b.onclick = () => { tvSub = b.dataset.tvs;
+    $('#p-tv').querySelectorAll('[data-tvs]').forEach(o => { const on = o === b; o.setAttribute('aria-selected', on); $('#tvs-' + o.dataset.tvs).hidden = !on; }); });
   $('#tvYear').onchange = e => { tvYear = +e.target.value; drawTuvi(); };
   $('#p-tv').querySelectorAll('[data-school]').forEach(b => b.onclick = () => { if (b.dataset.school !== R.tuvi.school) setSchool(b.dataset.school); });
   drawTuvi();
-  if (R.tvc) $('#p-tv').insertAdjacentHTML('beforeend', tvcHTML(R.tvc));
+  if (R.tvc) { $('#tvs-cach').innerHTML = cachHTML(R.tvc); $('#tvs-van').innerHTML = vanHTML(R.tvc); bindCach(); }
+  $('#tvs-tinh').innerHTML = traitsHTML(); bindTraits();
 }
 function elOfNapAm(s){ return ['Kim','Mộc','Thủy','Hỏa','Thổ'].find(h => s.endsWith(h)); }
 function menhCuc(m, c){ if (!m || !c) return ''; const SINH={'Mộc':'Hỏa','Hỏa':'Thổ','Thổ':'Kim','Kim':'Thủy','Thủy':'Mộc'}, KHAC={'Mộc':'Thổ','Thổ':'Thủy','Thủy':'Hỏa','Hỏa':'Kim','Kim':'Mộc'};
@@ -1396,7 +1502,7 @@ function drawTuvi(){
   const tip = (s, p) => `data-tip="star" data-key="${esc(s.name)}" data-ctx="${esc(p.name + '|' + (s.bright||'') + '|' + (s.mut||''))}"`;
   const starLine = (s, p) => { const el = MAJOR_EL[s.name]; const lm = mutOf(s.name, H.yearlyMut);
     return `<div class="tv-st"><span class="el-${el}" ${tip(s, p)}>${s.name}</span>${s.bright?`<sup title="${s.bright==='Hạn'?'Hãm':s.bright}">${BRIGHT[s.bright]||s.bright}</sup>`:''}${s.mut?`<span class="mut mut-${s.mut}" title="Hóa ${s.mut} gốc">${s.mut}</span>`:''}${lm?`<span class="mut-luu" title="Lưu niên hóa ${lm}">L.${lm}</span>`:''}</div>`; };
-  const minorName = (s, p) => { const lm = mutOf(s.name, H.yearlyMut); return `<span ${tip(s, p)}>${s.name}</span>${s.bright && t.school==='vn'?`<sup class="mb">${BRIGHT[s.bright]||''}</sup>`:''}${s.mut?`<span class="mut mut-${s.mut}">${s.mut}</span>`:''}${lm?`<span class="mut-luu">L.${lm}</span>`:''}`; };
+  const minorName = (s, p) => { const lm = mutOf(s.name, H.yearlyMut), el = TVP.EL[s.name]; return `<span ${el ? `class="el-${el}" ` : ''}${tip(s, p)}>${s.name}</span>${s.bright && t.school==='vn'?`<sup class="mb">${BRIGHT[s.bright]||''}</sup>`:''}${s.mut?`<span class="mut mut-${s.mut}">${s.mut}</span>`:''}${lm?`<span class="mut-luu">L.${lm}</span>`:''}`; };
   const tt = {}; // Tuần/Triệt: đặt nhãn ở cạnh chung của hai cung
   const mark = (pair, label) => { const [a, b] = pair; const ia = LAYOUT.indexOf(a), ib = LAYOUT.indexOf(b); const first = Math.min(ia, ib), second = Math.max(ia, ib);
     const side = Math.floor(first/4) === Math.floor(second/4) ? 'right' : 'bottom'; const key = LAYOUT[first] + side; tt[key] = { b: LAYOUT[first], side, label: tt[key] ? tt[key].label + ' · ' + label : label }; };
@@ -1411,6 +1517,7 @@ function drawTuvi(){
       <div class="small">Bản mệnh <b class="el-${m}">${t.napAmNam}</b> · <b>${esc(t.cuc)}</b> · ${menhCuc(m, c)}</div>
       <div class="small">Mệnh tại <b>${t.menh}</b> · Thân tại <b>${t.than}</b> · Mệnh chủ ${esc(t.soul)} · Thân chủ ${esc(t.body)}</div>
       ${t.thanCu || t.laiNhan ? `<div class="small">${t.thanCu ? `Thân cư <b>${t.thanCu}</b>` : ''}${t.thanCu && t.laiNhan ? ' · ' : ''}${t.laiNhan ? `Lai nhân cung <b>${t.laiNhan}</b>` : ''}</div>` : ''}
+      <div class="tv-els small" aria-label="Màu chữ của sao theo ngũ hành">Màu sao: <b class="el-Kim">Kim</b> <b class="el-Mộc">Mộc</b> <b class="el-Thủy">Thủy</b> <b class="el-Hỏa">Hỏa</b> <b class="el-Thổ">Thổ</b></div>
       <div class="tv-year"><b>Năm ${H.year} ${H.gz}</b>, ${H.age} tuổi âm · Đại hạn ${H.decadalGZ}<br><span class="small">Lưu tứ hóa: ${H.yearlyMut.map((s,k)=>`${MUT_LIST[k]} ${s}`).join(', ')}</span></div></div>`; } return; }
     const p = byB[b]; if (!p) { cells += '<div class="tv-cell"></div>'; return; }
     const minors = [...p.minor.map(s=>({...s,adj:false})), ...p.adj.map(n=>({name:n,adj:true}))].filter(s=>s.name!=='Tuần Không'&&s.name!=='Triệt Lộ');
@@ -1426,11 +1533,11 @@ function drawTuvi(){
       <div class="tv-major">${p.major.length?p.major.map(s=>starLine(s,p)).join(''):'<span class="muted" style="font-weight:500">Vô chính diệu</span>'}</div>
       <div class="tv-cols"><div class="tv-good">${good.map(s=>minorName(s,p)).join('<br>')}</div><div class="tv-bad">${badS.map(s=>minorName(s,p)).join('<br>')}</div></div>
       ${luu.length?`<div class="tv-luu">${luu.map(s=>t.school==='vn'?s.name.replace(/^Lưu /,'L.'):s.name).join(' · ')}</div>`:''}
-      <div class="tv-foot"><span>${p.changsheng||''}${p.boshi?' · '+p.boshi:''}</span><span class="num">${thOf[b] ? `<span title="Tháng âm lịch năm ${tvYear} rơi vào cung này">${thOf[b]}</span> · ` : ''}${p.decadal?p.decadal[0]+'–'+p.decadal[1]:''}</span></div></div>`;
+      <div class="tv-foot"><span>${p.changsheng||''}${p.boshi?`<span class="tv-bs"> · ${p.boshi}</span>`:''}</span><span class="num">${thOf[b] ? `<span class="tv-th" title="Tháng âm lịch năm ${tvYear} rơi vào cung này">${thOf[b]} · </span>` : ''}${p.decadal?p.decadal[0]+'–'+p.decadal[1]:''}</span></div></div>`;
   });
   grid.innerHTML = cells + '<svg class="tv-lines" aria-hidden="true"></svg>';
   renderMonths(ML);
-  grid.querySelectorAll('.tv-cell[data-b]').forEach(c => { const go = () => selectPalace(c.dataset.b === tvSel ? null : c.dataset.b); c.addEventListener('click', go); c.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); go(); } }); });
+  grid.querySelectorAll('.tv-cell[data-b]').forEach(c => { const go = () => { selectPalace(c.dataset.b); openPalaceSheet(c.dataset.b); }; c.addEventListener('click', go); c.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); go(); } }); });
   selectPalace(tvSel);
 }
 
@@ -1474,14 +1581,99 @@ function selectPalace(b){
 }
 addEventListener('resize', () => { if (tvSel && $('#tvGrid')) selectPalace(tvSel); });
 
-// Các cách nổi bật, đường đi đại hạn, 3 năm tới
-function tvcHTML(A){
+/* ---- Thẻ chi tiết trượt lên (dùng cho cung, cách cục, nét tính cách) ---- */
+function openSheet(html, from){
+  const sh = $('#sheet'); sh.querySelector('.sheet-body').innerHTML = html; sh.hidden = false; openSheet.from = from || document.activeElement;
+  document.body.classList.add('sheet-open'); sh.querySelector('.sheet-card').scrollTop = 0; sh.querySelector('.sheet-x').focus({ preventScroll: true });
+}
+function closeSheet(){ const sh = $('#sheet'); if (sh.hidden) return; sh.hidden = true; document.body.classList.remove('sheet-open'); if (openSheet.from && openSheet.from.focus) openSheet.from.focus({ preventScroll: true }); }
+const bars = n => `<span class="lv" aria-hidden="true">${[1,2,3,4].map(k => `<i class="${k <= n ? 'on' : ''}"></i>`).join('')}</span>`;
+const brTag = b => b ? ` <span class="br-tag">${TVP.briTxt(b)}</span>` : '';
+const starRows = (L, cls) => L.length ? `<div class="sh-rows">${L.map(x => `<div class="sh-row"><span><b>${esc(x.name)}</b> <span class="muted small">${x.rel}${x.bright ? ', ' + TVP.briTxt(x.bright) : ''}</span></span><span class="sh-lv ${cls}">${bars(x.lvl[1])} ${x.lvl[0]}</span></div>`).join('')}</div>` : '<p class="small muted">Không có.</p>';
+const ubar = (v, cls = '') => `<span class="ubar ${cls}" role="img" aria-label="${v} trên 100"><i style="width:${v}%"></i><b style="left:25%"></b><b style="left:50%"></b><b style="left:75%"></b></span>`;
+
+/* ---- Cách cục: tốt/xấu và mức ứng là hai trục riêng ---- */
+let CC = [];
+function cachHTML(A){
+  CC = A.cach.map(c => TVP.cach(R.tuvi, c));
+  const groups = [3, 2, 1].map(w => [w, CC.map((c, i) => ({ c, i })).filter(x => x.c.w === w)]).filter(g => g[1].length);
+  const strong = CC.filter(c => c.ung >= 70).length;
+  return `<div class="panel"><div class="cc-head"><h3>Cách cục trên lá số</h3><span class="small muted">${CC.length} cách · <b>${strong}</b> đang ứng mạnh</span></div>
+    <p class="small muted" style="margin:4px 0 12px">Mỗi cách có hai thông số. Nhãn <b>Tốt / Lưu ý</b> là bản chất của cách theo phú đoán. Thanh <b>mức ứng</b> là cách đó hiện ra mạnh tới đâu trên lá số này, tùy độ sáng của sao, cát tinh, sát tinh và Tuần Triệt. Bấm vào một cách để xem vì sao.</p>
+    ${groups.map(([w, L]) => `<div class="cc-group"><div class="label">${L[0].c.rank} · ${L.length}</div>${L.map(({ c, i }) => `
+      <button type="button" class="cc-row cc-${c.tone}" data-cc="${i}">
+        <span class="cc-n">${esc(c.name)}</span><span class="tchip t-${c.tone}">${c.toneTxt}</span>
+        ${ubar(c.ung, 'u-' + c.tone)}<span class="cc-u">${c.ungTxt}</span>
+        <span class="cc-m small muted">luận cho ${esc(c.palace)}${c.form.length ? ' · ' + c.form.length + ' sao' : ''}${c.tt ? ' · bị Tuần Triệt' : ''}</span></button>`).join('')}</div>`).join('')}
+  </div>`;
+}
+function bindCach(){ $('#tvs-cach').querySelectorAll('[data-cc]').forEach(b => b.onclick = () => openCach(CC[+b.dataset.cc], b)); }
+function openCach(c, from){
+  openSheet(`<div class="sh-top"><div><h3 id="sheetTitle">${esc(c.name)}</h3><div class="small muted">${c.rank} · luận cho cung ${esc(c.palace)} (${c.at})</div></div>
+      <div class="sh-score"><b class="t-${c.tone}">${c.toneTxt}</b><span class="small">${c.ungTxt}</span></div></div>
+    ${ubar(c.ung, 'u-' + c.tone + ' big')}
+    <p>${esc(c.text)}</p>
+    <p class="small muted">${esc(c.why)}</p>
+    ${c.form.length ? `<h4>Sao làm nên cách</h4><div class="sh-rows">${c.form.map(x => `<div class="sh-row"><span><b>${esc(x.name)}</b> <span class="muted small">${x.rel}</span></span><span>${x.bright ? `<span class="br-tag">${TVP.briTxt(x.bright)}</span>` : ''}</span></div>`).join('')}</div>` : ''}
+    <h4>Cát tinh ${c.tone === 'luuy' ? 'làm nhẹ đi' : 'trợ lực'}</h4>${starRows(c.help.slice(0, 8), 'good')}
+    <h4>Sát tinh ${c.tone === 'luuy' ? 'làm nặng thêm' : 'cản trở'}</h4>${starRows(c.hurt.slice(0, 8), 'bad')}
+    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi AI về cách này</button></div>`, from);
+  $('#shAsk').onclick = () => { closeSheet(); askAbout(`Lá số Tử vi của tôi có ${c.name} (${c.toneTxt.toLowerCase()}, ${c.ungTxt}, luận cho cung ${c.palace}). Cách này ứng vào đời tôi thế nào?`); };
+}
+
+/* ---- Thế của một cung ---- */
+function openPalaceSheet(b){
+  if (!R || !R.tuvi) return;
+  const P = TVP.palace(R.tuvi, b), cell = $(`.tv-cell[data-b="${b}"]`);
+  openSheet(`<div class="sh-top"><div><h3 id="sheetTitle">Cung ${esc(P.name)}</h3><div class="small muted">${P.stem} ${b}${P.tt ? ' · bị Tuần hoặc Triệt' : ''}</div></div>
+      <div class="sh-score"><b class="${P.label === 'Vững' ? 't-tot' : P.label === 'Yếu' ? 't-luuy' : ''}">${P.label}</b><span class="small">thế cung ${P.score}/100</span></div></div>
+    ${ubar(P.score, P.label === 'Vững' ? 'u-tot big' : P.label === 'Yếu' ? 'u-luuy big' : 'big')}
+    <p>${esc(NGHIA.palace[P.name] || '')}</p>
+    <p class="small muted">Thế cung tính từ độ sáng của chính tinh${P.borrow ? ' (cung trống nên mượn chính tinh ở cung xung chiếu, tính bảy phần)' : ''}, cộng cát tinh và trừ sát tinh ở cung này, hai cung tam hợp, cung xung chiếu và hai cung kề bên. Đây là cách đọc gợi ý của Tứ Chiếu, không phải điểm tốt xấu tuyệt đối.</p>
+    <h4>${P.borrow ? 'Vô chính diệu, mượn chính tinh xung chiếu' : 'Chính tinh'}</h4>
+    ${P.major.length ? `<div class="sh-rows">${P.major.map(x => `<div class="sh-row"><span><b class="el-${MAJOR_EL[x.name]}">${esc(x.name)}</b></span><span>${x.bright ? `<span class="br-tag">${TVP.briTxt(x.bright)}</span>` : ''}</span></div>`).join('')}</div>` : '<p class="small muted">Không có.</p>'}
+    <h4>Cát tinh trợ lực</h4>${starRows(P.help.slice(0, 8), 'good')}
+    <h4>Sát tinh cản trở</h4>${starRows(P.hurt.slice(0, 8), 'bad')}
+    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi AI về cung này</button></div>`, cell);
+  $('#shAsk').onclick = () => { closeSheet(); askAbout(`Cung ${P.name} trong lá số Tử vi của tôi nói gì? Đọc cả các sao trong cung và cung chiếu về.`); };
+}
+
+/* ---- Nét tính cách: so với lá số ngẫu nhiên tính bằng cùng engine ---- */
+let TR = [];
+function traitsHTML(){
+  if (!R || !R.tuvi || typeof TVP === 'undefined') return '';
+  TR = TVP.traits(R.tuvi); if (!TR.length || TR[0].pct === null) return '<div class="panel"><p class="small muted">Chưa có bảng so sánh cho cách an sao này.</p></div>';
+  const groups = [...new Set(TR.map(x => x.g))];
+  return `<div class="panel"><div class="cc-head"><h3>Nét tính cách theo Tử vi</h3><span class="small muted">so với ${TR[0].n.toLocaleString('vi-VN')} lá số</span></div>
+    <p class="small muted" style="margin:4px 0 12px">Mỗi nét là tổng các sao quanh cung Mệnh (nét tiền bạc đọc theo cung Tài Bạch), tính cả độ sáng, rồi so với ${TR[0].n.toLocaleString('vi-VN')} lá số ngẫu nhiên sinh 1950–2009 lập bằng cùng cách an sao. "Hơn 80%" nghĩa là nét này của bạn cao hơn 80% số lá số đó. Bấm vào một nét để xem vì sao.</p>
+    <div class="tr-groups">${groups.map(g => `<div class="tr-group"><div class="label">${g}</div>${TR.map((x, i) => x.g !== g ? '' : `
+      <button type="button" class="tr-row" data-tr="${i}"><span class="tr-n">${x.name}</span>
+        <span class="tr-track" aria-hidden="true"><i class="tr-fill" style="left:${Math.min(50, x.pct)}%;width:${Math.abs(x.pct - 50)}%"></i><b style="left:25%"></b><b style="left:50%"></b><b style="left:75%"></b><i class="tr-dot ${x.pct >= 75 ? 'hi' : x.pct <= 25 ? 'lo' : ''}" style="left:${x.pct}%"></i></span>
+        <span class="tr-v"><b class="${x.pct >= 75 ? 't-tot' : x.pct <= 25 ? 't-luuy' : ''}">${x.level}</b><span class="small muted">hơn ${x.pct}%</span></span></button>`).join('')}</div>`).join('')}</div>
+    <p class="small muted" style="margin:12px 0 0">Trọng số từng sao do Tứ Chiếu đặt theo tính chất sao trong phú đoán phổ biến. Đây là cách đọc gợi ý để tự soi mình, không phải bài kiểm tra tính cách.</p></div>`;
+}
+function bindTraits(){ $('#tvs-tinh').querySelectorAll('[data-tr]').forEach(b => b.onclick = () => openTrait(TR[+b.dataset.tr], b)); }
+function openTrait(x, from){
+  const up = x.parts.filter(p => p.c > 0), down = x.parts.filter(p => p.c < 0);
+  const row = (p, neg) => `<div class="sh-row"><span><b>${esc(p.name)}</b> <span class="muted small">${p.where}${p.bright ? ' · ' + TVP.briTxt(p.bright) : ''}</span></span><span class="sh-lv ${neg ? 'bad' : 'good'}">${neg ? 'kéo xuống ' : 'góp '}${p.lvl}</span></div>`;
+  openSheet(`<div class="sh-top"><div><h3 id="sheetTitle">${x.name}</h3><div class="small muted">${x.g} · đọc theo cung ${x.at}</div></div>
+      <div class="sh-score"><b class="${x.pct >= 75 ? 't-tot' : x.pct <= 25 ? 't-luuy' : ''}">${x.level}</b><span class="small">hơn ${x.pct}%</span></div></div>
+    <div class="label" style="margin-top:14px">Con số này nghĩa là</div><p class="sh-big">${esc(x.mean)}</p>
+    <div class="label">${x.name} là gì</div><p>${esc(x.what)}</p>
+    <details class="sh-why" open><summary>Vì sao có con số này?</summary>
+      <p class="small muted">Những sao dưới đây làm nên con số. Sao ở chính cung góp đủ, sao xung chiếu, tam hợp, kề bên góp ít hơn; sao sáng góp nhiều hơn sao hãm.${down.length ? ' Có sao kéo nét này xuống.' : ''}</p>
+      ${up.length ? `<div class="sh-rows">${up.map(p => row(p)).join('')}</div>` : '<p class="small muted">Không có sao nào đẩy nét này lên.</p>'}
+      ${down.length ? `<div class="sh-rows" style="margin-top:8px">${down.map(p => row(p, true)).join('')}</div>` : ''}</details>
+    <p class="small muted">So với ${x.n.toLocaleString('vi-VN')} lá số ngẫu nhiên lập bằng cùng cách an sao (${R.tuvi.school === 'vn' ? 'Việt Nam' : 'Trung Quốc'}).</p>
+    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi AI về nét này</button></div>`, from);
+  $('#shAsk').onclick = () => { closeSheet(); askAbout(`Theo Tử vi, nét "${x.name}" của tôi ở mức ${x.level.toLowerCase()} (hơn ${x.pct}% người). Điều này thể hiện ra sao trong đời sống và nên tận dụng thế nào?`); };
+}
+
+/* ---- Đường đi đại hạn và 3 năm tới ---- */
+function vanHTML(A){
   const ci = A.decades.findIndex(d => d.current), decs = A.decades.slice(Math.max(0, ci - 1), ci < 0 ? 4 : ci + 4);
   const mutTxt = m => `<span class="hoa hoa-${m.hoa}">${m.hoa}</span> ${m.star} → ${m.palace}${m.song?` <b class="song">song ${m.hoa}</b>`:''}${m.chong?' <b class="song">Kỵ chồng Kỵ</b>':''}`;
-  return `
-  <div class="panel"><h3>Các cách nổi bật</h3><p class="small muted" style="margin:4px 0 12px">Máy tự dò trên lá số theo phú đoán phổ biến. Cách lớn xếp trước. Mỗi trường phái có thể đọc hơi khác.</p>
-    <div class="cach-grid">${A.cach.map(c=>`<div class="cach w${c.w}"><b>${c.name}</b><span class="small muted">${esc(c.where)}</span><p>${esc(c.text)}</p></div>`).join('')}</div></div>
-  <div class="two">
+  return `<div class="two">
     <div class="panel"><h3>Đường đi đại hạn</h3><div class="dh-list">${decs.map(d=>`<div class="dh-item ${d.current?'cur':''}">
       <div class="dh-top"><b>${d.range[0]}–${d.range[1]} tuổi</b><span class="num muted">${d.years[0]}–${d.years[1]}</span>${d.current?'<span class="tf tf-ln">Hiện tại</span>':''}</div>
       <div>Cung <b>${d.palace}</b> (${d.gz}) · ${d.major.join(', ')||'vô chính diệu'}${d.pattern?` · <b>${d.pattern}</b>`:''}${d.tuanTriet.length?' · '+d.tuanTriet.join(', '):''}</div>
@@ -1918,6 +2110,8 @@ document.addEventListener('click', e => { // bắt ở pha đầu để không k
 }, true);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTip(); else if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('svg [data-tip]') && R) { e.preventDefault(); openTip(e.target); } });
 $('#tipPop .tip-x').onclick = closeTip;
+$('#sheet').querySelectorAll('[data-close]').forEach(b => b.onclick = closeSheet);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
 addEventListener('scroll', () => { if (innerWidth > 560) closeTip(); }, { passive: true });
 
 /* ---- Xem độ hợp ---- */

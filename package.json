@@ -1,4 +1,9 @@
-{ "name": "tuchieu", "private": true, "type": "module",
+{
+  "name": "tuchieu",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "test:qimen": "node test/qimen/hand.cjs lib/lunar.js qimen.js && node test/qimen/invariants.cjs lib/lunar.js qimen.js && node test/qimen/compare.cjs lib/lunar.js qimen.js"
-  } }
+    "test:qimen": "node test/qimen/hand.cjs lib/lunar.js qimen.js && node test/qimen/invariants.cjs lib/lunar.js qimen.js && node test/qimen/compare.cjs lib/lunar.js qimen.js",
+    "test:tuvi": "node test/tuvi/pho.cjs"
+  }
+}
