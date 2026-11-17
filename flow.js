@@ -1,5 +1,5 @@
 /* Tứ Chiếu — bố cục trang kết quả.
-   Một tầng điều hướng duy nhất: Tổng quan · Lá số · Hỏi. Không tab con, không mục gập: cứ cuộn là đọc hết.
+   Một tầng điều hướng duy nhất: Tổng quan · Lá số · Hợp nhau. Chỉ có một chỗ hỏi: ngay dưới bài luận ở Tổng quan. Không tab con, không mục gập: cứ cuộn là đọc hết.
    Lớp này chỉ sắp xếp lại các khối mà trang đã vẽ (dùng window.TCUI = { R, show, go, labOpen }), không đổi phần tính toán. */
 (() => {
   const $ = s => document.querySelector(s), UI = window.TCUI;
@@ -14,9 +14,9 @@
   const ICON = {
     sum: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     laso: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
-    hoi: '<path d="M4 5h16v11H9l-5 4z"/>'
+    hop: '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/>'
   };
-  const SEC = [['sum', 'Tổng quan'], ['laso', 'Lá số'], ['hoi', 'Hỏi']];
+  const SEC = [['sum', 'Tổng quan'], ['laso', 'Lá số'], ['hop', 'Hợp nhau']];
   let cur = 'sum', sys = 'tv';
 
   const res = $('#ket-qua .container');
@@ -32,7 +32,7 @@
   function open(sec, s) {
     cur = sec; if (s) sys = s;
     const S = SYS.find(x => x.k === sys);
-    UI.show(sec === 'sum' ? 't-sum' : sec === 'hoi' ? 't-ai' : S.tab);
+    UI.show(sec === 'sum' ? 't-sum' : sec === 'hop' ? 't-hop' : S.tab);
     if (sec === 'laso' && S.lab) UI.labOpen(S.lab);
     sync();
     const y = res.getBoundingClientRect().top + scrollY - 64; if (scrollY > y + 10) scrollTo({ top: y });
@@ -40,13 +40,13 @@
   function sync() {
     // trang cũ vẫn tự gọi show() (nút "Xem Tử vi →", "Hỏi AI về điều này"): suy ra mục đang mở từ tab đang chọn
     const t = (document.querySelector('.tabs [role=tab][aria-selected=true]') || {}).id || 't-sum';
-    if (t === 't-sum') cur = 'sum'; else if (t === 't-ai' || t === 't-hop') cur = 'hoi';
+    // nút cũ mở "Luận giải AI" (Hỏi AI về năm…, Hỏi AI về điều này): đưa về Tổng quan, cuộn tới ô hỏi
+    if (t === 't-ai') { UI.show('t-sum'); cur = 'sum'; requestAnimationFrame(() => { const a = $('#ask'); if (a) { a.scrollIntoView({ block: 'center' }); a.focus({ preventScroll: true }); } }); }
+    else if (t === 't-sum') cur = 'sum'; else if (t === 't-hop') cur = 'hop';
     else { cur = 'laso'; const S = SYS.find(x => x.tab === t && (!x.lab || x.lab === (document.querySelector('#labNav [aria-pressed=true]') || {}).dataset?.lab)); if (S) sys = S.k; }
     [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === cur ? 'page' : 'false')));
     pick.hidden = cur !== 'laso';
     pick.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sys === sys));
-    // mục Hỏi gồm cả ô hỏi lẫn Xem độ hợp, hiện liền nhau
-    const hop = $('#p-hop'); if (hop) hop.hidden = cur !== 'hoi';
     read.hidden = traits.hidden = hero.hidden = tiles.hidden = cur !== 'sum';
   }
   [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => open(b.dataset.sec)));
@@ -65,11 +65,11 @@
 
   /* ---------- Tổng quan chứa luôn bài luận AI; mục Hỏi chỉ còn ô hỏi ---------- */
   const read = el('section', 'fl-read'); read.setAttribute('aria-label', 'Luận giải');
-  const ctxField = $('#ctx').closest('.field'); ctxField.classList.add('fl-ctx');
-  ctxField.querySelector('label').innerHTML = 'Bạn đang băn khoăn điều gì? <span class="muted" style="font-weight:400">(không bắt buộc)</span>';
-  $('#ctx').placeholder = 'Ví dụ: đang phân vân đổi việc trong năm nay';
+  // bỏ ô "bối cảnh": bài Tổng quan luôn là bài tổng quát, muốn hỏi gì thì hỏi ở ô ngay dưới bài
+  const ctxField = $('#ctx').closest('.field'); ctxField.hidden = true; $('#ctx').value = '';
   const head = $('#p-ai .ai-head'); head.querySelector('h2').textContent = 'Luận giải bốn lá số';
-  read.append(head, ctxField, $('#aiOut'));
+  const chatSlot = el('div', 'fl-chatslot');
+  read.append(head, $('#aiOut'), chatSlot);
   // đặt ngoài #p-sum (khối đó bị vẽ lại mỗi lần lập lá số), ẩn hiện theo mục Tổng quan
   const traits = el('div', 'fl-traits'); traits.hidden = true;
   const hero = el('section', 'fl-hero'); hero.hidden = true;
@@ -79,11 +79,11 @@
   [head.querySelector('label[for=focus]'), $('#focus'), $('#code'), $('#copyPrompt')].forEach(x => x && opt.lastChild.append(x));
   head.querySelector('.ai-controls').append(opt);
   // ô hỏi: tiêu đề và gợi ý
-  const chat = $('#chat'); chat.insertAdjacentHTML('afterbegin', '<h2 class="fl-h">Bạn muốn hỏi gì?</h2><p class="small muted" style="margin:0 0 10px">Hỏi về con người, công việc, tình cảm, năm nay… AI đọc trên lá số của bạn. Câu hỏi về một việc cụ thể ("có nên…", "…được không") sẽ được đọc bằng Kỳ Môn Độn Giáp lập theo lúc hỏi.</p>');
+  // ô hỏi: chỉ một chỗ, ngay dưới bài luận ở Tổng quan
+  const chat = $('#chat'); chatSlot.append(chat);
+  chat.insertAdjacentHTML('afterbegin', '<h2 class="fl-h">Bạn muốn hỏi gì?</h2><p class="small muted" style="margin:0 0 10px">Hỏi về con người, công việc, tình cảm, năm nay… AI đọc trên lá số của bạn. Câu hỏi về một việc cụ thể ("có nên…", "…được không") sẽ được đọc bằng Kỳ Môn Độn Giáp lập theo lúc hỏi.</p>');
   const hint = chat.querySelector('.chat-hint'); if (hint) hint.remove();
   chat.append($('#askStatus'));
-  // mục Hỏi: ô hỏi trước, Xem độ hợp sau
-  $('#p-ai').after($('#p-hop'));
 
   /* ---------- Sau mỗi lần vẽ lại: gỡ tab con, gom khối về đúng chỗ ---------- */
   const TECH = ['Bảng góc chiếu', 'Vị trí các sao', '12 nhà và chủ tinh'];
