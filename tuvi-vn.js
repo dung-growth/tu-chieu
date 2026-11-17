@@ -50,6 +50,19 @@ const TVVN = (() => {
     if (lunarMonth > 12) lunarMonth -= 12; if (lunarMonth >= 11 && diff < 4) lunarYear -= 1;
     return { day: lunarDay, month: lunarMonth, year: lunarYear, leap };
   }
+  function jdToDate(jd) { let a, b, c; if (jd > 2299160) { a = jd + 32044; b = INT((4 * a + 3) / 146097); c = a - INT(b * 146097 / 4); } else { b = 0; c = jd + 32082; }
+    const d2 = INT((4 * c + 3) / 1461), e = c - INT(1461 * d2 / 4), m = INT((5 * e + 2) / 153);
+    return { day: e - INT((153 * m + 2) / 5) + 1, month: m + 3 - 12 * INT(m / 10), year: b * 100 + d2 - 4800 + INT(m / 10) }; }
+  // Âm lịch Việt Nam → dương lịch (Hồ Ngọc Đức). Trả null khi ngày không có thật (tháng nhuận không tồn tại, mùng 30 của tháng thiếu).
+  function l2s(dd, mm, yy, leap = false, tz = 7) {
+    let a11, b11; if (mm < 11) { a11 = lunarMonth11(yy - 1, tz); b11 = lunarMonth11(yy, tz); } else { a11 = lunarMonth11(yy, tz); b11 = lunarMonth11(yy + 1, tz); }
+    const k = INT(0.5 + (a11 - 2415021.076998695) / 29.530588853); let off = mm - 11; if (off < 0) off += 12;
+    if (b11 - a11 > 365) { const leapOff = leapMonthOffset(a11, tz); let leapMonth = leapOff - 2; if (leapMonth < 0) leapMonth += 12;
+      if (leap && mm !== leapMonth) return null; if (leap || off >= leapOff) off += 1; }
+    else if (leap) return null;
+    const r = jdToDate(newMoonDay(k + off, tz) + dd - 1), back = s2l(r.day, r.month, r.year, tz);
+    return back.day === dd && back.month === mm && back.year === yy && back.leap === !!leap ? r : null;
+  }
   const yearCanChi = y => ({ can: ((y + 6) % 10) + 1, chi: ((y + 8) % 12) + 1 }); // 1-based
 
   /* ---------- Bảng miếu (M) vượng (V) đắc (Đ) bình (B) hãm (H), Tý → Hợi ---------- */
@@ -137,6 +150,6 @@ const TVVN = (() => {
     return S;
   }
 
-  return { s2l, yearCanChi, place, luu, tuHoa, bright, LOAI, BR, CAN };
+  return { s2l, l2s, yearCanChi, place, luu, tuHoa, bright, LOAI, BR, CAN };
 })();
 if (typeof module !== 'undefined') module.exports = TVVN;

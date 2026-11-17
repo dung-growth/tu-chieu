@@ -305,6 +305,12 @@ body.sheet-open{overflow:hidden}
 
 
 .ty-note{margin:0 0 4px;padding:10px 14px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:var(--r-sm);background:var(--sheet);font-size:13.5px;line-height:1.5;color:var(--ink-2)} .ty-note b{color:var(--ink)}
+.cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.seg-sm label{font-size:12.5px;padding:4px 10px}
+.lunar-in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1.2fr);gap:8px}
+.lunar-in[hidden]{display:none}
+.lunar-in .check{grid-column:1/-1}
+#calNote.err{color:var(--seal)}
 /* thần số */
 .num-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .ncard{background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow-sm);transition:border-color .2s var(--ease),box-shadow .2s var(--ease),transform .2s var(--ease)}
@@ -809,7 +815,18 @@ tr.cur td{background:var(--seal-soft)}
               <label><input type="radio" name="gender" id="g-nam" value="nam" checked><span>Nam</span></label>
               <label><input type="radio" name="gender" id="g-nu" value="nu"><span>Nữ</span></label>
             </div></div>
-          <div class="field"><label for="date">Ngày sinh (dương lịch)</label><input id="date" type="date" value="1995-03-14" required></div>
+          <div class="field"><div class="cal-head"><label for="date" id="dateLabel">Ngày sinh</label>
+              <div class="seg seg-sm" role="radiogroup" aria-label="Loại lịch">
+                <label><input type="radio" name="cal" id="cal-duong" value="duong" checked><span>Dương lịch</span></label>
+                <label><input type="radio" name="cal" id="cal-am" value="am"><span>Âm lịch</span></label>
+              </div></div>
+            <input id="date" type="date" value="1995-03-14" required>
+            <div class="lunar-in" id="lunarIn" hidden>
+              <select id="ld" aria-label="Ngày âm lịch"></select><select id="lm" aria-label="Tháng âm lịch"></select>
+              <input id="ly" type="number" inputmode="numeric" min="1900" max="2100" aria-label="Năm âm lịch" placeholder="Năm">
+              <label class="check" for="lleap"><input type="checkbox" id="lleap"> Tháng nhuận</label>
+            </div>
+            <span class="hint" id="calNote" hidden></span></div>
           <div class="field"><label for="time">Giờ sinh</label><input id="time" type="time" value="07:30">
             <label class="check" for="noTime"><input type="checkbox" id="noTime"> Không rõ giờ sinh</label></div>
           <div class="field" id="canhField" hidden><label for="canh">Biết khoảng giờ không?</label>
@@ -1178,8 +1195,29 @@ pin.addEventListener('blur', () => setTimeout(() => { if (document.activeElement
 sel.addEventListener('change', () => { pin.value = CITIES[+sel.value][0]; });
 
 // nhớ lần nhập gần nhất (chỉ trong trình duyệt của người xem)
+// Nhập ngày sinh theo âm lịch Việt Nam: đổi sang dương lịch (TVVN.l2s) rồi ghi vào ô #date, phần còn lại của trang không đổi
+const calAm = () => $('#cal-am').checked;
+for (let i = 1; i <= 30; i++) $('#ld').insertAdjacentHTML('beforeend', `<option value="${i}">${i <= 10 ? 'Mùng ' + i : i}</option>`);
+for (let i = 1; i <= 12; i++) $('#lm').insertAdjacentHTML('beforeend', `<option value="${i}">Tháng ${i === 1 ? 'Giêng' : i === 12 ? 'Chạp' : i}</option>`);
+function syncLunar(){
+  const n = $('#calNote'); n.classList.remove('err');
+  if (!calAm()) { n.hidden = true; return true; }
+  const d = +$('#ld').value, m = +$('#lm').value, y = +$('#ly').value, leap = $('#lleap').checked; n.hidden = false;
+  if (!(y >= 1900 && y <= 2100)) { n.textContent = 'Nhập năm âm lịch, ví dụ 1994.'; n.classList.add('err'); return false; }
+  const r = TVVN.l2s(d, m, y, leap);
+  if (!r) { n.textContent = leap ? `Năm ${y} âm lịch không có tháng ${m} nhuận.` : `Tháng ${m} năm ${y} âm lịch không có ngày ${d}.`; n.classList.add('err'); return false; }
+  const iso = `${r.year}-${String(r.month).padStart(2, '0')}-${String(r.day).padStart(2, '0')}`;
+  $('#date').value = iso; n.textContent = `= Dương lịch ${String(r.day).padStart(2, '0')}/${String(r.month).padStart(2, '0')}/${r.year}`;
+  $('#date').dispatchEvent(new Event('change')); return true;
+}
+function fillLunarFromDate(){ const v = $('#date').value; if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return; const [y, m, d] = v.split('-').map(Number), L = TVVN.s2l(d, m, y, 7);
+  $('#ld').value = L.day; $('#lm').value = L.month; $('#ly').value = L.year; $('#lleap').checked = L.leap; }
+function setCal(){ const am = calAm(); if (am) fillLunarFromDate(); $('#date').hidden = am; $('#lunarIn').hidden = !am; $('#dateLabel').setAttribute('for', am ? 'ld' : 'date'); syncLunar(); }
+document.querySelectorAll('input[name=cal]').forEach(r => r.addEventListener('change', setCal));
+['#ld', '#lm', '#ly', '#lleap'].forEach(sel => $(sel).addEventListener(sel === '#ly' ? 'input' : 'change', syncLunar));
 const KEY = 'tuchieu:last';
-try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { ['name','date','time','lat','lon','tz','ctx'].forEach(k => { if (s[k] != null) $('#'+k).value = s[k]; }); { const i = s.placeGeo ? addPlace(s.placeGeo) : placeIndex(s.placeName || OLD_PLACES[+s.place]); if (i >= 0) sel.value = i; } if (s.gender) $('#g-'+s.gender).checked = true; if (s.noTime) $('#noTime').checked = true; if (s.canh != null) $('#canh').value = s.canh; } } catch(e) {}
+try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) { ['name','date','time','lat','lon','tz','ctx'].forEach(k => { if (s[k] != null) $('#'+k).value = s[k]; }); { const i = s.placeGeo ? addPlace(s.placeGeo) : placeIndex(s.placeName || OLD_PLACES[+s.place]); if (i >= 0) sel.value = i; } if (s.gender) $('#g-'+s.gender).checked = true; if (s.noTime) $('#noTime').checked = true; if (s.canh != null) $('#canh').value = s.canh; if (s.cal === 'am') $('#cal-am').checked = true; } } catch(e) {}
+setCal();
 updateTimeUI();
 updateTzNote();
 pin.value = CITIES[+sel.value][0];
@@ -1211,13 +1249,14 @@ function readInput(){
 $('#f').addEventListener('submit', e => { e.preventDefault(); run(true); });
 
 function run(save){
+  if (!syncLunar()) { if (save) $('#ly').focus(); return; }
   const ge = geoError(); $('#geoErr').hidden = !ge; $('#geoErr').textContent = ge;
   if (ge) { if (save) $('#lat').focus(); return; }
   const inp = readInput();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(inp.date)) { $('#p-sum').innerHTML = '<p class="err">Nhập ngày sinh đầy đủ để lập lá số.</p>'; return; }
   const y = +inp.date.slice(0,4); if (y < 1900 || y > 2100) { $('#p-sum').innerHTML = '<p class="err">Ngày sinh cần nằm trong khoảng 1900–2100.</p>'; return; }
   try { R = TC.all(inp); adjustForTime(R); R.tvc = R.tuvi ? TVC.analyze(R.tuvi, +inp.date.slice(0,4), new Date().getFullYear()) : null; } catch(err) { console.error(err); $('#p-sum').innerHTML = '<p class="err">Không lập được lá số với thông tin này. Kiểm tra lại ngày giờ sinh.</p>'; return; }
-  if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, placeName:CITIES[+sel.value][0], placeGeo:CITIES[+sel.value][6] ? placeGeoOf(CITIES[+sel.value]) : null, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value })); } catch(e) {}
+  if (save) try { localStorage.setItem(KEY, JSON.stringify({ name:$('#name').value, date:$('#date').value, time:$('#time').value, lat:$('#lat').value, lon:$('#lon').value, tz:$('#tz').value, ctx:$('#ctx').value, placeName:CITIES[+sel.value][0], placeGeo:CITIES[+sel.value][6] ? placeGeoOf(CITIES[+sel.value]) : null, gender:inp.gender, noTime:$('#noTime').checked, canh:$('#canh').value, cal: calAm() ? 'am' : 'duong' })); } catch(e) {}
   renderSummary(); renderBazi(); renderAstro(); renderTuvi(); renderNum(); renderLab(); resetAI(); updateSteps(); tyNote();
   if (save) pulse(document.querySelector('.tabpanel:not([hidden])'));
   if (save) { show('t-sum'); $('#result').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto':'smooth', block:'start'}); }
