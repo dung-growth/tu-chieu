@@ -62,8 +62,6 @@
   }
   function showResult() { document.body.classList.add('has-result'); who(); sync(); }
   $('#f').addEventListener('submit', () => setTimeout(() => { if (!UI.R()) return; showResult(); open('sum'); scrollTo({ top: 0 }); }, 0));
-  let saved = null; try { saved = localStorage.getItem('tuchieu:last'); } catch (e) {}
-  if (saved && UI.R()) showResult();
 
   /* ---------- Tổng quan chứa luôn bài luận AI; mục Hỏi chỉ còn ô hỏi ---------- */
   const read = el('section', 'fl-read'); read.setAttribute('aria-label', 'Luận giải');
@@ -147,10 +145,13 @@
     tiles.querySelectorAll('[data-open]').forEach(x => x.onclick = () => open('laso', x.dataset.open));
     const sb = tiles.querySelector('#flShare');
     if (sb) sb.onclick = async () => { sb.disabled = true; const t = sb.textContent; sb.textContent = 'Đang tạo ảnh…';
-      try { const r = await SHARE.share(R); sb.textContent = r === 'download' ? 'Đã tải ảnh về' : t; } catch (e) { sb.textContent = 'Không tạo được ảnh, thử lại'; }
-      sb.disabled = false; setTimeout(() => sb.textContent = t, 2500); };
+      try { await SHARE.share(R, UI.openSheet); sb.textContent = t; } catch (e) { console.error(e); sb.textContent = 'Không tạo được ảnh, thử lại'; setTimeout(() => sb.textContent = t, 2500); }
+      sb.disabled = false; };
   }
 
   let tm; new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(tidy, 30); }).observe($('#result'), { childList: true, subtree: true });
   tidy();
+  // mở lại lá số đã lưu: chạy sau cùng, khi mọi khối ở trên đã dựng xong
+  let saved = null; try { saved = localStorage.getItem('tuchieu:last'); } catch (e) {}
+  if (saved && UI.R()) showResult();
 })();

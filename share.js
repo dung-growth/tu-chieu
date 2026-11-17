@@ -71,15 +71,18 @@ const SHARE = (() => {
     return new Promise(ok => cv.toBlob(ok, 'image/png'));
   }
 
-  // chia sẻ thẳng (điện thoại) hoặc tải về (máy tính)
-  async function share(R) {
-    const blob = await make(R), name = `tu-chieu-${(R.input.name || 'la-so').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()}.png`;
-    const file = new File([blob], name, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [file] }) && matchMedia('(pointer:coarse)').matches) {
-      try { await navigator.share({ files: [file] }); return 'shared'; } catch (e) { if (e.name === 'AbortError') return 'cancel'; }
-    }
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 4000); return 'download';
+  // tạo ảnh rồi hiện xem trước; nút tải là một thẻ <a download> nên trình duyệt nào cũng cho tải
+  let url;
+  async function share(R, openSheet) {
+    const blob = await make(R), name = `tu-chieu-${(R.input.name || 'la-so').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()}.png`;
+    if (url) URL.revokeObjectURL(url); url = URL.createObjectURL(blob);
+    const file = new File([blob], name, { type: 'image/png' }), canShare = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+    openSheet(`<h3 id="sheetTitle" style="margin:0 0 10px">Ảnh để đăng story</h3>
+      <img src="${url}" alt="Ảnh story của ${R.input.name}" style="display:block;width:100%;max-width:320px;margin:0 auto 14px;border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.18)">
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><a class="btn-primary" href="${url}" download="${name}">Tải ảnh về</a>${canShare ? '<button type="button" class="btn-ghost" id="shShare">Chia sẻ</button>' : ''}</div>
+      <p class="small muted" style="text-align:center;margin-top:10px">Trên điện thoại cũng có thể nhấn giữ vào ảnh để lưu.</p>`);
+    const sb = document.getElementById('shShare');
+    if (sb) sb.onclick = () => navigator.share({ files: [file] }).catch(() => {});
   }
   return { make, share };
 })();
