@@ -1,110 +1,156 @@
-/* Tứ Chiếu — lớp luồng đi mới (bản mẫu).
-   Không đổi phần tính toán hay cách vẽ: chỉ sắp lại trang thành 2 chế độ (nhập / xem kết quả) và 4 mục chính.
-   Dựa vào các hàm của trang qua window.TCUI = { R, show, go }. */
+/* Tứ Chiếu — bố cục trang kết quả.
+   Một tầng điều hướng duy nhất: Tổng quan · Lá số · Hỏi. Không tab con, không mục gập: cứ cuộn là đọc hết.
+   Lớp này chỉ sắp xếp lại các khối mà trang đã vẽ (dùng window.TCUI = { R, show, go, labOpen }), không đổi phần tính toán. */
 (() => {
   const $ = s => document.querySelector(s), UI = window.TCUI;
   if (!UI) return;
   document.body.classList.add('flow');
 
-  /* ---------- 4 mục chính, mỗi mục gom một hoặc nhiều tab cũ ---------- */
-  const SEC = [
-    { k: 'sum', name: 'Tổng quan', tabs: [['t-sum']], icon: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>' },
-    { k: 'laso', name: 'Lá số', tabs: [['t-tv', 'Tử vi'], ['t-bz', 'Bát tự'], ['t-as', 'Bản đồ sao'], ['t-nm', 'Thần số']], icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>' },
-    { k: 'ai', name: 'Hỏi AI', tabs: [['t-ai']], icon: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/>' },
-    { k: 'them', name: 'Thêm', tabs: [['t-hop', 'Xem độ hợp'], ['t-lab', 'Khám phá']], icon: '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>' }
+  /* ---------- 3 mục; mục Lá số có hàng chọn môn ---------- */
+  const SYS = [
+    { k: 'tv', name: 'Tử vi', tab: 't-tv' }, { k: 'bz', name: 'Bát tự', tab: 't-bz' }, { k: 'as', name: 'Chiêm tinh', tab: 't-as' }, { k: 'nm', name: 'Thần số', tab: 't-nm' },
+    { k: 'qm', name: 'Kỳ Môn', tab: 't-lab', lab: 'qm', beta: true }, { k: 'hd', name: 'Human Design', tab: 't-lab', lab: 'hd', beta: true }, { k: 'kd', name: 'Kinh Dịch', tab: 't-lab', lab: 'kd', beta: true }
   ];
-  const secOf = id => SEC.find(s => s.tabs.some(t => t[0] === id));
-  const last = {}; // tab con dùng gần nhất của mỗi mục
-  const cur = () => (document.querySelector('.tabs [role=tab][aria-selected=true]') || {}).id || 't-sum';
+  const ICON = {
+    sum: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+    laso: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
+    hoi: '<path d="M4 5h16v11H9l-5 4z"/>'
+  };
+  const SEC = [['sum', 'Tổng quan'], ['laso', 'Lá số'], ['hoi', 'Hỏi']];
+  let cur = 'sum', sys = 'tv';
 
   const res = $('#ket-qua .container');
-  const bar = document.createElement('div'); bar.className = 'fl-who'; bar.id = 'flWho';
-  const nav = document.createElement('nav'); nav.className = 'fl-nav'; nav.setAttribute('aria-label', 'Các mục kết quả');
-  nav.innerHTML = SEC.map(s => `<button type="button" data-sec="${s.k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${s.icon}</svg><span>${s.name}</span></button>`).join('');
-  const sub = document.createElement('div'); sub.className = 'fl-sub'; sub.setAttribute('role', 'group');
-  res.prepend(bar, nav, sub);
+  const bar = el('div', 'fl-who'); bar.id = 'flWho';
+  const nav = el('nav', 'fl-nav'); nav.setAttribute('aria-label', 'Các mục kết quả');
+  nav.innerHTML = SEC.map(([k, n]) => `<button type="button" data-sec="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg><span>${n}</span></button>`).join('');
+  const pick = el('div', 'fl-sys'); pick.setAttribute('role', 'group'); pick.setAttribute('aria-label', 'Chọn môn');
+  pick.innerHTML = SYS.map((s, i) => `${s.beta && !SYS[i - 1].beta ? '<span class="fl-beta">Beta</span>' : ''}<button type="button" data-sys="${s.k}">${s.name}</button>`).join('');
+  res.prepend(bar, nav, pick);
   const bottom = nav.cloneNode(true); bottom.className = 'fl-bottom'; document.body.append(bottom);
+  function el(t, c) { const e = document.createElement(t); e.className = c; return e; }
 
-  function open(id, scroll = true) {
-    UI.show(id); const s = secOf(id); if (s) last[s.k] = id; sync();
-    if (scroll) { const y = res.getBoundingClientRect().top + scrollY - 70; if (scrollY > y + 10) scrollTo({ top: y, behavior: 'auto' }); }
+  function open(sec, s) {
+    cur = sec; if (s) sys = s;
+    const S = SYS.find(x => x.k === sys);
+    UI.show(sec === 'sum' ? 't-sum' : sec === 'hoi' ? 't-ai' : S.tab);
+    if (sec === 'laso' && S.lab) UI.labOpen(S.lab);
+    sync();
+    const y = res.getBoundingClientRect().top + scrollY - 64; if (scrollY > y + 10) scrollTo({ top: y });
   }
   function sync() {
-    const id = cur(), s = secOf(id) || SEC[0];
-    [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === s.k ? 'page' : 'false')));
-    sub.hidden = s.tabs.length < 2; sub.setAttribute('aria-label', s.name);
-    sub.innerHTML = s.tabs.length < 2 ? '' : s.tabs.map(([t, n]) => `<button type="button" data-t="${t}" aria-pressed="${t === id}">${n}</button>`).join('');
-    sub.querySelectorAll('[data-t]').forEach(b => b.onclick = () => open(b.dataset.t));
+    // trang cũ vẫn tự gọi show() (nút "Xem Tử vi →", "Hỏi AI về điều này"): suy ra mục đang mở từ tab đang chọn
+    const t = (document.querySelector('.tabs [role=tab][aria-selected=true]') || {}).id || 't-sum';
+    if (t === 't-sum') cur = 'sum'; else if (t === 't-ai' || t === 't-hop') cur = 'hoi';
+    else { cur = 'laso'; const S = SYS.find(x => x.tab === t && (!x.lab || x.lab === (document.querySelector('#labNav [aria-pressed=true]') || {}).dataset?.lab)); if (S) sys = S.k; }
+    [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === cur ? 'page' : 'false')));
+    pick.hidden = cur !== 'laso';
+    pick.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sys === sys));
+    // mục Hỏi gồm cả ô hỏi lẫn Xem độ hợp, hiện liền nhau
+    const hop = $('#p-hop'); if (hop) hop.hidden = cur !== 'hoi';
+    read.hidden = traits.hidden = hero.hidden = tiles.hidden = cur !== 'sum';
   }
-  [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => { const s = SEC.find(x => x.k === b.dataset.sec); open(last[s.k] || s.tabs[0][0]); }));
-  // Trang cũ vẫn gọi show() ở nhiều chỗ (nút "Xem Tử vi →", "Hỏi AI về…"): theo dõi để cập nhật thanh mục
+  [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => open(b.dataset.sec)));
+  pick.querySelectorAll('[data-sys]').forEach(b => b.onclick = () => open('laso', b.dataset.sys));
   new MutationObserver(sync).observe($('.tabs'), { attributes: true, subtree: true, attributeFilter: ['aria-selected'] });
 
   /* ---------- Hai chế độ: nhập thông tin / xem kết quả ---------- */
-  function who() {
-    const R = UI.R(); if (!R) return;
-    const i = R.input;
-    bar.innerHTML = `<div><b>${esc(i.name)}</b><span>${i.gender === 'nam' ? 'Nam' : 'Nữ'} · ${i.date.split('-').reverse().join('/')} · ${esc(i.timeLabel)} · ${esc(i.place)}</span></div><button type="button" class="btn-ghost btn-sm" id="flEdit">Sửa</button>`;
-    $('#flEdit').onclick = () => { document.body.classList.remove('has-result'); scrollTo({ top: 0 }); setTimeout(() => $('#date').focus({ preventScroll: true }), 50); };
-  }
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  function who() {
+    const R = UI.R(); if (!R) return; const i = R.input;
+    bar.innerHTML = `<div><b>${esc(i.name)}</b><span>${i.gender === 'nam' ? 'Nam' : 'Nữ'} · ${i.date.split('-').reverse().join('/')} · ${esc(i.timeLabel)} · ${esc(i.place)}</span></div><button type="button" class="btn-ghost btn-sm" id="flEdit">Sửa</button>`;
+    $('#flEdit').onclick = () => { document.body.classList.remove('has-result'); scrollTo({ top: 0 }); };
+  }
   function showResult() { document.body.classList.add('has-result'); who(); sync(); }
-  $('#f').addEventListener('submit', () => setTimeout(() => { if (!UI.R()) return; showResult(); open('t-sum', false); scrollTo({ top: 0 }); }, 0));
+  $('#f').addEventListener('submit', () => setTimeout(() => { if (!UI.R()) return; showResult(); open('sum'); scrollTo({ top: 0 }); }, 0));
   let saved = null; try { saved = localStorage.getItem('tuchieu:last'); } catch (e) {}
   if (saved && UI.R()) showResult();
 
-  /* ---------- Form gọn: ô hỏi AI chuyển sang mục Hỏi AI ---------- */
-  const ctxField = $('#ctx').closest('.field');
-  ctxField.classList.add('fl-ctx'); ctxField.querySelector('label').innerHTML = 'Bạn đang băn khoăn điều gì? <span class="muted" style="font-weight:400">(không bắt buộc, AI sẽ trả lời xoáy vào đây)</span>';
+  /* ---------- Tổng quan chứa luôn bài luận AI; mục Hỏi chỉ còn ô hỏi ---------- */
+  const read = el('section', 'fl-read'); read.setAttribute('aria-label', 'Luận giải');
+  const ctxField = $('#ctx').closest('.field'); ctxField.classList.add('fl-ctx');
+  ctxField.querySelector('label').innerHTML = 'Bạn đang băn khoăn điều gì? <span class="muted" style="font-weight:400">(không bắt buộc)</span>';
   $('#ctx').placeholder = 'Ví dụ: đang phân vân đổi việc trong năm nay';
-  $('#p-ai .ai-body').prepend(ctxField);
-  const ctl = $('#p-ai .ai-controls'), opt = document.createElement('details'); opt.className = 'fl-opt';
-  opt.innerHTML = '<summary>Tùy chọn</summary><div class="fl-opt-body"></div>';
-  const ob = opt.querySelector('.fl-opt-body');
-  [ctl.querySelector('label[for=focus]'), $('#focus'), $('#code'), $('#copyPrompt')].forEach(el => el && ob.append(el));
-  ctl.append(opt);
+  const head = $('#p-ai .ai-head'); head.querySelector('h2').textContent = 'Luận giải bốn lá số';
+  read.append(head, ctxField, $('#aiOut'));
+  // đặt ngoài #p-sum (khối đó bị vẽ lại mỗi lần lập lá số), ẩn hiện theo mục Tổng quan
+  const traits = el('div', 'fl-traits'); traits.hidden = true;
+  const hero = el('section', 'fl-hero'); hero.hidden = true;
+  const tiles = el('div', 'fl-tiles'); tiles.hidden = true;
+  $('#p-sum').before(hero, tiles, read, traits);
+  const opt = el('details', 'fl-opt'); opt.innerHTML = '<summary>Tùy chọn</summary><div class="fl-opt-body"></div>';
+  [head.querySelector('label[for=focus]'), $('#focus'), $('#code'), $('#copyPrompt')].forEach(x => x && opt.lastChild.append(x));
+  head.querySelector('.ai-controls').append(opt);
+  // ô hỏi: tiêu đề và gợi ý
+  const chat = $('#chat'); chat.insertAdjacentHTML('afterbegin', '<h2 class="fl-h">Bạn muốn hỏi gì?</h2><p class="small muted" style="margin:0 0 10px">Hỏi về con người, công việc, tình cảm, năm nay… AI đọc trên lá số của bạn. Câu hỏi về một việc cụ thể ("có nên…", "…được không") sẽ được đọc bằng Kỳ Môn Độn Giáp lập theo lúc hỏi.</p>');
+  const hint = chat.querySelector('.chat-hint'); if (hint) hint.remove();
+  chat.append($('#askStatus'));
+  // mục Hỏi: ô hỏi trước, Xem độ hợp sau
+  $('#p-ai').after($('#p-hop'));
 
-  /* ---------- Tổng quan: bắt đầu từ đâu ---------- */
-  function start() {
-    const R = UI.R(), box = $('#p-sum'); if (!R || !box || box.querySelector('.fl-start')) return;
-    let top = [];
-    if (R.tuvi && typeof TVP !== 'undefined') top = TVP.traits(R.tuvi).filter(x => x.pct >= 75 || x.pct <= 25).sort((a, b) => Math.abs(b.pct - 50) - Math.abs(a.pct - 50)).slice(0, 3);
-    const el = document.createElement('div'); el.className = 'fl-start';
-    el.innerHTML = `<div class="fl-start-main"><span class="label">Bắt đầu từ đây</span>
-        <h2>Đọc bài luận giải của bạn</h2>
-        <p>AI đọc cả bốn lá số cùng lúc, chỉ ra chỗ các môn cùng nói một điều và chỗ khác nhau. Khoảng một phút.</p>
-        <button type="button" class="btn-primary btn-lg" id="flAi">Đọc luận giải AI</button></div>
-      ${top.length ? `<div class="fl-start-side"><span class="label">Nổi bật nhất (theo Tử vi)</span>${top.map(x => `<button type="button" class="fl-trait" data-k="${x.k}"><b>${x.name}</b><span class="${x.pct >= 75 ? 't-tot' : 't-luuy'}">${x.level.toLowerCase()}</span><small>hơn ${x.pct}% người</small></button>`).join('')}
-        <button type="button" class="fl-link" id="flTraits">Xem đủ 12 nét →</button></div>` : ''}`;
-    box.prepend(el);
-    $('#flAi').onclick = () => { open('t-ai'); if (!$('#aiGo').disabled) $('#aiGo').click(); };
-    const toTraits = () => { open('t-tv'); const b = document.querySelector('[data-tvs="tinh"]'); if (b) { b.click(); setTimeout(() => $('#tvs-tinh').scrollIntoView({ block: 'start' }), 30); } };
-    el.querySelectorAll('.fl-trait').forEach(b => b.onclick = toTraits); const tl = $('#flTraits'); if (tl) tl.onclick = toTraits;
-  }
-
-  /* ---------- Bớt chữ: đoạn giải thích thành nút (?), bảng kỹ thuật thu gọn sẵn ---------- */
-  const FOLD = ['Bảng góc chiếu', 'Vị trí các sao', '12 nhà và chủ tinh'];
+  /* ---------- Sau mỗi lần vẽ lại: gỡ tab con, gom khối về đúng chỗ ---------- */
+  const TECH = ['Bảng góc chiếu', 'Vị trí các sao', '12 nhà và chủ tinh'];
   function tidy() {
+    // nét tính cách nổi bật (Tử vi), ngay dưới bài luận; tính lại khi lá số đổi
+    const R = UI.R();
+    if (R && R.tuvi !== tidy.tv) { tidy.tv = R.tuvi; traits.innerHTML = '';
+      const top = R.tuvi && typeof TVP !== 'undefined' ? TVP.traits(R.tuvi).filter(x => x.pct >= 75 || x.pct <= 25).sort((a, b) => Math.abs(b.pct - 50) - Math.abs(a.pct - 50)).slice(0, 3) : [];
+      if (top.length) traits.innerHTML = `<span class="label">Nổi bật nhất theo Tử vi</span><div>${top.map(x => `<span class="fl-trait"><b>${x.name}</b> <span class="${x.pct >= 75 ? 't-tot' : 't-luuy'}">${x.level.toLowerCase()}</span> <small>hơn ${x.pct}% người</small></span>`).join('')}</div>`;
+      traits.classList.toggle('empty', !top.length); }
+    if (R && R !== tidy.r) { tidy.r = R; visuals(R); }
+    // Tử vi: hiện liền mọi phần (cách cục, nét tính cách, đại hạn, 12 tháng)
+    document.querySelectorAll('#p-tv [role=tabpanel][hidden]').forEach(x => x.hidden = false);
+    // Kỳ Môn: bỏ nút Mệnh bàn / Hỏi việc; phần hỏi việc chạy ngầm qua ô Hỏi
+    const qmHead = $('#lab-qm .qm-head .seg'); if (qmHead) qmHead.remove();
+    const qmM = $('#qmMenh'); if (qmM) qmM.hidden = false;
+    const qmH = $('#qmHoi'); if (qmH) qmH.hidden = true;
+    // bài luận: mở hết các phần, không gập
+    document.querySelectorAll('#aiOut .rd-body[hidden]').forEach(b => b.hidden = false);
+    // chiêm tinh: bảng kỹ thuật xuống cuối trang
+    document.querySelectorAll('#p-as .panel h3').forEach(h => { if (TECH.includes(h.textContent.trim())) h.closest('.panel').classList.add('fl-tech'); });
+    // đoạn giải thích dài dưới tiêu đề: thu thành nút (?), không phải nội dung chính
     document.querySelectorAll('#result .panel h3, #result .cc-head h3').forEach(h => {
       if (h.dataset.fl) return; h.dataset.fl = 1;
-      const panel = h.closest('.panel'); if (!panel) return;
       const anchor = h.closest('.cc-head') || h, p = anchor.nextElementSibling;
-      if (p && p.matches('p.small.muted') && p.textContent.length > 60) {
-        p.hidden = true; p.classList.add('fl-help');
-        const q = document.createElement('button'); q.type = 'button'; q.className = 'fl-q'; q.setAttribute('aria-label', 'Giải thích'); q.setAttribute('aria-expanded', 'false'); q.textContent = '?';
-        q.onclick = () => { p.hidden = !p.hidden; q.setAttribute('aria-expanded', !p.hidden); };
-        h.append(q);
-      }
-      if (FOLD.includes(h.textContent.replace('?', '').trim())) {
-        panel.classList.add('fl-fold');
-        const t = document.createElement('button'); t.type = 'button'; t.className = 'fl-fold-t'; t.setAttribute('aria-expanded', 'false');
-        t.innerHTML = `<span>${h.firstChild.textContent}</span><small>Bảng chi tiết · bấm để mở</small>`;
-        t.onclick = () => { const on = panel.classList.toggle('open'); t.setAttribute('aria-expanded', on); };
-        h.replaceWith(t);
-      }
+      if (!p || !p.matches('p.small.muted') || p.textContent.length < 60) return;
+      p.hidden = true; p.classList.add('fl-help');
+      const q = document.createElement('button'); q.type = 'button'; q.className = 'fl-q'; q.setAttribute('aria-label', 'Giải thích'); q.setAttribute('aria-expanded', 'false'); q.textContent = '?';
+      q.onclick = () => { p.hidden = !p.hidden; q.setAttribute('aria-expanded', !p.hidden); }; h.append(q);
     });
-    start();
+    sync();
   }
+  /* ---------- Thẻ đầu Tổng quan: bầu trời lúc sinh, trăng đúng pha, bốn tia là bốn môn (card.js lo phần nội dung) ---------- */
+  function visuals(R) {
+    if (typeof CARD === 'undefined') return;
+    const K = CARD.build(R), i = R.input, by = Object.fromEntries(K.votes.map(v => [v.k, v]));
+    const [y, mo, d] = i.date.split('-');
+    // bốn tia: trên Bát tự, phải Chiêm tinh, dưới Tử vi, trái Thần số; tia đồng ý thì rõ, nói khác thì mờ
+    const ray = (v, dPath) => v ? `<path d="${dPath}" fill="${K.RAY[v.el]}" opacity="${v.agree || !K.main ? 1 : .42}"/>` : '';
+    const rays = ray(by.bz, 'M100 10 102.5 92 100 100 97.5 92Z') + ray(by.as, 'M190 100 108 102.5 100 100 108 97.5Z') + ray(by.tv, 'M100 190 97.5 108 100 100 102.5 108Z')
+      + `<path d="M10 100 92 97.5 100 100 92 102.5Z" fill="#f1dca8" opacity=".55"/>`;
+    const stars = [[14, 22, 2, .8], [31, 14, 1.5, .5], [70, 20, 2, .7], [84, 36, 1.5, .5], [9, 46, 1.5, .4], [58, 10, 1.5, .6], [42, 30, 1.2, .35]]
+      .map(([x, yy, r, o]) => `<span class="fl-star" style="left:${x}%;top:${yy}%;width:${r}px;height:${r}px;opacity:${o}"></span>`).join('');
+    const moonSvg = K.moon ? `<svg width="26" height="26" viewBox="-23 -23 46 46" role="img" aria-label="${K.moon.name}, ngày ${K.lunarDay} âm"><circle r="18" fill="#fff" opacity=".1"/>${K.moon.dark ? '' : `<path d="${K.moon.path}" fill="#F6EEDC"/>`}</svg>` : '';
+    const [g0, g1, g2] = K.sky.g, tint = K.main ? K.INK[K.main] : '#5a6aa0';
+    hero.innerHTML = `<div class="fl-card" style="--g0:${g0};--g1:${g1};--g2:${g2};--tint:${tint}">
+        <div class="fl-grain"></div>${stars}
+        <div class="fl-ctop"><span>${K.timeKnown ? esc(i.time) + ' · ' : ''}${d}.${mo}.${y}</span>${moonSvg}</div>
+        <svg class="fl-mark" width="200" height="200" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="flh"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+          <circle cx="100" cy="100" r="62" fill="none" stroke="#fff" stroke-opacity=".14"/><circle cx="100" cy="100" r="30" fill="url(#flh)"/>${rays}<circle cx="100" cy="100" r="3.5" fill="#fff"/></svg>
+        <div class="fl-ct"><span class="fl-k">${esc(i.name)}</span><h2>${esc(K.title)}</h2><p>${esc(K.body)}</p></div>
+      </div>`;
+    const row = (k, sys, detail, color, state) => `<button type="button" class="fl-it" data-open="${k}"><i style="background:${color}"></i><span>${sys}<small>${esc(detail)}${state ? ', ' + state : ''}</small></span></button>`;
+    const st = v => !K.main ? '' : v.agree ? 'đồng ý' : 'nói khác';
+    tiles.innerHTML = `<div class="fl-key">${['bz', 'as', 'tv'].map(k => by[k] ? row(k, by[k].sys, by[k].detail + ' → ' + by[k].el, K.INK[by[k].el], st(by[k])) : '').join('')}
+        ${row('nm', 'Thần số', 'Đường đời ' + K.num, '#C9A95A', 'không xét')}</div>
+      <p class="fl-note">Bốn tia sáng là bốn môn: tia rõ là đồng ý, tia mờ là nói khác. ${[K.timeKnown ? 'Màu trời theo giờ sinh (' + K.sky.name + ')' : 'Không rõ giờ sinh nên trời để màu ban ngày', K.moon ? 'trăng vẽ đúng pha ngày ' + K.lunarDay + ' âm' : ''].filter(Boolean).join(', ')}. Bấm một dòng để xem môn đó.</p>
+      ${typeof SHARE !== 'undefined' ? `<div class="fl-share"><button type="button" class="btn-ghost btn-sm" id="flShare">Tạo ảnh để đăng story</button><span>Ảnh dọc, có màu và hướng hợp với bạn. Ảnh tạo ngay trên máy, không gửi đi đâu.</span></div>` : ''}`;
+    tiles.querySelectorAll('[data-open]').forEach(x => x.onclick = () => open('laso', x.dataset.open));
+    const sb = tiles.querySelector('#flShare');
+    if (sb) sb.onclick = async () => { sb.disabled = true; const t = sb.textContent; sb.textContent = 'Đang tạo ảnh…';
+      try { const r = await SHARE.share(R); sb.textContent = r === 'download' ? 'Đã tải ảnh về' : t; } catch (e) { sb.textContent = 'Không tạo được ảnh, thử lại'; }
+      sb.disabled = false; setTimeout(() => sb.textContent = t, 2500); };
+  }
+
   let tm; new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(tidy, 30); }).observe($('#result'), { childList: true, subtree: true });
-  tidy(); sync();
+  tidy();
 })();

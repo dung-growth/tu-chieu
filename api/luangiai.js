@@ -14,7 +14,7 @@
 //   RATE_LIMIT_PER_HOUR (tùy chọn) số lượt tối đa mỗi IP mỗi giờ, mặc định 8
 //   OWNER_CODE          (tùy chọn) mã của chủ trang; nhập mã này vào ô "Mã truy cập" thì không bị giới hạn lượt
 
-import { rules, askRules, hdRules, thayRules, qmHoiRules, qmMenhRules, FOCUS } from '../prompt.js';
+import { rules, askRules, hdRules, thayRules, qmHoiRules, qmMenhRules, FOCUS, STYLE } from '../prompt.js';
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
 const OR_MODELS = (process.env.OPENROUTER_MODELS || 'nvidia/nemotron-3.5-super-vl:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,openrouter/free')
@@ -116,7 +116,8 @@ Cách trả lời lượt này:
 - Chỉ đưa căn cứ MỚI trên bàn, hoặc một căn cứ cũ nhưng đọc lại theo thông tin mới. Không lặp lại các ý, câu, lời khuyên đã nói.
 - Không dùng tiêu đề, không theo bố cục lượt trước. Viết 1–3 đoạn ngắn, tối đa khoảng 150 từ.
 - Dùng ĐÚNG bàn ở trên, không lập bàn mới, không thêm dữ liệu ngoài bàn. Căn cứ để trong ngoặc.
-- KHÔNG hỏi lại thêm câu nào. Nếu bàn không trả lời được ý mới này thì nói thẳng là bàn không cho thấy.` });
+- KHÔNG hỏi lại thêm câu nào. Nếu bàn không trả lời được ý mới này thì nói thẳng là bàn không cho thấy.
+${STYLE}` });
   return first;
 }
 

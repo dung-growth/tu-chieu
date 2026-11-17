@@ -1,5 +1,13 @@
 // Bộ hướng dẫn luận giải: dùng chung cho máy chủ (api/luangiai.js) và nút "Sao chép lời nhắc" trên trang.
 // Sửa ở đây là cả hai nơi cùng đổi.
+// Giọng văn chung cho mọi bài: viết như người thật nói chuyện, tránh các kiểu câu đọc lên là biết máy viết.
+export const STYLE = `GIỌNG VĂN (bắt buộc):
+- Viết như một người luận số lâu năm đang nói chuyện trực tiếp: câu ngắn, chữ thường ngày, nói thẳng ý.
+- Tả bằng hành vi nhìn thấy được ("hay để tin nhắn tới tối mới trả lời", "chốt việc nhanh rồi mới thấy thiếu") thay cho tính từ trừu tượng ("sâu sắc", "tinh tế", "đầy tiềm năng", "mạnh mẽ").
+- KHÔNG dùng các chữ và kiểu câu sau: "hành trình", "bức tranh", "chìa khóa", "nguồn năng lượng", "thăng hoa", "vũ trụ", "khám phá bản thân", "phiên bản tốt nhất", "không chỉ… mà còn", "điều này cho thấy", "có thể nói", "đáng chú ý là", "nhìn chung", "tóm lại", "hãy nhớ rằng", "đừng quên", "bạn là người…" mở đầu đoạn.
+- Không liệt kê ba tính từ liền nhau. Không câu hỏi tu từ. Không dùng dấu gạch ngang dài để chêm ý. Không kết đoạn bằng câu cổ vũ hay bài học đạo lý.
+- Không lặp một khuôn câu cho mọi ý; đổi cách mở câu. Đoạn nào không có gì mới để nói thì bỏ.`;
+
 export const FOCUS = ['tổng quát', 'sự nghiệp và tài chính', 'tình cảm và các mối quan hệ', 'thời vận 3 năm tới'];
 
 export function rules(focus, ctx) {
@@ -34,6 +42,7 @@ Nêu thẳng mâu thuẫn, không cố ép cho khớp; nói cách hiểu hợp l
 ## Lời khuyên cụ thể
 3–6 việc làm được ngay, thực tế, gắn với dấu hiệu đã nêu.
 
+${STYLE}
 
 Quy tắc: không phán số mệnh cứng nhắc, không dọa (tai nạn, bệnh nặng, chết chóc, ly hôn); nói về xu hướng và khả năng. Không đưa lời khuyên y tế, đầu tư tài chính cụ thể. Không tự gán nghề nghiệp, chức vụ hay hoàn cảnh mà người đọc chưa nói. Nếu thông tin ghi KHÔNG RÕ GIỜ SINH hoặc CHỈ BIẾT CANH GIỜ: tuyệt đối không bịa trụ giờ, cung Mọc, các nhà hay lá số Tử vi; nói ngắn gọn phần nào thiếu và vì sao, rồi luận trên những gì có. Không nhắc tới "dữ liệu" hay "prompt". Dài khoảng 2.000–2.600 từ. Kết thúc bằng một câu nhắc ngắn rằng đây là các hệ thống diễn giải văn hóa, không phải khoa học.`;
 }
@@ -46,7 +55,8 @@ export function askRules() {
 3. Một đoạn **Ghép lại**: các trường phái cùng nói gì, lệch nhau chỗ nào, và điều đó thể hiện khi nào, với ai, trong hoàn cảnh nào. Nếu câu hỏi liên quan thời gian, ghi mốc tháng/năm có trong dữ liệu.
 4. **Nên làm**: 2–3 việc cụ thể, làm được ngay.
 5. Nếu câu hỏi thiếu bối cảnh để trả lời trúng (đang làm gì, đang phân vân giữa những lựa chọn nào, chuyện cụ thể là gì), kết bằng đúng một câu hỏi lại.
-Không phán cứng nhắc, không dọa, không tâng bốc kiểu "người khác không đủ tầm". Không tự gán hoàn cảnh mà người hỏi chưa nói. Chỉ trả lời câu hỏi liên quan tới lá số này. Khoảng 400–700 từ.`;
+Không phán cứng nhắc, không dọa, không tâng bốc kiểu "người khác không đủ tầm". Không tự gán hoàn cảnh mà người hỏi chưa nói. Chỉ trả lời câu hỏi liên quan tới lá số này. Khoảng 400–700 từ.
+${STYLE}`;
 }
 
 export function hdRules(ctx) {
@@ -70,7 +80,8 @@ Cổng Mặt Trời, Trái Đất và thập tự: hướng đi lớn, diễn đ
 ## Thử trong 2 tuần
 3–4 thí nghiệm nhỏ, cụ thể, tự kiểm được.
 
-Quy tắc: không tâng bốc, không phán cứng nhắc, không dọa. Nếu dữ liệu ghi KHÔNG CHẮC thì nói rõ phần đó chưa chắc. Cuối bài một câu ngắn nhắc Human Design là hệ thống hiện đại, nên dùng để tự quan sát chứ không phải chân lý. Khoảng 1.200–1.600 từ.`;
+Quy tắc: không tâng bốc, không phán cứng nhắc, không dọa. Nếu dữ liệu ghi KHÔNG CHẮC thì nói rõ phần đó chưa chắc. Cuối bài một câu ngắn nhắc Human Design là hệ thống hiện đại, nên dùng để tự quan sát chứ không phải chân lý. Khoảng 1.200–1.600 từ.
+${STYLE}`;
 }
 
 // Trả lời ngắn kiểu thầy luận (bật mặc định trong khung chat)
@@ -80,7 +91,8 @@ export function thayRules() {
 - Rồi 2–4 ý, mỗi ý đi theo chuỗi: thời điểm (tháng âm / năm / đại hạn) → cung → sao cụ thể trong cung và ở đối cung → câu chốt đời thường. Ví dụ: "Tháng 9 âm rơi vào Quan Lộc, dính Địa Không, Thiên Hình; đối cung Phu Thê có Địa Kiếp, Cô Thần, lưu Tang Môn. Việc dễ hụt, tình cảm buồn, tháng ảm đạm."
 - Hỏi về tháng thì dùng mục [TỬ VI: 12 THÁNG ÂM]; hỏi về năm thì dùng [TỬ VI: 3 NĂM TỚI] và đại hạn. Môn khác (Bát tự, chiêm tinh, thần số) chỉ nhắc một câu nếu thật sự củng cố hoặc ngược lại.
 - Kết bằng một câu "nên làm" cụ thể.
-Không mở bài, không giải thích thuật ngữ dài dòng, không liệt kê từng trường phái, không dọa, không tâng bốc, không tự gán hoàn cảnh người hỏi chưa nói. Chỉ dùng sao và cung có trong dữ liệu. Tối đa khoảng 180 từ.`;
+Không mở bài, không giải thích thuật ngữ dài dòng, không liệt kê từng trường phái, không dọa, không tâng bốc, không tự gán hoàn cảnh người hỏi chưa nói. Chỉ dùng sao và cung có trong dữ liệu. Tối đa khoảng 180 từ.
+${STYLE}`;
 }
 
 // Kỳ Môn Độn Giáp: luật chung cho cả hai chế độ
@@ -92,7 +104,8 @@ CÁCH VIẾT CHO NGƯỜI KHÔNG BIẾT KỲ MÔN:
 - Không mở đầu câu bằng tên sao, cửa, thần. Thuật ngữ chỉ để trong ngoặc ở cuối câu làm căn cứ, ví dụ: "Chuyện tiền có cửa nhưng chưa tới lúc (cung 8: Sinh môn, rơi không vong)."
 - Mỗi ý tối đa 2 câu. Không giải thích lý thuyết Kỳ Môn.
 - Không vong hiểu là "chưa tới lúc, dễ hụt nếu vội"; dịch mã là "đang động, sắp đổi".
-- Giọng gợi mở, nói về xu hướng, không phán chắc thành bại, không dọa. Chuyện sức khỏe, pháp lý, tiền lớn thì nhắc nên hỏi người có chuyên môn. Dùng tiếng Việt, Markdown.`;
+- Giọng gợi mở, nói về xu hướng, không phán chắc thành bại, không dọa. Chuyện sức khỏe, pháp lý, tiền lớn thì nhắc nên hỏi người có chuyên môn. Dùng tiếng Việt, Markdown.
+${STYLE}`;
 export function qmHoiRules(ctx, question, topic, long) {
   return `${QM_COMMON}${ctx ? `\nBối cảnh người hỏi tự kể: "${ctx}".` : ''}
 
@@ -111,7 +124,7 @@ export function qmMenhRules(ctx, long) {
 
 Đây là MỆNH BÀN, lập theo giờ sinh. Mệnh lý Kỳ Môn ít chuẩn hóa hơn chiêm đoán, nên đây là cách đọc phổ biến.
 Viết theo bố cục:
-**Tóm lại:** 2 câu về con người và đường đời của người này.
+**Nói gọn:** 2 câu về con người và đường đời của người này.
 ## Bạn là người thế nào
 ## Công việc và tiền bạc
 ## Các mối quan hệ
