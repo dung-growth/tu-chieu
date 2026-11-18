@@ -97,10 +97,20 @@
     if (R && R !== tidy.r) { tidy.r = R; visuals(R); }
     // Tử vi: hiện liền mọi phần (cách cục, nét tính cách, đại hạn, 12 tháng)
     document.querySelectorAll('#p-tv [role=tabpanel][hidden]').forEach(x => x.hidden = false);
-    // Kỳ Môn: bỏ nút Mệnh bàn / Hỏi việc; phần hỏi việc chạy ngầm qua ô Hỏi
+    // Kỳ Môn: bỏ nút chuyển chế độ, hiện liền hai phần: Hỏi việc ở trên, Mệnh bàn ở dưới
     const qmHead = $('#lab-qm .qm-head .seg'); if (qmHead) qmHead.remove();
-    const qmM = $('#qmMenh'); if (qmM) qmM.hidden = false;
-    const qmH = $('#qmHoi'); if (qmH) qmH.hidden = true;
+    const qmM = $('#qmMenh'), qmH = $('#qmHoi');
+    if (qmM && qmH && !qmH.dataset.fl) {
+      qmH.dataset.fl = 1; qmH.hidden = false; qmM.hidden = false; qmM.before(qmH);
+      qmH.insertAdjacentHTML('afterbegin', '<h3 class="fl-qmh">Hỏi một việc cụ thể</h3><p class="small muted" style="margin:0 0 8px">Bàn lập đúng lúc bạn hỏi. Hợp với câu kiểu "có nên…", "…được không", "khi nào nên…".</p>');
+      qmM.insertAdjacentHTML('afterbegin', '<h3 class="fl-qmh" style="margin-top:28px">Mệnh bàn (lập theo giờ sinh)</h3>');
+      // câu hỏi việc từ ô Hỏi ở Tổng quan có thể đã mang khung kết quả đi; hỏi ở đây thì trả khung về chỗ cũ
+      const go = $('#qmGo'), orig = go && go.onclick;
+      if (go && orig) go.onclick = e => { const out = $('#qmHoiOut');
+        if (out && !qmH.contains(out)) { if (out.innerHTML.trim()) { const snap = out.cloneNode(true); snap.removeAttribute('id'); snap.querySelectorAll('[id]').forEach(x => x.removeAttribute('id')); snap.querySelectorAll('.qm-chat,.qa-more').forEach(x => x.remove()); out.replaceWith(snap); } else out.remove();
+          const fresh = document.createElement('div'); fresh.id = 'qmHoiOut'; qmH.append(fresh); }
+        return orig.call(go, e); };
+    }
     // bài luận: mở hết các phần, không gập
     document.querySelectorAll('#aiOut .rd-body[hidden]').forEach(b => b.hidden = false);
     // chiêm tinh: bảng kỹ thuật xuống cuối trang

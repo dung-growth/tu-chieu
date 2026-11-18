@@ -114,3 +114,4 @@ body.flow #p-sum .lens-grid{display:none}
 .fl-card:not(.has-sil) .fl-sky{position:absolute;inset:0}
 @media (max-width:640px){ .fl-card.has-sil .fl-sky{padding-top:210px} .fl-card.has-sil .fl-ct{padding:4px 22px 22px} }
 @media (min-width:641px){ .fl-card.has-sil .fl-sil{height:min(30vw,300px);object-fit:cover;object-position:50% 100%} }
+.fl-qmh{font-size:18px;margin:0 0 4px}
