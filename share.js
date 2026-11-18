@@ -44,30 +44,30 @@ const SHARE = (() => {
     spaced(c, `${K.timeKnown ? i.time + ' · ' : ''}${d}.${mo}.${y}`, 80, 150, 5);
     if (K.moon) c.drawImage(await img(`<svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="-23 -23 46 46"><circle r="18" fill="#fff" opacity=".1"/>${K.moon.dark ? '' : `<path d="${K.moon.path}" fill="#F6EEDC"/>`}</svg>`), W - 164, 98);
     // dấu bốn tia
-    c.drawImage(await img(markSvg(K)), (W - 560) / 2, 230, 560, 560);
-    // tên, tiêu đề (ưu tiên ngắt sau dấu phẩy), câu tả
-    let yy = 900;
-    c.fillStyle = 'rgba(255,255,255,.78)'; c.font = sans(500, 30); spaced(c, i.name.toUpperCase(), 80, yy, 6);
-    c.fillStyle = '#fff'; c.font = '500 92px Lora, Georgia, serif';
-    const parts = /^Pha trộn /.test(K.title) ? ['Pha trộn', K.title.slice(9)] : K.title.split(/(?<=,) /), tl = c.measureText(K.title).width <= W - 160 ? [K.title]
-      : parts.length > 1 && parts.every(t => c.measureText(t).width <= W - 160) && parts.length <= 2 ? parts : wrap(c, K.title, W - 160);
-    tl.forEach(t => { yy += 108; c.fillText(t, 80, yy); });
-    yy += 30; c.font = sans(400, 38); c.fillStyle = 'rgba(255,255,255,.9)';
-    wrap(c, K.body, W - 160).forEach(t => { yy += 56; c.fillText(t, 80, yy); });
-    // ba môn trên một dòng
-    yy += 80; let x = 80; c.font = sans(500, 32);
-    K.votes.forEach(v => { c.globalAlpha = v.agree || !K.main ? 1 : .55; c.fillStyle = K.RAY[v.el]; c.fillRect(x, yy - 13, 34, 5); c.globalAlpha = 1;
-      const t = `${v.sys} ${v.el}`; c.fillStyle = 'rgba(255,255,255,.92)'; c.fillText(t, x + 46, yy); x += 46 + c.measureText(t).width + 40; });
-    // màu và hướng hợp, hai cột
-    yy += 50; c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(80, yy, W - 160, 2); yy += 70;
-    c.fillStyle = 'rgba(255,255,255,.7)'; c.font = sans(500, 28); spaced(c, 'MÀU HỢP', 80, yy, 5); spaced(c, 'HƯỚNG HỢP', 640, yy, 5);
-    yy += 64; x = 80; c.font = sans(500, 36);
-    L.colors.forEach(([nm, hex]) => { c.fillStyle = hex; c.beginPath(); c.arc(x + 18, yy - 13, 18, 0, 7); c.fill(); c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = 2; c.stroke();
-      c.fillStyle = '#fff'; c.fillText(nm, x + 48, yy); x += 48 + c.measureText(nm).width + 36; });
-    c.fillStyle = '#fff'; c.fillText(L.dirs, 640, yy);
-    c.fillStyle = 'rgba(255,255,255,.62)'; c.font = sans(400, 27); c.fillText(L.why + '.', 80, yy + 56);
+    c.drawImage(await img(markSvg(K)), (W - 440) / 2, 200, 440, 440);
+    // tên, tên thẻ, đoạn kể, tính cách, câu "như…"
+    let St = null; try { St = typeof STORY !== 'undefined' ? STORY.build(R, K) : null; } catch (e) {}
+    const title = St ? St.title : K.title, MW = W - 160;
+    let yy = 730;
+    c.fillStyle = 'rgba(255,255,255,.78)'; c.font = sans(500, 28); spaced(c, (i.name + (St ? ' · ' + K.title : '')).toUpperCase(), 80, yy, 5);
+    c.fillStyle = '#fff'; c.font = '500 84px Lora, Georgia, serif';
+    const bal = t => { const w = t.split(' '); let best = null; for (let k = 1; k < w.length; k++) { const a = w.slice(0, k).join(' '), z = w.slice(k).join(' '), m = Math.max(c.measureText(a).width, c.measureText(z).width); if (m <= MW && (!best || m < best[0])) best = [m, [a, z]]; } return best ? best[1] : wrap(c, t, MW); };
+    const tl = c.measureText(title).width <= MW ? [title] : /^Pha trộn /.test(title) ? ['Pha trộn', title.slice(9)] : St && St.lines.length > 1 ? St.lines : bal(title);
+    tl.forEach(t => { yy += 98; c.fillText(t, 80, yy); });
+    const para = (txt, font, color, lh, gap) => { yy += gap; c.font = font; c.fillStyle = color; wrap(c, txt, MW).forEach(t => { yy += lh; c.fillText(t, 80, yy); }); };
+    if (St) {
+      para(St.story, 'italic 400 31px Inter, system-ui, sans-serif', 'rgba(255,255,255,.75)', 46, 24);
+      para(St.trait, sans(400, 35), 'rgba(255,255,255,.95)', 52, 26);
+      para(St.nhu, 'italic 500 38px Lora, Georgia, serif', '#fff', 54, 22);
+    } else para(K.body, sans(400, 36), 'rgba(255,255,255,.9)', 54, 24);
+    // màu và hướng hợp, một dòng
+    yy += 50; c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(80, yy, MW, 2); yy += 62;
+    let x = 80; c.font = sans(500, 30); c.fillStyle = 'rgba(255,255,255,.7)'; c.fillText('Màu hợp', x, yy); x += c.measureText('Màu hợp').width + 22;
+    L.colors.forEach(([nm, hex]) => { c.fillStyle = hex; c.beginPath(); c.arc(x + 14, yy - 11, 14, 0, 7); c.fill(); c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = 2; c.stroke();
+      c.fillStyle = '#fff'; c.fillText(nm, x + 38, yy); x += 38 + c.measureText(nm).width + 26; });
+    c.fillStyle = 'rgba(255,255,255,.7)'; c.fillText('· Hướng', x, yy); x += c.measureText('· Hướng').width + 14; c.fillStyle = '#fff'; c.fillText(L.dirs, x, yy);
     // chân
-    c.fillStyle = 'rgba(255,255,255,.7)'; c.font = sans(600, 30); c.textAlign = 'center'; c.fillText('Tứ Chiếu · tu-chieu.vercel.app', W / 2, H - 150);
+    c.fillStyle = 'rgba(255,255,255,.7)'; c.font = sans(600, 30); c.textAlign = 'center'; c.fillText('Tứ Chiếu · tu-chieu.vercel.app', W / 2, H - 70);
     return new Promise(ok => cv.toBlob(ok, 'image/png'));
   }
 

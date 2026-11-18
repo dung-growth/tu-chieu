@@ -120,6 +120,7 @@
   function visuals(R) {
     if (typeof CARD === 'undefined') return;
     const K = CARD.build(R), i = R.input, by = Object.fromEntries(K.votes.map(v => [v.k, v]));
+    let S = null; try { S = typeof STORY !== 'undefined' ? STORY.build(R, K) : null; } catch (e) { console.error(e); }
     const [y, mo, d] = i.date.split('-');
     // bốn tia: trên Bát tự, phải Chiêm tinh, dưới Tử vi, trái Thần số; tia đồng ý thì rõ, nói khác thì mờ
     const ray = (v, dPath) => v ? `<path d="${dPath}" fill="${K.RAY[v.el]}" opacity="${v.agree || !K.main ? 1 : .42}"/>` : '';
@@ -134,13 +135,14 @@
         <div class="fl-ctop"><span>${K.timeKnown ? esc(i.time) + ' · ' : ''}${d}.${mo}.${y}</span>${moonSvg}</div>
         <svg class="fl-mark" width="200" height="200" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="flh"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
           <circle cx="100" cy="100" r="62" fill="none" stroke="#fff" stroke-opacity=".14"/><circle cx="100" cy="100" r="30" fill="url(#flh)"/>${rays}<circle cx="100" cy="100" r="3.5" fill="#fff"/></svg>
-        <div class="fl-ct"><span class="fl-k">${esc(i.name)}</span><h2>${esc(K.title)}</h2><p>${esc(K.body)}</p></div>
+        <div class="fl-ct">${S ? `<span class="fl-k">${esc(i.name)} · ${esc(K.title)}</span><h2>${S.lines.map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' ')}</h2><p class="fl-story">${esc(S.story)}</p><p>${esc(S.trait)}</p><p class="fl-nhu">${esc(S.nhu)}</p>`
+          : `<span class="fl-k">${esc(i.name)}</span><h2>${esc(K.title)}</h2><p>${esc(K.body)}</p>`}</div>
       </div>`;
     const row = (k, sys, detail, color, state) => `<button type="button" class="fl-it" data-open="${k}"><i style="background:${color}"></i><span>${sys}<small>${esc(detail)}${state ? ', ' + state : ''}</small></span></button>`;
     const st = v => !K.main ? '' : v.agree ? 'đồng ý' : 'nói khác';
     tiles.innerHTML = `<div class="fl-key">${['bz', 'as', 'tv'].map(k => by[k] ? row(k, by[k].sys, by[k].detail + ' → ' + by[k].el, K.INK[by[k].el], st(by[k])) : '').join('')}
         ${row('nm', 'Thần số', 'Đường đời ' + K.num, '#C9A95A', 'không xét')}</div>
-      <p class="fl-note">Bốn tia sáng là bốn môn: tia rõ là đồng ý, tia mờ là nói khác. ${[K.timeKnown ? 'Màu trời theo giờ sinh (' + K.sky.name + ')' : 'Không rõ giờ sinh nên trời để màu ban ngày', K.moon ? 'trăng vẽ đúng pha ngày ' + K.lunarDay + ' âm' : ''].filter(Boolean).join(', ')}. Bấm một dòng để xem môn đó.</p>
+      <p class="fl-note">${S ? 'Đoạn kể tính từ bầu trời thật lúc và nơi bạn sinh. Tên thẻ ghép từ chất chính và nhóm sao ở cung Mệnh. ' : ''}Bốn tia sáng là bốn môn: tia rõ là đồng ý, tia mờ là nói khác. ${[K.timeKnown ? 'Màu trời theo giờ sinh (' + K.sky.name + ')' : 'Không rõ giờ sinh nên trời để màu ban ngày', K.moon ? 'trăng vẽ đúng pha ngày ' + K.lunarDay + ' âm' : ''].filter(Boolean).join(', ')}. Bấm một dòng để xem môn đó.</p>
       ${typeof SHARE !== 'undefined' ? `<div class="fl-share"><button type="button" class="btn-ghost btn-sm" id="flShare">Tạo ảnh để đăng story</button><span>Ảnh dọc, có màu và hướng hợp với bạn. Ảnh tạo ngay trên máy, không gửi đi đâu.</span></div>` : ''}`;
     tiles.querySelectorAll('[data-open]').forEach(x => x.onclick = () => open('laso', x.dataset.open));
     const sb = tiles.querySelector('#flShare');
