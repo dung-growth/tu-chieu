@@ -785,6 +785,8 @@ tr.cur td{background:var(--seal-soft)}
   .wheel{overflow:visible} .wheel text[font-size="12"]{font-size:17px} .wheel text[font-size="12"][font-weight="700"]{font-size:14px}
   .meter .zone{white-space:nowrap;font-size:11px} .wheel text[font-size="21"]{font-size:27px} .wheel text[font-size="16"]{font-size:21px} .wheel text[font-size="22"]{font-size:27px}
 }
+.pal-ul{margin:4px 0 6px;padding-left:20px} .pal-ul li{margin:4px 0;line-height:1.5}
+.pal-tech{margin-top:22px;padding-top:6px;border-top:1px dashed var(--line)} .pal-tech h4{opacity:.85}
 </style>
 <link rel="stylesheet" href="flow.css">
 </head>
@@ -1679,7 +1681,12 @@ function openSheet(html, from){
 function closeSheet(){ const sh = $('#sheet'); if (sh.hidden) return; sh.hidden = true; document.body.classList.remove('sheet-open'); if (openSheet.from && openSheet.from.focus) openSheet.from.focus({ preventScroll: true }); }
 const bars = n => `<span class="lv" aria-hidden="true">${[1,2,3,4].map(k => `<i class="${k <= n ? 'on' : ''}"></i>`).join('')}</span>`;
 const brTag = b => b ? ` <span class="br-tag">${TVP.briTxt(b)}</span>` : '';
-const starRows = (L, cls) => L.length ? `<div class="sh-rows">${L.map(x => `<div class="sh-row"><span><b>${esc(x.name)}</b> <span class="muted small">${x.rel}${x.bright ? ', ' + TVP.briTxt(x.bright) : ''}</span></span><span class="sh-lv ${cls}">${bars(x.lvl[1])} ${x.lvl[0]}</span></div>`).join('')}</div>` : '<p class="small muted">Không có.</p>';
+// đọc sao bằng lời thường: sao ở đâu so với cung, sáng hay tối, tác động bao nhiêu
+const WHERE = { toa: 'ngay trong cung', xung: 'chiếu từ cung đối diện', hop: 'chiếu từ cung tam hợp', giap: 'ở cung kề bên' };
+const BRIGHT_TXT = b => !b ? '' : /Miếu|Vượng/.test(b) ? `đang sáng (${b.toLowerCase()})` : /Đắc|Lợi/.test(b) ? `khá sáng (${b.toLowerCase()})` : /Hãm|Hạn|Bất/.test(b) ? `bị tối (${TVP.briTxt(b)})` : `sáng vừa (${b.toLowerCase()})`;
+const EFFECT = (n, good) => (good ? ['giúp rất ít', 'giúp ít', 'giúp vừa', 'giúp nhiều'] : ['cản rất ít', 'cản ít', 'cản vừa', 'cản nhiều'])[n - 1];
+const starMean = n => { const t = (NGHIA.star && NGHIA.star[n]) || ''; const m = t.split(':').slice(1).join(':').trim() || t; return m.split(/[;.]/)[0]; };
+const starRows = (L, cls) => L.length ? `<div class="sh-rows">${L.map(x => `<div class="sh-row"><span><b>${esc(x.name)}</b>${starMean(x.name) ? ` <span class="small">· ${esc(starMean(x.name))}</span>` : ''}<span class="muted small" style="display:block">${WHERE[x.r] || x.rel}${x.bright ? ', ' + BRIGHT_TXT(x.bright) : ''}</span></span><span class="sh-lv ${cls}">${bars(x.lvl[1])} ${EFFECT(x.lvl[1], cls === 'good')}</span></div>`).join('')}</div>` : '<p class="small muted">Không có.</p>';
 const ubar = (v, cls = '') => `<span class="ubar ${cls}" role="img" aria-label="${v} trên 100"><i style="width:${v}%"></i><b style="left:25%"></b><b style="left:50%"></b><b style="left:75%"></b></span>`;
 
 /* ---- Cách cục: tốt/xấu và mức ứng là hai trục riêng ---- */
@@ -1705,26 +1712,84 @@ function openCach(c, from){
     <p>${esc(c.text)}</p>
     <p class="small muted">${esc(c.why)}</p>
     ${c.form.length ? `<h4>Sao làm nên cách</h4><div class="sh-rows">${c.form.map(x => `<div class="sh-row"><span><b>${esc(x.name)}</b> <span class="muted small">${x.rel}</span></span><span>${x.bright ? `<span class="br-tag">${TVP.briTxt(x.bright)}</span>` : ''}</span></div>`).join('')}</div>` : ''}
-    <h4>Cát tinh ${c.tone === 'luuy' ? 'làm nhẹ đi' : 'trợ lực'}</h4>${starRows(c.help.slice(0, 8), 'good')}
-    <h4>Sát tinh ${c.tone === 'luuy' ? 'làm nặng thêm' : 'cản trở'}</h4>${starRows(c.hurt.slice(0, 8), 'bad')}
+    <h4>Sao tốt ${c.tone === 'luuy' ? 'làm nhẹ đi' : 'giúp thêm'}</h4>${starRows(c.help.slice(0, 8), 'good')}
+    <h4>Sao xấu ${c.tone === 'luuy' ? 'làm nặng thêm' : 'cản trở'}</h4>${starRows(c.hurt.slice(0, 8), 'bad')}
     <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi AI về cách này</button></div>`, from);
   $('#shAsk').onclick = () => { closeSheet(); askAbout(`Lá số Tử vi của tôi có ${c.name} (${c.toneTxt.toLowerCase()}, ${c.ungTxt}, luận cho cung ${c.palace}). Cách này ứng vào đời tôi thế nào?`); };
 }
 
 /* ---- Thế của một cung ---- */
+// Bảng cung: kết luận trước (cung nói gì, của bạn ra sao), rồi điều giúp và điều cản bằng lời thường; chi tiết sao để cuối cho người rành
+const PAL_ABOUT = { 'Mệnh': 'con người bạn: tính cách và cách bạn đi qua cuộc đời', 'Huynh Đệ': 'anh chị em, bạn bè ngang hàng, đồng nghiệp cùng cấp',
+  'Phu Thê': 'vợ chồng, người yêu và các mối quan hệ một-một', 'Tử Nữ': 'con cái, cấp dưới và những thứ bạn tạo ra', 'Tài Bạch': 'tiền bạc: kiếm, tiêu và giữ',
+  'Tật Ách': 'sức khỏe và những điều dồn nén bên trong', 'Thiên Di': 'lúc ra ngoài: đi xa, môi trường xã hội, cơ hội từ bên ngoài',
+  'Nô Bộc': 'bạn bè, cộng sự, khách hàng, những người đi cùng bạn', 'Quan Lộc': 'công việc, sự nghiệp, cách bạn làm việc',
+  'Điền Trạch': 'nhà cửa, đất đai, chỗ ở và tài sản lớn', 'Phúc Đức': 'sự bình yên trong lòng, phúc phần gia đình và dòng họ',
+  'Phụ Mẫu': 'cha mẹ, người trên, cấp trên và giấy tờ' };
+// Ngoài đời thường thấy gì, và nên làm gì, theo từng cung và từng mức
+const PAL_LIFE = {
+  'Mệnh': { 'Vững': ['Làm gì cũng có người tin, tự đứng được trên chân mình, ít khi bị hoàn cảnh nhấn chìm lâu.', 'Dám nhận việc lớn, nhưng nhớ chừa chỗ cho người khác góp tay.'],
+    'Vừa': ['Có lúc rất tự tin, có lúc lại hoài nghi chính mình; kết quả phụ thuộc nhiều vào môi trường xung quanh.', 'Chọn chỗ làm, nhóm bạn hợp mình, vì bạn chịu ảnh hưởng của người bên cạnh khá nhiều.'],
+    'Yếu': ['Hay tự làm khó mình, dễ chùn khi gặp áp lực, cảm giác phải cố gấp đôi người khác mới được như họ.', 'Đi chậm mà chắc, đặt mục tiêu nhỏ, tìm một hai người cố vấn để không phải tự gánh hết.'] },
+  'Huynh Đệ': { 'Vững': ['Anh chị em, bạn bè ngang hàng giúp được bạn, lúc kẹt có người đỡ.', 'Giữ liên lạc đều, những mối này về sau rất đáng giá.'],
+    'Vừa': ['Có người thân thiết, nhưng cũng có lúc so bì, hiểu lầm với anh chị em hoặc đồng nghiệp cùng cấp.', 'Nói rõ chuyện tiền bạc, công sức với người thân để tránh mất lòng.'],
+    'Yếu': ['Ít nhờ được anh chị em; dễ có chuyện căng với người ngang hàng, hoặc phải lo cho họ nhiều hơn được họ lo.', 'Hạn chế làm ăn chung, cho vay mượn với anh em bạn bè; giữ tình cảm tách khỏi tiền.'] },
+  'Phu Thê': { 'Vững': ['Chuyện tình cảm, vợ chồng tương đối êm, người bên cạnh là chỗ dựa thật.', 'Đừng coi sự êm là đương nhiên; vẫn cần chăm cho mối quan hệ.'],
+    'Vừa': ['Tình cảm có lúc ngọt lúc lạt, hay vướng chuyện khác quan điểm hoặc thời điểm chưa hợp.', 'Nói thẳng điều mình cần thay vì chờ người kia tự hiểu.'],
+    'Yếu': ['Đường tình dễ trắc trở: đến muộn, hay hiểu lầm, hoặc thấy mình cho nhiều mà nhận ít.', 'Đừng vội ràng buộc; tìm hiểu đủ lâu, và học cách nói ra khi buồn thay vì giữ trong lòng.'] },
+  'Tử Nữ': { 'Vững': ['Con cái, cấp dưới hoặc những thứ bạn làm ra thường mang lại niềm vui và thành quả.', 'Dành thời gian dạy dỗ, kèm cặp; công sức bỏ ra sẽ quay lại.'],
+    'Vừa': ['Có lúc tự hào, có lúc mệt vì con cái hay cấp dưới; dự án của bạn thành bại đan xen.', 'Giao việc rõ ràng, kỳ vọng vừa phải.'],
+    'Yếu': ['Lo cho con cái, cấp dưới hay dự án của mình tốn nhiều sức mà kết quả chưa như ý.', 'Bớt ôm đồm, chọn ít việc mà làm tới nơi; với con cái, kiên nhẫn hơn là ép.'] },
+  'Tài Bạch': { 'Vững': ['Tiền vào khá đều, biết cách kiếm và giữ được tiền.', 'Tiền dư nên để vào chỗ an toàn, đừng vì thuận mà liều.'],
+    'Vừa': ['Tiền có vào có ra, lúc dư lúc thiếu; kiếm được mà khó giữ lâu.', 'Ghi chép chi tiêu và để riêng một khoản không đụng tới.'],
+    'Yếu': ['Kiếm tiền vất vả, hay có khoản chi bất ngờ, dễ hao vì tin người hoặc quyết vội.', 'Tránh vay mượn, đầu tư theo phong trào; ưu tiên thu nhập ổn định trước, làm giàu sau.'] },
+  'Tật Ách': { 'Vững': ['Sức khỏe khá ổn, ốm đau nhanh hồi.', 'Giữ nếp ngủ và vận động, đừng ỷ vào sức.'],
+    'Vừa': ['Sức khỏe bình thường nhưng dễ mệt khi căng thẳng kéo dài.', 'Để ý dấu hiệu cơ thể báo, nghỉ đúng lúc.'],
+    'Yếu': ['Dễ mệt, căng thẳng dồn vào người; những chuyện nén trong lòng hay hiện ra thành bệnh vặt.', 'Khám sức khỏe định kỳ, tìm cách xả căng thẳng đều đặn. Có triệu chứng thì đi khám, đừng tự đoán.'] },
+  'Thiên Di': { 'Vững': ['Ra ngoài được việc, đi xa hay đổi môi trường thường gặp người tốt và cơ hội.', 'Mạnh dạn mở rộng quan hệ, nhận cơ hội ở nơi khác.'],
+    'Vừa': ['Ra ngoài có lúc thuận lúc không; người ngoài nhìn bạn khác với con người thật của bạn.', 'Chuẩn bị kỹ trước khi đi xa hay đổi chỗ, đừng quyết theo cảm hứng.'],
+    'Yếu': ['Ra ngoài dễ gặp chuyện không như ý, hay bị hiểu lầm, khó gây ấn tượng lúc đầu.', 'Đi đâu cũng tính đường lui; xây quan hệ chậm mà chắc thay vì mong được để ý ngay.'] },
+  'Nô Bộc': { 'Vững': ['Có bạn bè, cộng sự, khách hàng tốt, được người dưới hoặc người ngoài giúp nhiều.', 'Đối đãi tử tế với người đi cùng, họ sẽ ở lại lâu.'],
+    'Vừa': ['Bạn bè cộng sự có người tốt người không; quan hệ hay thay đổi.', 'Chọn người để tin dần dần, đừng giao hết từ đầu.'],
+    'Yếu': ['Dễ gặp người lợi dụng, giúp người mà không được đáp lại, cộng sự hay bỏ ngang.', 'Giấy trắng mực đen với cộng sự; giúp người trong sức mình, không hứa quá.'] },
+  'Quan Lộc': { 'Vững': ['Công việc lên đều, làm đâu cũng được ghi nhận, có đường thăng tiến.', 'Nhắm vị trí cao hơn, học thêm kỹ năng quản lý.'],
+    'Vừa': ['Công việc có lúc lên lúc chững; hay phân vân giữa ổn định và đổi hướng.', 'Chọn một hướng đi rõ và theo đủ lâu trước khi đổi.'],
+    'Yếu': ['Đường công việc nhiều trắc trở: hay đổi chỗ, gặp sếp khó, hoặc cố mà chưa được ghi nhận.', 'Tích lũy tay nghề thật chắc, giữ việc ổn định, đổi việc khi đã có chỗ mới chắc chắn.'] },
+  'Điền Trạch': { 'Vững': ['Nhà cửa, chỗ ở ổn định, dễ có tài sản lớn theo thời gian.', 'Tích lũy để mua nhà, đất khi thời điểm hợp.'],
+    'Vừa': ['Chỗ ở có lúc ổn có lúc phải dời; tài sản lớn đến chậm.', 'Tính kỹ trước khi mua nhà, đừng ôm nợ quá sức.'],
+    'Yếu': ['Hay phải dọn chỗ ở, nhà cửa nhiều chuyện phiền, tài sản lớn khó giữ.', 'Ưu tiên ở thuê yên ổn hơn mua vội; giấy tờ nhà đất phải thật rõ ràng.'] },
+  'Phúc Đức': { 'Vững': ['Trong lòng khá bình yên, gặp chuyện vẫn có cái gì đó đỡ cho; họ hàng là chỗ dựa.', 'Giữ nếp sống tử tế, đó là cái vốn của bạn.'],
+    'Vừa': ['Có lúc thấy an, có lúc bất an không rõ lý do; chuyện họ hàng lúc gần lúc xa.', 'Tạo cho mình vài thói quen giúp tâm yên: đi bộ, ghi chép, ngồi yên một lúc mỗi ngày.'],
+    'Yếu': ['Dễ nghĩ nhiều, khó thấy bình yên dù mọi thứ có vẻ ổn; chuyện họ hàng gia đình hay làm bạn mệt.', 'Chủ động chăm cho tinh thần: ngủ đủ, bớt so sánh, tìm người để nói chuyện; cần thì gặp chuyên gia tâm lý.'] },
+  'Phụ Mẫu': { 'Vững': ['Cha mẹ, người trên, cấp trên thương và giúp bạn; giấy tờ thủ tục thường suôn sẻ.', 'Hỏi ý người đi trước khi gặp chuyện lớn.'],
+    'Vừa': ['Với cha mẹ, cấp trên có lúc hợp có lúc vênh; thủ tục giấy tờ hay phải làm lại.', 'Nói chuyện thẳng thắn, tôn trọng mà vẫn giữ ý mình.'],
+    'Yếu': ['Khó được cha mẹ hay cấp trên hiểu, dễ bất đồng; giấy tờ hành chính hay vướng.', 'Kiên nhẫn với người lớn, giữ giấy tờ cẩn thận, đọc kỹ trước khi ký.'] }
+};
+const PAL_TAG = { 'Vững': 'Thuận', 'Vừa': 'Lẫn lộn', 'Yếu': 'Nhiều trở ngại' };
+const PAL_VERDICT = {
+  'Vững': 'Của bạn khá thuận: được nâng đỡ nhiều hơn bị cản.',
+  'Vừa': 'Của bạn tốt xấu đan xen: có chỗ dựa, nhưng cũng có chuyện phải để ý.',
+  'Yếu': 'Của bạn đang khá trắc trở: nhiều điều kéo lại hơn là đẩy lên.' };
+const starWhy = x => { const m = (starMean(x.name) || x.name).replace(/ ở nơi nó đậu/, ''); return m.charAt(0).toUpperCase() + m.slice(1); };
+const bullets = (L, bad) => L.length ? `<ul class="pal-ul">${L.slice(0, 3).map(x => `<li>${esc(starWhy(x))} <span class="muted small">(${esc(x.name)}${bad && x.lvl[1] >= 4 ? ', khá nặng' : bad && x.lvl[1] <= 2 ? ', nhẹ' : ''})</span></li>`).join('')}</ul>` : `<p class="small muted">${bad ? 'Không có gì đáng kể.' : 'Không có sao tốt nào đáng kể chiếu về.'}</p>`;
 function openPalaceSheet(b){
   if (!R || !R.tuvi) return;
-  const P = TVP.palace(R.tuvi, b), cell = $(`.tv-cell[data-b="${b}"]`);
-  openSheet(`<div class="sh-top"><div><h3 id="sheetTitle">Cung ${esc(P.name)}</h3><div class="small muted">${P.stem} ${b}${P.tt ? ' · bị Tuần hoặc Triệt' : ''}</div></div>
-      <div class="sh-score"><b class="${P.label === 'Vững' ? 't-tot' : P.label === 'Yếu' ? 't-luuy' : ''}">${P.label}</b><span class="small">thế cung ${P.score}/100</span></div></div>
-    ${ubar(P.score, P.label === 'Vững' ? 'u-tot big' : P.label === 'Yếu' ? 'u-luuy big' : 'big')}
-    <p>${esc(NGHIA.palace[P.name] || '')}</p>
-    <p class="small muted">Thế cung tính từ độ sáng của chính tinh${P.borrow ? ' (cung trống nên mượn chính tinh ở cung xung chiếu, tính bảy phần)' : ''}, cộng cát tinh và trừ sát tinh ở cung này, hai cung tam hợp, cung xung chiếu và hai cung kề bên. Đây là cách đọc gợi ý của Tứ Chiếu, không phải điểm tốt xấu tuyệt đối.</p>
-    <h4>${P.borrow ? 'Vô chính diệu, mượn chính tinh xung chiếu' : 'Chính tinh'}</h4>
-    ${P.major.length ? `<div class="sh-rows">${P.major.map(x => `<div class="sh-row"><span><b class="el-${MAJOR_EL[x.name]}">${esc(x.name)}</b></span><span>${x.bright ? `<span class="br-tag">${TVP.briTxt(x.bright)}</span>` : ''}</span></div>`).join('')}</div>` : '<p class="small muted">Không có.</p>'}
-    <h4>Cát tinh trợ lực</h4>${starRows(P.help.slice(0, 8), 'good')}
-    <h4>Sát tinh cản trở</h4>${starRows(P.hurt.slice(0, 8), 'bad')}
-    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi AI về cung này</button></div>`, cell);
+  const P = TVP.palace(R.tuvi, b), cell = $(`.tv-cell[data-b="${b}"]`), cls = P.label === 'Vững' ? 't-tot' : P.label === 'Yếu' ? 't-luuy' : '';
+  const help = P.help.filter(x => x.lvl[1] >= 2), hurt = P.hurt.filter(x => x.lvl[1] >= 2);
+  openSheet(`<div class="sh-top"><div><h3 id="sheetTitle">Cung ${esc(P.name)}</h3><div class="small muted">Nói về ${esc(PAL_ABOUT[P.name] || '')}</div></div>
+      <div class="sh-score"><b class="${cls}">${PAL_TAG[P.label]}</b><span class="small">${P.score}/100</span></div></div>
+    ${ubar(P.score, P.label === 'Vững' ? 'u-tot big' : P.label === 'Yếu' ? 'u-luuy big' : 'big')}<p class="small muted" style="margin:4px 0 0">Thanh càng dài là cung càng được nâng đỡ: dưới 45 là nhiều trở ngại, 45 đến 64 là lẫn lộn, từ 65 là thuận.</p>
+    <p style="margin:10px 0 4px;font-size:16px"><b>${PAL_VERDICT[P.label]}</b>${P.tt ? ' Cung còn bị Tuần hoặc Triệt chặn, nên cái tốt cái xấu đều tới chậm và nhẹ đi.' : ''}</p>
+    ${PAL_LIFE[P.name] ? `<h4>Ngoài đời thường thấy</h4><p style="margin:2px 0">${PAL_LIFE[P.name][P.label][0]}</p><h4>Nên làm</h4><p style="margin:2px 0">${PAL_LIFE[P.name][P.label][1]}</p>` : ''}
+    <h4>Điều giúp bạn</h4>${bullets(help.length ? help : P.help, false)}
+    <h4>Điều làm bạn chùn lại</h4>${bullets(hurt.length ? hurt : P.hurt, true)}
+    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi AI về cung này</button></div>
+    <div class="pal-tech"><h4>Chi tiết cho người rành Tử vi</h4>
+      <p class="small muted">${P.stem} ${b}. Điểm tính từ độ sáng của sao chính${P.borrow ? ' (cung trống nên mượn sao ở cung đối diện, tính bảy phần)' : ''}, cộng sao tốt và trừ sao xấu ở cung này cùng các cung chiếu về. Sao càng gần cung càng mạnh (ngay trong cung, rồi đối diện, tam hợp, kề bên); sao tốt càng sáng càng giúp nhiều, sao xấu bị tối lại càng gây khó. Đây là cách đọc gợi ý của Tứ Chiếu.</p>
+      <h4>${P.borrow ? 'Sao chính (mượn cung đối diện)' : 'Sao chính'}</h4>
+      ${P.major.length ? `<div class="sh-rows">${P.major.map(x => `<div class="sh-row"><span><b class="el-${MAJOR_EL[x.name]}">${esc(x.name)}</b></span><span class="small">${x.bright ? BRIGHT_TXT(x.bright) : ''}</span></div>`).join('')}</div>` : '<p class="small muted">Không có.</p>'}
+      <h4>Sao tốt</h4>${starRows(P.help.slice(0, 8), 'good')}
+      <h4>Sao xấu</h4>${starRows(P.hurt.slice(0, 8), 'bad')}</div>`, cell);
   $('#shAsk').onclick = () => { closeSheet(); askAbout(`Cung ${P.name} trong lá số Tử vi của tôi nói gì? Đọc cả các sao trong cung và cung chiếu về.`); };
 }
 
