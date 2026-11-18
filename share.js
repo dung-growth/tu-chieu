@@ -30,44 +30,47 @@ const SHARE = (() => {
     if (document.fonts) await Promise.all(['500 96px Lora', '400 40px Inter', '600 40px Inter'].map(f => document.fonts.load(f).catch(() => {})));
     const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d');
     const [g0, g1, g2] = K.sky.g, tint = K.main ? K.INK[K.main] : '#5a6aa0';
+    let St = null; try { St = typeof STORY !== 'undefined' ? STORY.build(R, K) : null; } catch (e) {}
+    const silImg = St ? await new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => ok(null); im.src = St.sil; }) : null;
+    const HZ = silImg ? 880 : H; // chân trời: dưới đó là đất tối, chữ nằm trên nền đất
     // trời
-    let g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, g0); g.addColorStop(.55, g1); g.addColorStop(1, g2); c.fillStyle = g; c.fillRect(0, 0, W, H);
-    const glow = (x, yy, r, a) => { const q = c.createRadialGradient(x, yy, 0, x, yy, r); q.addColorStop(0, tint + a); q.addColorStop(1, tint + '00'); c.fillStyle = q; c.fillRect(0, 0, W, H); };
-    glow(W * .3, H, 900, '88'); glow(W * .9, H * .95, 700, '55');
+    let g = c.createLinearGradient(0, 0, 0, HZ); g.addColorStop(0, g0); g.addColorStop(.6, g1); g.addColorStop(1, g2); c.fillStyle = g; c.fillRect(0, 0, W, HZ);
+    const glow = (x, yy, r, a) => { const q = c.createRadialGradient(x, yy, 0, x, yy, r); q.addColorStop(0, tint + a); q.addColorStop(1, tint + '00'); c.fillStyle = q; c.fillRect(0, 0, W, HZ); };
+    glow(W * .5, HZ, 800, 'aa'); glow(W * .15, HZ, 500, '55');
     // sao
     const r = rng(+(y + mo + d) % 2147483646 + 1);
-    for (let k = 0; k < 70; k++) { const sy = r() * H * .62; c.globalAlpha = .2 + r() * .6; c.fillStyle = '#fff'; c.beginPath(); c.arc(r() * W, sy, .8 + r() * 2.2, 0, 7); c.fill(); }
+    for (let k = 0; k < 80; k++) { const sy = r() * HZ * .7; c.globalAlpha = .2 + r() * .6; c.fillStyle = '#fff'; c.beginPath(); c.arc(r() * W, sy, .8 + r() * 2.2, 0, 7); c.fill(); }
     c.globalAlpha = 1;
+    if (silImg) { const sh = W * silImg.height / silImg.width; c.drawImage(silImg, 0, HZ - sh + 2, W, sh); c.fillStyle = '#05071a'; c.fillRect(0, HZ, W, H - HZ); }
     // dòng trên: giờ, ngày, trăng
     const sans = (wt, px) => `${wt} ${px}px Inter, system-ui, sans-serif`;
     c.fillStyle = 'rgba(255,255,255,.75)'; c.font = sans(500, 30); c.textBaseline = 'alphabetic';
     spaced(c, `${K.timeKnown ? i.time + ' · ' : ''}${d}.${mo}.${y}`, 80, 150, 5);
     if (K.moon) c.drawImage(await img(`<svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="-23 -23 46 46"><circle r="18" fill="#fff" opacity=".1"/>${K.moon.dark ? '' : `<path d="${K.moon.path}" fill="#F6EEDC"/>`}</svg>`), W - 164, 98);
     // dấu bốn tia
-    c.drawImage(await img(markSvg(K)), (W - 440) / 2, 200, 440, 440);
+    c.drawImage(await img(markSvg(K)), (W - 360) / 2, 170, 360, 360);
     // tên, tên thẻ, đoạn kể, tính cách, câu "như…"
-    let St = null; try { St = typeof STORY !== 'undefined' ? STORY.build(R, K) : null; } catch (e) {}
     const title = St ? St.title : K.title, MW = W - 160;
-    let yy = 730;
+    let yy = silImg ? HZ + 40 : 730;
     c.fillStyle = 'rgba(255,255,255,.78)'; c.font = sans(500, 28); spaced(c, (i.name + (St ? ' · ' + K.title : '')).toUpperCase(), 80, yy, 5);
-    c.fillStyle = '#fff'; c.font = '500 84px Lora, Georgia, serif';
+    c.fillStyle = '#fff'; c.font = `500 ${silImg ? 74 : 84}px Lora, Georgia, serif`;
     const bal = t => { const w = t.split(' '); let best = null; for (let k = 1; k < w.length; k++) { const a = w.slice(0, k).join(' '), z = w.slice(k).join(' '), m = Math.max(c.measureText(a).width, c.measureText(z).width); if (m <= MW && (!best || m < best[0])) best = [m, [a, z]]; } return best ? best[1] : wrap(c, t, MW); };
     const tl = c.measureText(title).width <= MW ? [title] : /^Pha trộn /.test(title) ? ['Pha trộn', title.slice(9)] : St && St.lines.length > 1 ? St.lines : bal(title);
-    tl.forEach(t => { yy += 98; c.fillText(t, 80, yy); });
+    tl.forEach(t => { yy += silImg ? 86 : 98; c.fillText(t, 80, yy); });
     const para = (txt, font, color, lh, gap) => { yy += gap; c.font = font; c.fillStyle = color; wrap(c, txt, MW).forEach(t => { yy += lh; c.fillText(t, 80, yy); }); };
     if (St) {
-      para(St.story, 'italic 400 31px Inter, system-ui, sans-serif', 'rgba(255,255,255,.75)', 46, 24);
-      para(St.trait, sans(400, 35), 'rgba(255,255,255,.95)', 52, 26);
-      para(St.nhu, 'italic 500 38px Lora, Georgia, serif', '#fff', 54, 22);
+      para(St.story, 'italic 400 28px Inter, system-ui, sans-serif', 'rgba(255,255,255,.72)', 40, 18);
+      para(St.trait, sans(400, 32), 'rgba(255,255,255,.95)', 46, 20);
+      para(St.nhu, 'italic 500 35px Lora, Georgia, serif', '#fff', 48, 18);
     } else para(K.body, sans(400, 36), 'rgba(255,255,255,.9)', 54, 24);
     // màu và hướng hợp, một dòng
-    yy += 50; c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(80, yy, MW, 2); yy += 62;
+    yy += 36; c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(80, yy, MW, 2); yy += 56;
     let x = 80; c.font = sans(500, 30); c.fillStyle = 'rgba(255,255,255,.7)'; c.fillText('Màu hợp', x, yy); x += c.measureText('Màu hợp').width + 22;
     L.colors.forEach(([nm, hex]) => { c.fillStyle = hex; c.beginPath(); c.arc(x + 14, yy - 11, 14, 0, 7); c.fill(); c.strokeStyle = 'rgba(255,255,255,.5)'; c.lineWidth = 2; c.stroke();
       c.fillStyle = '#fff'; c.fillText(nm, x + 38, yy); x += 38 + c.measureText(nm).width + 26; });
     c.fillStyle = 'rgba(255,255,255,.7)'; c.fillText('· Hướng', x, yy); x += c.measureText('· Hướng').width + 14; c.fillStyle = '#fff'; c.fillText(L.dirs, x, yy);
     // chân
-    c.fillStyle = 'rgba(255,255,255,.7)'; c.font = sans(600, 30); c.textAlign = 'center'; c.fillText('Tứ Chiếu · tu-chieu.vercel.app', W / 2, H - 70);
+    c.fillStyle = 'rgba(255,255,255,.7)'; c.font = sans(600, 30); c.textAlign = 'center'; c.fillText('Tứ Chiếu · tu-chieu.vercel.app', W / 2, H - 50);
     return new Promise(ok => cv.toBlob(ok, 'image/png'));
   }
 

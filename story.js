@@ -144,7 +144,7 @@ const STORY = (() => {
     const i = R.input, el = (K && K.main) || (K && K.votes[0] && K.votes[0].el) || 'Nước';
     const C = CHON[el] || CHON['Nước'], dk = dangOf(R.tuvi), D = dk && DANG[dk];
     const raw = (TEN[el] || TEN['Nước'])[dk || 'x'], title = raw.replace('|', ' '), lines = raw.split('|');
-    return { title, lines, story: tell(i), trait: C.trait + (D ? ' ' + D.line : ''), nhu: C.nhu, chon: el, dang: dk };
+    return { title, lines, sil: `assets/bong/${{ 'Nước': 'nuoc', 'Lửa': 'lua', 'Kim': 'kim', 'Đất': 'dat', 'Mộc': 'moc' }[el] || 'nuoc'}-${dk || 'dung'}.webp`, story: tell(i), trait: C.trait + (D ? ' ' + D.line : ''), nhu: C.nhu, chon: el, dang: dk };
   }
   return { build, tell, sky, CHON, DANG };
 })();

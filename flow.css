@@ -106,3 +106,11 @@ body.flow #p-sum .lens-grid{display:none}
 .fl-share span{font-size:12.5px;color:var(--ink-2)}
 .fl-chatslot .chat{margin-top:22px!important;padding-top:18px!important;border-top:1px solid var(--line-2)!important}
 .fl-chatslot .fl-h{font-size:19px}
+/* thẻ có bóng người: trời ở trên, bóng người đứng ở chân trời, chữ nằm trên nền đất tối */
+.fl-card.has-sil{background:#05071a}
+.fl-card.has-sil .fl-sky{position:relative;padding-top:250px;background:radial-gradient(80% 40% at 50% 100%,color-mix(in srgb,var(--tint) 75%,transparent) 0%,transparent 75%),linear-gradient(180deg,var(--g0) 0%,var(--g1) 60%,var(--g2) 100%)}
+.fl-card.has-sil .fl-sil{display:block;width:100%;height:auto;position:relative;margin-bottom:-1px}
+.fl-card.has-sil .fl-ct{padding:6px 28px 26px}
+.fl-card:not(.has-sil) .fl-sky{position:absolute;inset:0}
+@media (max-width:640px){ .fl-card.has-sil .fl-sky{padding-top:210px} .fl-card.has-sil .fl-ct{padding:4px 22px 22px} }
+@media (min-width:641px){ .fl-card.has-sil .fl-sil{height:min(30vw,300px);object-fit:cover;object-position:50% 100%} }
