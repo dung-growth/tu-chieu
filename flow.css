@@ -130,3 +130,23 @@ body.flow #p-sum .lens-grid{display:none}
 .fl-td-line{margin:6px 0;line-height:1.55}
 .fl-td-why{font-size:12.5px;color:var(--ink-2);margin:10px 0;border-top:1px solid var(--line-2);padding-top:8px}
 @media (max-width:640px){ .fl-td-cols{grid-template-columns:1fr} .fl-today{padding:16px 14px} .fl-td-theme{font-size:21px} }
+
+/* ===== Tổng quan gọn: 3 phần, cùng một kiểu khung ===== */
+body.flow #hdHook, body.flow .fl-traits, body.flow #p-sum > .callout{display:none!important}
+.fl-chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 2px 18px}
+.fl-chip{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;padding:6px 11px;border-radius:99px;border:1px solid var(--line);background:var(--sheet)}
+.fl-chip i{width:9px;height:9px;border-radius:50%} .fl-chip.dim{opacity:.6} .fl-chip:hover{border-color:var(--ink-2)} .fl-chip:focus-visible{outline:2px solid var(--seal)}
+.fl-chip-share{margin-left:auto;background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.fl-sec-h{font-size:19px;margin:0}
+.fl-today,body.flow #yearPanel,.fl-read{border:1px solid var(--line)!important;border-radius:var(--r)!important;background:var(--sheet)!important;box-shadow:none!important}
+.fl-today{margin-bottom:12px}
+body.flow #p-sum{padding-top:0} body.flow #yearPanel{margin:0 0 18px;padding:16px 20px}
+body.flow #yearPanel .yr-head h3{font-size:16px}
+body.flow #yearPanel:not(.open) .yr-grid, body.flow #yearPanel:not(.open) #yrAsk{display:none}
+.fl-yr-more{margin-top:10px}
+details.fl-td-why summary{cursor:pointer;color:var(--ink-2);font-size:13px}
+details.fl-td-why{border-top:1px solid var(--line-2);padding-top:8px;margin:10px 0}
+.fl-read{padding:18px 20px 12px} .fl-read .ai-title{display:none} .fl-read .ai-head{margin-top:6px}
+.fl-chatslot .chat{margin:0!important;padding:0!important;border:0!important}
+.fl-chatslot .fl-h{font-size:19px}
+@media (max-width:640px){ .fl-read{padding:16px 14px 10px} body.flow #yearPanel{padding:14px} .fl-chip-share{margin-left:0} }

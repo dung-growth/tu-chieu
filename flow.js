@@ -69,20 +69,20 @@
   const ctxField = $('#ctx').closest('.field'); ctxField.hidden = true; $('#ctx').value = '';
   const head = $('#p-ai .ai-head'); head.querySelector('h2').textContent = 'Luận giải bốn lá số';
   const chatSlot = el('div', 'fl-chatslot');
-  read.append(head, $('#aiOut'), chatSlot);
+  read.append(chatSlot, head, $('#aiOut'));
   // đặt ngoài #p-sum (khối đó bị vẽ lại mỗi lần lập lá số), ẩn hiện theo mục Tổng quan
   const traits = el('div', 'fl-traits'); traits.hidden = true;
   const hero = el('section', 'fl-hero'); hero.hidden = true;
   const tiles = el('div', 'fl-tiles'); tiles.hidden = true;
   const todayBox = el('section', 'fl-today'); todayBox.hidden = true; todayBox.setAttribute('aria-label', 'Hôm nay của bạn');
-  $('#p-sum').before(hero, tiles, todayBox, read, traits);
+  $('#p-sum').before(hero, tiles, todayBox, traits); $('#p-sum').after(read);
   const opt = el('details', 'fl-opt'); opt.innerHTML = '<summary>Tùy chọn</summary><div class="fl-opt-body"></div>';
   [head.querySelector('label[for=focus]'), $('#focus'), $('#code'), $('#copyPrompt')].forEach(x => x && opt.lastChild.append(x));
   head.querySelector('.ai-controls').append(opt);
   // ô hỏi: tiêu đề và gợi ý
   // ô hỏi: chỉ một chỗ, ngay dưới bài luận ở Tổng quan
   const chat = $('#chat'); chatSlot.append(chat);
-  chat.insertAdjacentHTML('afterbegin', '<h2 class="fl-h">Bạn muốn hỏi gì?</h2><p class="small muted" style="margin:0 0 10px">Hỏi về con người, công việc, tình cảm, năm nay… AI đọc trên lá số của bạn. Câu hỏi về một việc cụ thể ("có nên…", "…được không") sẽ được đọc bằng Kỳ Môn Độn Giáp lập theo lúc hỏi.</p>');
+  chat.insertAdjacentHTML('afterbegin', '<h2 class="fl-h">Bạn muốn hỏi gì?</h2><p class="small muted" style="margin:0 0 10px">Hỏi về tính cách, công việc, tình cảm, năm nay… Câu "có nên…" sẽ được đọc bằng Kỳ Môn theo đúng lúc hỏi.</p>');
   const hint = chat.querySelector('.chat-hint'); if (hint) hint.remove();
   chat.append($('#askStatus'));
 
@@ -96,6 +96,12 @@
       if (top.length) traits.innerHTML = `<span class="label">Nổi bật nhất theo Tử vi</span><div>${top.map(x => `<span class="fl-trait"><b>${x.name}</b> <span class="${x.pct >= 75 ? 't-tot' : 't-luuy'}">${x.level.toLowerCase()}</span> <small>hơn ${x.pct}% người</small></span>`).join('')}</div>`;
       traits.classList.toggle('empty', !top.length); }
     if (R && R !== tidy.r) { tidy.r = R; visuals(R); renderToday(R, localYmd(new Date())); }
+    // Năm của bạn: bản gọn (tên năm, nhãn); bấm mới mở bốn ô chi tiết
+    const yp = $('#yearPanel');
+    if (yp && !yp.querySelector('.fl-yr-more')) { const t = el('button', 'btn-ghost btn-sm fl-yr-more'); t.type = 'button'; t.textContent = 'Xem chi tiết năm';
+      t.onclick = () => { const o = yp.classList.toggle('open'); t.textContent = o ? 'Thu gọn' : 'Xem chi tiết năm'; }; yp.append(t); }
+    // bài luận: chưa viết thì ẩn khung chữ hướng dẫn
+    const ao = $('#aiOut'); if (ao) ao.hidden = /Bấm\s*Viết luận giải/.test(ao.textContent) && ao.children.length <= 1;
     // Tử vi: hiện liền mọi phần (cách cục, nét tính cách, đại hạn, 12 tháng)
     document.querySelectorAll('#p-tv [role=tabpanel][hidden]').forEach(x => x.hidden = false);
     // Kỳ Môn: bỏ nút chuyển chế độ, hiện liền hai phần: Hỏi việc ở trên, Mệnh bàn ở dưới
@@ -149,12 +155,10 @@
         <div class="fl-ct">${S ? `<span class="fl-k">${esc(i.name)} · ${esc(K.title)}</span><h2>${S.lines.map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' ')}</h2><p class="fl-story">${esc(S.story)}</p><p>${esc(S.trait)}</p><p class="fl-nhu">${esc(S.nhu)}</p>`
           : `<span class="fl-k">${esc(i.name)}</span><h2>${esc(K.title)}</h2><p>${esc(K.body)}</p>`}</div>
       </div>`;
-    const row = (k, sys, detail, color, state) => `<button type="button" class="fl-it" data-open="${k}"><i style="background:${color}"></i><span>${sys}<small>${esc(detail)}${state ? ', ' + state : ''}</small></span></button>`;
-    const st = v => !K.main ? '' : v.agree ? 'đồng ý' : 'nói khác';
-    tiles.innerHTML = `<div class="fl-key">${['bz', 'as', 'tv'].map(k => by[k] ? row(k, by[k].sys, by[k].detail + ' → ' + by[k].el, K.INK[by[k].el], st(by[k])) : '').join('')}
-        ${row('nm', 'Thần số', 'Đường đời ' + K.num, '#C9A95A', 'không xét')}</div>
-      <p class="fl-note">${S ? 'Đoạn kể tính từ bầu trời thật lúc và nơi bạn sinh. Tên thẻ ghép từ chất chính và nhóm sao ở cung Mệnh. ' : ''}Bốn tia sáng là bốn môn: tia rõ là đồng ý, tia mờ là nói khác. ${[K.timeKnown ? 'Màu trời theo giờ sinh (' + K.sky.name + ')' : 'Không rõ giờ sinh nên trời để màu ban ngày', K.moon ? 'trăng vẽ đúng pha ngày ' + K.lunarDay + ' âm' : ''].filter(Boolean).join(', ')}. Bấm một dòng để xem môn đó.</p>
-      ${typeof SHARE !== 'undefined' ? `<div class="fl-share"><button type="button" class="btn-ghost btn-sm" id="flShare">Tạo ảnh để đăng story</button><span>Ảnh dọc, có màu và hướng hợp với bạn. Ảnh tạo ngay trên máy, không gửi đi đâu.</span></div>` : ''}`;
+    const chip = (k, txt, color, dim, title) => `<button type="button" class="fl-chip${dim ? ' dim' : ''}" data-open="${k}" title="${esc(title)}"><i style="background:${color}"></i>${esc(txt)}</button>`;
+    tiles.innerHTML = `<div class="fl-chips">${['bz', 'as', 'tv'].map(k => by[k] ? chip(k, `${by[k].sys}: ${by[k].el}`, K.INK[by[k].el], K.main && !by[k].agree, by[k].detail + (K.main ? (by[k].agree ? ', đồng ý' : ', nói khác') : '')) : '').join('')}
+        ${chip('nm', 'Thần số: ' + K.num, '#C9A95A', false, 'Đường đời ' + K.num)}
+        ${typeof SHARE !== 'undefined' ? '<button type="button" class="fl-chip fl-chip-share" id="flShare">Tạo ảnh story</button>' : ''}</div>`;
     tiles.querySelectorAll('[data-open]').forEach(x => x.onclick = () => open('laso', x.dataset.open));
     const sb = tiles.querySelector('#flShare');
     if (sb) sb.onclick = async () => { sb.disabled = true; const t = sb.textContent; sb.textContent = 'Đang tạo ảnh…';
@@ -169,16 +173,16 @@
     let T; try { T = TODAY.build(R, ymd); } catch (e) { console.error(e); todayBox.innerHTML = ''; return; }
     const isToday = ymd === localYmd(new Date()), li = a => a.map(x => `<li>${esc(x)}</li>`).join('');
     const mood = T.moon ? [T.moon.hit ? T.moon.hit.text + '.' : '', T.moon.houseTxt].filter(Boolean).join(' ') : '';
-    todayBox.innerHTML = `<div class="fl-td-head"><div><span class="label">${isToday ? 'Hôm nay của bạn' : 'Ngày bạn chọn'}</span>
+    todayBox.innerHTML = `<div class="fl-td-head"><div><h2 class="fl-sec-h">${isToday ? 'Hôm nay của bạn' : 'Ngày bạn chọn'}</h2>
         <div class="fl-td-date">${T.thu}, ${T.d}/${T.m}/${T.y} · ngày ${esc(T.gz)}${T.lunar ? ' · ' + T.lunar : ''}</div></div>
         <div class="fl-td-nav"><button type="button" class="btn-ghost btn-sm" data-step="-1" aria-label="Ngày trước">‹</button><input type="date" value="${ymd}" aria-label="Chọn ngày"><button type="button" class="btn-ghost btn-sm" data-step="1" aria-label="Ngày sau">›</button>${isToday ? '' : '<button type="button" class="btn-ghost btn-sm" data-today>Hôm nay</button>'}</div></div>
       <h3 class="fl-td-theme">${esc(T.theme)}</h3>
-      <div class="fl-td-tags"><span class="fl-td-tag ${T.hoang ? 'good' : 'bad'}">Ngày ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} (${T.dayThan})</span>${T.notes.map(n => `<span class="fl-td-tag ${/xung|hại/.test(n) ? 'bad' : 'good'}">${esc(n[0].toUpperCase() + n.slice(1))}</span>`).join('')}</div>
-      <div class="fl-td-cols"><div><h4>Nên</h4><ul>${li(T.nen)}</ul></div><div><h4>Nên tránh</h4><ul>${li(T.tranh)}</ul></div></div>
+      <div class="fl-td-tags"><span class="fl-td-tag ${T.hoang ? 'good' : 'bad'}">Ngày ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} (${T.dayThan})</span>${T.notes.slice(0, 1).map(n => `<span class="fl-td-tag ${/xung|hại/.test(n) ? 'bad' : 'good'}">${esc(n[0].toUpperCase() + n.slice(1))}</span>`).join('')}</div>
+      <div class="fl-td-cols"><div><h4>Nên</h4><ul>${li(T.nen.slice(0, 2))}</ul></div><div><h4>Nên tránh</h4><ul>${li(T.tranh.slice(0, 2))}</ul></div></div>
       <p class="fl-td-line"><b>Giờ tốt:</b> ${T.gio.map(g => g.gio).join(', ') || 'không có giờ hoàng đạo ban ngày'}</p>
       ${mood ? `<p class="fl-td-line"><b>Tâm trạng:</b> ${esc(mood)}</p>` : ''}
-      <p class="fl-td-line"><b>Số ngày cá nhân:</b> ${esc(T.pday.text)}</p>
-      <p class="fl-td-why">Căn cứ: Bát tự, ngày ${esc(T.gz)} là ngày ${T.god} với nhật chủ ${esc(R.bazi.dayMaster)}${T.notes.length ? '; ' + esc(T.notes.join(', ')) : ''}. Chiêm tinh, Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ', nhà ' + T.moon.house : ''}. Lịch Việt, ngày ${T.dayThan}, giờ hoàng đạo theo 12 thần. Thần số, số ngày cá nhân ${T.pday.n}.</p>
+      
+      <details class="fl-td-why"><summary>Vì sao?</summary> Bát tự, ngày ${esc(T.gz)} là ngày ${T.god} với nhật chủ ${esc(R.bazi.dayMaster)}${T.notes.length ? '; ' + esc(T.notes.join(', ')) : ''}. Chiêm tinh, Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ', nhà ' + T.moon.house : ''}. Lịch Việt, ngày ${T.dayThan}, giờ hoàng đạo theo 12 thần. Thần số, số ngày cá nhân ${T.pday.n}.</details>
       <button type="button" class="btn-ghost btn-sm" data-ask>Hỏi AI về ngày này</button>`;
     const go = v => renderToday(R, v);
     todayBox.querySelector('input[type=date]').onchange = e => e.target.value && go(e.target.value);
