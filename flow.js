@@ -47,7 +47,7 @@
     [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === cur ? 'page' : 'false')));
     pick.hidden = cur !== 'laso';
     pick.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sys === sys));
-    read.hidden = traits.hidden = hero.hidden = tiles.hidden = todayBox.hidden = cur !== 'sum';
+    read.hidden = traits.hidden = hero.hidden = tiles.hidden = todayBox.hidden = synth.hidden = cur !== 'sum';
   }
   [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => open(b.dataset.sec)));
   pick.querySelectorAll('[data-sys]').forEach(b => b.onclick = () => open('laso', b.dataset.sys));
@@ -61,7 +61,7 @@
     $('#flEdit').onclick = () => { document.body.classList.remove('has-result'); scrollTo({ top: 0 }); };
   }
   function showResult() { document.body.classList.add('has-result'); who(); sync(); }
-  $('#f').addEventListener('submit', () => setTimeout(() => { if (!UI.R()) return; showResult(); open('sum'); scrollTo({ top: 0 }); }, 0));
+  $('#f').addEventListener('submit', () => setTimeout(() => { if (!UI.R()) return; arrange(false); showResult(); open('sum'); scrollTo({ top: 0 }); }, 0));
 
   /* ---------- Tổng quan chứa luôn bài luận AI; mục Hỏi chỉ còn ô hỏi ---------- */
   const read = el('section', 'fl-read'); read.setAttribute('aria-label', 'Luận giải');
@@ -69,13 +69,18 @@
   const ctxField = $('#ctx').closest('.field'); ctxField.hidden = true; $('#ctx').value = '';
   const head = $('#p-ai .ai-head'); head.querySelector('h2').textContent = 'Luận giải bốn lá số';
   const chatSlot = el('div', 'fl-chatslot');
-  read.append(chatSlot, head, $('#aiOut'));
+  const synth = el('section', 'fl-read fl-synth'); synth.setAttribute('aria-label', 'Đọc tổng hợp');
+  synth.insertAdjacentHTML('afterbegin', '<h2 class="fl-sec-h">Đọc tổng hợp</h2><p class="small muted" style="margin:4px 0 10px">AI đọc cả bốn lá số ở trên, chỉ ra chỗ các môn cùng nói một điều, chỗ nói khác nhau, rồi viết thành một bài.</p>');
+  synth.append(head, $('#aiOut'));
+  read.append(chatSlot);
   // đặt ngoài #p-sum (khối đó bị vẽ lại mỗi lần lập lá số), ẩn hiện theo mục Tổng quan
   const traits = el('div', 'fl-traits'); traits.hidden = true;
   const hero = el('section', 'fl-hero'); hero.hidden = true;
   const tiles = el('div', 'fl-tiles'); tiles.hidden = true;
   const todayBox = el('section', 'fl-today'); todayBox.hidden = true; todayBox.setAttribute('aria-label', 'Hôm nay của bạn');
-  $('#p-sum').before(hero, tiles, todayBox, traits); $('#p-sum').after(read);
+  $('#p-sum').before(hero, todayBox, traits); $('#p-sum').after(tiles, synth, read);
+  // khách quay lại (mở trang đã có lá số lưu sẵn): Hôm nay lên đầu; lần đầu lập lá số: thẻ bầu trời lên đầu
+  function arrange(back) { if (back) tiles.before(hero); else todayBox.before(hero); }
   const opt = el('details', 'fl-opt'); opt.innerHTML = '<summary>Tùy chọn</summary><div class="fl-opt-body"></div>';
   [head.querySelector('label[for=focus]'), $('#focus'), $('#code'), $('#copyPrompt')].forEach(x => x && opt.lastChild.append(x));
   head.querySelector('.ai-controls').append(opt);
@@ -155,10 +160,14 @@
         <div class="fl-ct">${S ? `<span class="fl-k">${esc(i.name)} · ${esc(K.title)}</span><h2>${S.lines.map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' ')}</h2><p class="fl-story">${esc(S.story)}</p><p>${esc(S.trait)}</p><p class="fl-nhu">${esc(S.nhu)}</p>`
           : `<span class="fl-k">${esc(i.name)}</span><h2>${esc(K.title)}</h2><p>${esc(K.body)}</p>`}</div>
       </div>`;
-    const chip = (k, txt, color, dim, title) => `<button type="button" class="fl-chip${dim ? ' dim' : ''}" data-open="${k}" title="${esc(title)}"><i style="background:${color}"></i>${esc(txt)}</button>`;
-    tiles.innerHTML = `<div class="fl-chips">${['bz', 'as', 'tv'].map(k => by[k] ? chip(k, `${by[k].sys}: ${by[k].el}`, K.INK[by[k].el], K.main && !by[k].agree, by[k].detail + (K.main ? (by[k].agree ? ', đồng ý' : ', nói khác') : '')) : '').join('')}
-        ${chip('nm', 'Thần số: ' + K.num, '#C9A95A', false, 'Đường đời ' + K.num)}
-        ${typeof SHARE !== 'undefined' ? '<button type="button" class="fl-chip fl-chip-share" id="flShare">Tạo ảnh story</button>' : ''}</div>`;
+    const tv = R.tuvi, menh = tv && tv.palaces.find(p => p.name === 'Mệnh'), pts = R.astro.points, known = i.timeMode !== 'unknown';
+    const four = [
+      ['bz', 'Bát tự', `Nhật chủ ${R.bazi.dayMaster} ${R.bazi.dayMasterHanh}, ${R.bazi.strength.level.toLowerCase()}`, by.bz],
+      ['tv', 'Tử vi', !tv ? 'Cần giờ sinh để lập' : menh.major.length ? `Mệnh có ${menh.major.map(x => x.name).join(', ')}` : 'Mệnh vô chính diệu', by.tv],
+      ['as', 'Chiêm tinh', `Mặt Trời ${pts[0].sign}, Trăng ${pts[1].sign}${known && R.astro.asc ? `, Mọc ${R.astro.asc.sign}` : ''}`, by.as],
+      ['nm', 'Thần số', `Đường đời ${K.num}`, null]];
+    tiles.innerHTML = `<div class="fl-four-h"><h2 class="fl-sec-h">Bốn lá số của bạn</h2>${typeof SHARE !== 'undefined' ? '<button type="button" class="fl-chip fl-chip-share" id="flShare">Tạo ảnh story</button>' : ''}</div>
+      <div class="fl-four">${four.map(([k, name, line, v]) => `<button type="button" class="fl-fc" data-open="${k}"><span class="fl-fc-n"><i style="background:${v ? K.INK[v.el] : '#C9A95A'}"></i>${name}${v ? ` <small>${v.el}${K.main && !v.agree ? ', nói khác' : ''}</small>` : ''}</span><span class="fl-fc-l">${esc(line)}</span><span class="fl-fc-go">Xem lá số →</span></button>`).join('')}</div>`;
     tiles.querySelectorAll('[data-open]').forEach(x => x.onclick = () => open('laso', x.dataset.open));
     const sb = tiles.querySelector('#flShare');
     if (sb) sb.onclick = async () => { sb.disabled = true; const t = sb.textContent; sb.textContent = 'Đang tạo ảnh…';
@@ -197,5 +206,5 @@
   tidy();
   // mở lại lá số đã lưu: chạy sau cùng, khi mọi khối ở trên đã dựng xong
   let saved = null; try { saved = localStorage.getItem('tuchieu:last'); } catch (e) {}
-  if (saved && UI.R()) showResult();
+  if (saved && UI.R()) { arrange(true); showResult(); }
 })();
