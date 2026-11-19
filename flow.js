@@ -168,7 +168,7 @@
     if (typeof TODAY === 'undefined' || !R) return;
     let T; try { T = TODAY.build(R, ymd); } catch (e) { console.error(e); todayBox.innerHTML = ''; return; }
     const isToday = ymd === localYmd(new Date()), li = a => a.map(x => `<li>${esc(x)}</li>`).join('');
-    const mood = T.moon ? (T.moon.hit ? T.moon.hit.text + '.' : '') + (T.moon.houseTxt ? ` Trăng đi qua phần ${T.moon.houseTxt} của bạn, nên chuyện đó dễ được để ý hơn.` : '') : '';
+    const mood = T.moon ? [T.moon.hit ? T.moon.hit.text + '.' : '', T.moon.houseTxt].filter(Boolean).join(' ') : '';
     todayBox.innerHTML = `<div class="fl-td-head"><div><span class="label">${isToday ? 'Hôm nay của bạn' : 'Ngày bạn chọn'}</span>
         <div class="fl-td-date">${T.thu}, ${T.d}/${T.m}/${T.y} · ngày ${esc(T.gz)}${T.lunar ? ' · ' + T.lunar : ''}</div></div>
         <div class="fl-td-nav"><button type="button" class="btn-ghost btn-sm" data-step="-1" aria-label="Ngày trước">‹</button><input type="date" value="${ymd}" aria-label="Chọn ngày"><button type="button" class="btn-ghost btn-sm" data-step="1" aria-label="Ngày sau">›</button>${isToday ? '' : '<button type="button" class="btn-ghost btn-sm" data-today>Hôm nay</button>'}</div></div>

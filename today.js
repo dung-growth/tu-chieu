@@ -22,10 +22,13 @@ const TODAY = (() => {
     'Thiên Ấn': ['Ngày hướng vào trong, nhiều suy nghĩ', ['Việc cần tập trung một mình, nghiên cứu', 'Viết ra điều đang lăn tăn'], ['Quyết chuyện lớn khi còn phân vân', 'Ở một mình quá lâu rồi tự buồn']]
   };
   // Mặt Trăng đi qua nhà nào trong bản đồ sao gốc
-  const HOUSE = ['', 'bản thân: ngoại hình, sức khỏe, cách bạn xuất hiện', 'tiền bạc và những thứ bạn sở hữu', 'tin nhắn, giấy tờ, đi lại gần, anh chị em',
-    'nhà cửa và gia đình', 'vui chơi, tình cảm, chuyện sáng tạo', 'việc hằng ngày và sức khỏe', 'người yêu, vợ chồng, đối tác',
-    'tiền chung, chuyện sâu kín, cảm xúc mạnh', 'học hỏi, đi xa, những điều mới lạ', 'công việc và hình ảnh trước người khác',
-    'bạn bè, nhóm, những dự định xa', 'nghỉ ngơi, ở một mình, khép lại việc cũ'];
+  const HOUSE = ['', 'Bạn dễ để ý tới bản thân hơn: ngoại hình, sức khỏe, và người khác cũng dễ để ý tới bạn.',
+    'Bạn dễ nghĩ tới chuyện tiền, muốn mua sắm hoặc ngồi tính lại chi tiêu.', 'Nhiều tin nhắn, cuộc gọi, việc vặt phải chạy tới chạy lui.',
+    'Bạn dễ muốn ở nhà, nghĩ về gia đình hoặc dọn dẹp chỗ ở.', 'Bạn dễ muốn vui chơi, hẹn hò, làm điều mình thích.',
+    'Hợp dọn việc tồn và chăm sức khỏe, nhưng dễ bực vì việc lặt vặt.', 'Chuyện với người yêu, vợ chồng hoặc đối tác dễ chiếm tâm trí.',
+    'Cảm xúc sâu hơn thường ngày, dễ nghĩ về chuyện riêng tư hoặc tiền chung.', 'Bạn dễ tò mò, muốn đọc cái mới, học thêm hoặc đi đâu đó khác thường ngày.',
+    'Chuyện công việc và hình ảnh của bạn trước người khác được chú ý nhiều hơn.', 'Hợp gặp bạn bè, làm việc nhóm, nghĩ về dự định xa.',
+    'Bạn dễ mệt và muốn ở một mình; hợp nghỉ ngơi, khép lại việc cũ.'];
   // Mặt Trăng của ngày chạm sao gốc
   const ASP = [[0, 7, 'trùng'], [60, 4, 'thuận'], [90, 5, 'khó'], [120, 5, 'thuận'], [180, 6, 'khó']];
   const MOON_TO = {
