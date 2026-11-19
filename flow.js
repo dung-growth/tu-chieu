@@ -47,7 +47,7 @@
     [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === cur ? 'page' : 'false')));
     pick.hidden = cur !== 'laso';
     pick.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sys === sys));
-    read.hidden = traits.hidden = hero.hidden = tiles.hidden = cur !== 'sum';
+    read.hidden = traits.hidden = hero.hidden = tiles.hidden = todayBox.hidden = cur !== 'sum';
   }
   [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => open(b.dataset.sec)));
   pick.querySelectorAll('[data-sys]').forEach(b => b.onclick = () => open('laso', b.dataset.sys));
@@ -74,7 +74,8 @@
   const traits = el('div', 'fl-traits'); traits.hidden = true;
   const hero = el('section', 'fl-hero'); hero.hidden = true;
   const tiles = el('div', 'fl-tiles'); tiles.hidden = true;
-  $('#p-sum').before(hero, tiles, read, traits);
+  const todayBox = el('section', 'fl-today'); todayBox.hidden = true; todayBox.setAttribute('aria-label', 'Hôm nay của bạn');
+  $('#p-sum').before(hero, tiles, todayBox, read, traits);
   const opt = el('details', 'fl-opt'); opt.innerHTML = '<summary>Tùy chọn</summary><div class="fl-opt-body"></div>';
   [head.querySelector('label[for=focus]'), $('#focus'), $('#code'), $('#copyPrompt')].forEach(x => x && opt.lastChild.append(x));
   head.querySelector('.ai-controls').append(opt);
@@ -94,7 +95,7 @@
       const top = R.tuvi && typeof TVP !== 'undefined' ? TVP.traits(R.tuvi).filter(x => x.pct >= 75 || x.pct <= 25).sort((a, b) => Math.abs(b.pct - 50) - Math.abs(a.pct - 50)).slice(0, 3) : [];
       if (top.length) traits.innerHTML = `<span class="label">Nổi bật nhất theo Tử vi</span><div>${top.map(x => `<span class="fl-trait"><b>${x.name}</b> <span class="${x.pct >= 75 ? 't-tot' : 't-luuy'}">${x.level.toLowerCase()}</span> <small>hơn ${x.pct}% người</small></span>`).join('')}</div>`;
       traits.classList.toggle('empty', !top.length); }
-    if (R && R !== tidy.r) { tidy.r = R; visuals(R); }
+    if (R && R !== tidy.r) { tidy.r = R; visuals(R); renderToday(R, localYmd(new Date())); }
     // Tử vi: hiện liền mọi phần (cách cục, nét tính cách, đại hạn, 12 tháng)
     document.querySelectorAll('#p-tv [role=tabpanel][hidden]').forEach(x => x.hidden = false);
     // Kỳ Môn: bỏ nút chuyển chế độ, hiện liền hai phần: Hỏi việc ở trên, Mệnh bàn ở dưới
@@ -159,6 +160,33 @@
     if (sb) sb.onclick = async () => { sb.disabled = true; const t = sb.textContent; sb.textContent = 'Đang tạo ảnh…';
       try { await SHARE.share(R, UI.openSheet); sb.textContent = t; } catch (e) { console.error(e); sb.textContent = 'Không tạo được ảnh, thử lại'; setTimeout(() => sb.textContent = t, 2500); }
       sb.disabled = false; };
+  }
+
+  /* ---------- Hôm nay của bạn: tính bằng công thức (today.js), chọn được ngày khác ---------- */
+  function localYmd(dt) { return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`; }
+  function renderToday(R, ymd) {
+    if (typeof TODAY === 'undefined' || !R) return;
+    let T; try { T = TODAY.build(R, ymd); } catch (e) { console.error(e); todayBox.innerHTML = ''; return; }
+    const isToday = ymd === localYmd(new Date()), li = a => a.map(x => `<li>${esc(x)}</li>`).join('');
+    const mood = T.moon ? (T.moon.hit ? T.moon.hit.text + '.' : '') + (T.moon.houseTxt ? ` Trăng đi qua phần ${T.moon.houseTxt} của bạn, nên chuyện đó dễ được để ý hơn.` : '') : '';
+    todayBox.innerHTML = `<div class="fl-td-head"><div><span class="label">${isToday ? 'Hôm nay của bạn' : 'Ngày bạn chọn'}</span>
+        <div class="fl-td-date">${T.thu}, ${T.d}/${T.m}/${T.y} · ngày ${esc(T.gz)}${T.lunar ? ' · ' + T.lunar : ''}</div></div>
+        <div class="fl-td-nav"><button type="button" class="btn-ghost btn-sm" data-step="-1" aria-label="Ngày trước">‹</button><input type="date" value="${ymd}" aria-label="Chọn ngày"><button type="button" class="btn-ghost btn-sm" data-step="1" aria-label="Ngày sau">›</button>${isToday ? '' : '<button type="button" class="btn-ghost btn-sm" data-today>Hôm nay</button>'}</div></div>
+      <h3 class="fl-td-theme">${esc(T.theme)}</h3>
+      <div class="fl-td-tags"><span class="fl-td-tag ${T.hoang ? 'good' : 'bad'}">Ngày ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} (${T.dayThan})</span>${T.notes.map(n => `<span class="fl-td-tag ${/xung|hại/.test(n) ? 'bad' : 'good'}">${esc(n[0].toUpperCase() + n.slice(1))}</span>`).join('')}</div>
+      <div class="fl-td-cols"><div><h4>Nên</h4><ul>${li(T.nen)}</ul></div><div><h4>Nên tránh</h4><ul>${li(T.tranh)}</ul></div></div>
+      <p class="fl-td-line"><b>Giờ tốt:</b> ${T.gio.map(g => g.gio).join(', ') || 'không có giờ hoàng đạo ban ngày'}</p>
+      ${mood ? `<p class="fl-td-line"><b>Tâm trạng:</b> ${esc(mood)}</p>` : ''}
+      <p class="fl-td-line"><b>Số ngày cá nhân:</b> ${esc(T.pday.text)}</p>
+      <p class="fl-td-why">Căn cứ: Bát tự, ngày ${esc(T.gz)} là ngày ${T.god} với nhật chủ ${esc(R.bazi.dayMaster)}${T.notes.length ? '; ' + esc(T.notes.join(', ')) : ''}. Chiêm tinh, Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ', nhà ' + T.moon.house : ''}. Lịch Việt, ngày ${T.dayThan}, giờ hoàng đạo theo 12 thần. Thần số, số ngày cá nhân ${T.pday.n}.</p>
+      <button type="button" class="btn-ghost btn-sm" data-ask>Hỏi AI về ngày này</button>`;
+    const go = v => renderToday(R, v);
+    todayBox.querySelector('input[type=date]').onchange = e => e.target.value && go(e.target.value);
+    todayBox.querySelectorAll('[data-step]').forEach(bt => bt.onclick = () => { const [y, m, d] = ymd.split('-').map(Number); go(localYmd(new Date(y, m - 1, d + +bt.dataset.step))); });
+    const tb = todayBox.querySelector('[data-today]'); if (tb) tb.onclick = () => go(localYmd(new Date()));
+    todayBox.querySelector('[data-ask]').onclick = () => {
+      const q = `Ngày ${T.d}/${T.m}/${T.y} (${T.gz}) với tôi thế nào? Tứ Chiếu tính: ngày ${T.god} với nhật chủ, ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} ${T.dayThan}${T.notes.length ? ', ' + T.notes.join(', ') : ''}, Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ' nhà ' + T.moon.house : ''}, số ngày cá nhân ${T.pday.n}. Đọc kỹ hơn cho tôi.`;
+      const a = $('#ask'); if (!a) return; a.value = q; const c = $('#chat'); if (c) c.hidden = false; $('#askGo').click(); a.scrollIntoView({ block: 'center' }); };
   }
 
   let tm; new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(tidy, 30); }).observe($('#result'), { childList: true, subtree: true });
