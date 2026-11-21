@@ -34,3 +34,9 @@ language sql security definer set search_path = '' as $$
 $$;
 revoke all on function public.delete_me() from public, anon;
 grant execute on function public.delete_me() to authenticated;
+
+-- Cấp quyền cho người đã đăng nhập dùng hai bảng (dự án Supabase mới không tự cấp).
+-- Quyền thật vẫn do các policy ở trên giới hạn: mỗi người chỉ đụng được dòng của mình.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.charts to authenticated;
+grant select, insert, update, delete on public.profiles to authenticated;

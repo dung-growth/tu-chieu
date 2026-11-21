@@ -113,7 +113,10 @@ body.flow #p-sum .lens-grid{display:none}
 .fl-card.has-sil .fl-ct{padding:6px 28px 26px}
 .fl-card:not(.has-sil) .fl-sky{position:absolute;inset:0}
 @media (max-width:640px){ .fl-card.has-sil .fl-sky{padding-top:210px} .fl-card.has-sil .fl-ct{padding:4px 22px 22px} }
-@media (min-width:641px){ .fl-card.has-sil .fl-sil{height:min(30vw,300px);object-fit:cover;object-position:50% 100%} }
+/* máy tính: ảnh khung rộng 2:1, tán cây chạm mép trên thẻ như bố cục gốc */
+/* ảnh khung 2:1, tán cây chạm mép trên thẻ như bố cục gốc; điện thoại cắt bớt hai bên cho đủ chỗ ngôi sao */
+.fl-card.has-sil .fl-sky{padding-top:0} .fl-card.has-sil .fl-sil{aspect-ratio:2/1;max-height:560px;object-fit:cover;object-position:50% 100%}
+@media (max-width:640px){ .fl-card.has-sil .fl-sil{aspect-ratio:5/4;object-position:35% 100%} }
 .fl-qmh{font-size:18px;margin:0 0 4px}
 /* Hôm nay của bạn */
 .fl-today{margin:0 0 18px;padding:18px 20px;border:1px solid var(--line);border-radius:var(--r);background:var(--sheet)}

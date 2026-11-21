@@ -4,7 +4,7 @@ Làm một lần, khoảng 20–30 phút. Không dán khóa nào vào chat hay v
 
 ## 1. Tạo dự án Supabase
 
-1. Vào supabase.com, đăng nhập, bấm **New project**. Region chọn **Southeast Asia (Singapore)** cho gần Việt Nam.
+1. Vào supabase.com, đăng nhập, bấm **New project**. Region chọn khu vực châu Á gần Việt Nam (Tứ Chiếu đang dùng **Southeast Asia (Singapore)**). Đổi region thì sửa lại dòng Supabase trong `chinh-sach-bao-mat.html`.
 2. Mở **SQL Editor**, dán toàn bộ file `supabase/schema.sql`, bấm **Run**. Lệnh này tạo bảng lưu lá số, bảng lưu thời điểm đồng ý chính sách, hàm cho người dùng tự xóa tài khoản, và khóa quyền: mỗi người chỉ đọc, sửa được dữ liệu của chính mình. Chạy lại nhiều lần cũng không sao.
 3. Mở **Project Settings → API** (hoặc **API Keys**), chép hai thứ:
    - **Project URL** (dạng `https://xxxx.supabase.co`)
