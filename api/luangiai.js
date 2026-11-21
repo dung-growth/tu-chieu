@@ -14,7 +14,7 @@
 //   RATE_LIMIT_PER_HOUR (tùy chọn) số lượt tối đa mỗi IP mỗi giờ, mặc định 8
 //   OWNER_CODE          (tùy chọn) mã của chủ trang; nhập mã này vào ô "Mã truy cập" thì không bị giới hạn lượt
 
-import { rules, askRules, hdRules, thayRules, qmHoiRules, qmMenhRules, FOCUS, STYLE } from '../prompt.js';
+import { rules, askRules, hdRules, thayRules, qmHoiRules, qmMenhRules, keRules, FOCUS, STYLE } from '../prompt.js';
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3-flash-preview';
 const OR_MODELS = (process.env.OPENROUTER_MODELS || 'nvidia/nemotron-3.5-super-vl:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,openrouter/free')
@@ -186,7 +186,13 @@ export default async function handler(req, res) {
   // Kỳ Môn: bàn do trình duyệt tính sẵn bằng qimen.js; ở đây chỉ kiểm có đúng dữ liệu bàn rồi đưa AI đọc
   if ((b.mode === 'qm-menh' || b.mode === 'qm-hoi') && !brief.includes('[KỲ MÔN ĐỘN GIÁP · BÀN ĐÃ TÍNH SẴN]')) return res.status(400).json({ error: 'Thiếu dữ liệu bàn Kỳ Môn.' });
   if (b.mode === 'qm-hoi' && clip(b.question, 300).trim().length < 3) return res.status(400).json({ error: 'Chưa có câu hỏi.' });
-  const messages = b.mode === 'qm-menh' ? [{ role: 'user', content: qmMenhRules(ctx, !!b.long) + '\n\nDỮ LIỆU:\n' + brief }]
+  if (b.mode === 'ke' && clip(b.text, 800).trim().length < 2) return res.status(400).json({ error: 'Bạn chưa kể gì.' });
+  const keMsgs = () => {
+    const m = [{ role: 'user', content: keRules(clip(b.today, 800)) + '\n\nLÁ SỐ CỦA HỌ:\n' + brief }, { role: 'assistant', content: 'Mình đã đọc lá số và ngày hôm nay của bạn. Bạn kể đi.' }];
+    (Array.isArray(b.history) ? b.history.slice(-4) : []).forEach(h => { m.push({ role: 'user', content: clip(h.q, 800) }); m.push({ role: 'assistant', content: clip(h.a, 1500) || '...' }); });
+    m.push({ role: 'user', content: clip(b.text, 800) }); return m;
+  };
+  const messages = b.mode === 'ke' ? keMsgs() : b.mode === 'qm-menh' ? [{ role: 'user', content: qmMenhRules(ctx, !!b.long) + '\n\nDỮ LIỆU:\n' + brief }]
     : b.mode === 'qm-hoi' ? qmThread(b, ctx, brief)
     : b.mode === 'hd'
     ? [{ role: 'user', content: hdRules(ctx) + '\n\nDỮ LIỆU:\n' + brief }]
@@ -195,9 +201,10 @@ export default async function handler(req, res) {
        { role: 'assistant', content: 'Tôi đã đọc xong dữ liệu lá số. Bạn muốn hỏi gì?' }]
     : [{ role: 'user', content: rules(focus, ctx) + '\n\nDỮ LIỆU:\n' + brief }];
   let maxTokens = 12288;
-  if (b.mode === 'hd' || b.mode === 'qm-menh') maxTokens = 8192;
+  if (b.mode === 'ke') maxTokens = 3072;
+  else if (b.mode === 'hd' || b.mode === 'qm-menh') maxTokens = 8192;
   else if (b.mode === 'qm-hoi') maxTokens = 6144;
-  else if (b.question) {
+  else if (b.question && b.mode !== 'ke') {
     if (firstText) messages.push({ role: 'assistant', content: firstText });
     (Array.isArray(b.history) ? b.history.slice(-3) : []).forEach(h => {
       messages.push({ role: 'user', content: clip(h.q, 400) });

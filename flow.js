@@ -192,14 +192,85 @@
       ${mood ? `<p class="fl-td-line"><b>Tâm trạng:</b> ${esc(mood)}</p>` : ''}
       
       <details class="fl-td-why"><summary>Vì sao?</summary> Bát tự, ngày ${esc(T.gz)} là ngày ${T.god} với nhật chủ ${esc(R.bazi.dayMaster)}${T.notes.length ? '; ' + esc(T.notes.join(', ')) : ''}. Chiêm tinh, Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ', nhà ' + T.moon.house : ''}. Lịch Việt, ngày ${T.dayThan}, giờ hoàng đạo theo 12 thần. Thần số, số ngày cá nhân ${T.pday.n}.</details>
-      <button type="button" class="btn-ghost btn-sm" data-ask>Hỏi AI về ngày này</button>`;
+      <div class="fl-ke"></div>`;
     const go = v => renderToday(R, v);
     todayBox.querySelector('input[type=date]').onchange = e => e.target.value && go(e.target.value);
     todayBox.querySelectorAll('[data-step]').forEach(bt => bt.onclick = () => { const [y, m, d] = ymd.split('-').map(Number); go(localYmd(new Date(y, m - 1, d + +bt.dataset.step))); });
     const tb = todayBox.querySelector('[data-today]'); if (tb) tb.onclick = () => go(localYmd(new Date()));
-    todayBox.querySelector('[data-ask]').onclick = () => {
-      const q = `Ngày ${T.d}/${T.m}/${T.y} (${T.gz}) với tôi thế nào? Tứ Chiếu tính: ngày ${T.god} với nhật chủ, ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} ${T.dayThan}${T.notes.length ? ', ' + T.notes.join(', ') : ''}, Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ' nhà ' + T.moon.house : ''}, số ngày cá nhân ${T.pday.n}. Đọc kỹ hơn cho tôi.`;
-      const a = $('#ask'); if (!a) return; a.value = q; const c = $('#chat'); if (c) c.hidden = false; $('#askGo').click(); a.scrollIntoView({ block: 'center' }); };
+    const dayTxt = `Ngày ${T.thu}, ${T.d}/${T.m}/${T.y} (${T.gz}${T.lunar ? ', ' + T.lunar : ''}): chủ đề "${T.theme}"; ngày ${T.god} với nhật chủ; ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} ${T.dayThan}${T.notes.length ? '; ' + T.notes.join(', ') : ''}; nên: ${T.nen.join('; ')}; nên tránh: ${T.tranh.join('; ')}; giờ tốt: ${T.gio.map(g => g.gio).join(', ') || 'không'}; Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ' nhà ' + T.moon.house : ''}${mood ? ' (' + mood + ')' : ''}; số ngày cá nhân ${T.pday.n}.`;
+    renderKe(R, ymd, isToday, dayTxt);
+  }
+
+  /* ---------- Kể nghe: than riêng, chỉ lưu trên máy này ---------- */
+  const KE_KEY = 'tuchieu:ke', KE_MAX = 3;
+  const keId = R => [R.input.name, R.input.date, R.input.time || ''].join('|');
+  function keAll() { try { return JSON.parse(localStorage.getItem(KE_KEY)) || {}; } catch (e) { return {}; } }
+  function keSave(all) { try { localStorage.setItem(KE_KEY, JSON.stringify(all)); } catch (e) {} }
+  const keGet = (R, ymd) => ((keAll()[keId(R)] || {})[ymd]) || [];
+  function kePut(R, ymd, list) { const all = keAll(), id = keId(R); all[id] = all[id] || {}; if (list.length) all[id][ymd] = list; else delete all[id][ymd]; keSave(all); }
+  // dấu hiệu nguy hiểm: hiện ngay chỗ có người thật hỗ trợ, không chờ AI
+  const deacc = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd');
+  function risky(t) {
+    const x = t.toLowerCase(), y = deacc(x);
+    if (/tự tử|tự sát|tu sat|không muốn sống|khong muon song|không thiết sống|khong thiet song|chán sống|chan song|kết liễu|ket lieu|tự làm (hại|đau)|tu lam (hai|dau)|rạch tay|rach tay|cắt tay|cat tay|chết quách|chet quach|nhảy cầu|nhay cau|muốn biến mất|muon bien mat|không muốn tỉnh dậy|khong muon tinh day/.test(x + ' ' + y)) return true;
+    const m = y.match(/(\S+)\s+muon chet/); if (!/muon chet/.test(y)) return false;
+    return !m || !/^(met|nong|doi|vui|so|lo|ngai|lanh|them|kho|cuoi|chan|dau|buon|ret|nhuc|xau|ho|ngu|ngai)$/.test(m[1]);
+  }
+  const HELP = `<div class="fl-ke-help" role="note"><b>Bạn không phải một mình.</b> Nếu bạn đang nghĩ tới chuyện làm hại bản thân, hãy nói ngay với một người bạn tin, hoặc gọi đường dây Ngày Mai <a href="tel:0963061414">096 306 1414</a> (13h–20h30, thứ Tư đến Chủ nhật, miễn phí). Đang gặp nguy hiểm thì gọi <a href="tel:115">115</a>.</div>`;
+  let keCtl = null;
+  function renderKe(R, ymd, isToday, dayTxt) {
+    const box = todayBox.querySelector('.fl-ke'); if (!box) return;
+    const list = keGet(R, ymd), days = Object.keys(keAll()[keId(R)] || {}).length;
+    const item = e => `<div class="fl-ke-it"><div class="fl-ke-q">${esc(e.q)}</div>${risky(e.q) ? HELP : ''}<div class="fl-ke-a">${UI.md(e.a)}</div></div>`;
+    const left = KE_MAX - list.length;
+    box.innerHTML = `${isToday ? `<h4>Hôm nay của bạn thế nào?</h4>` : list.length ? '<h4>Bạn đã kể hôm đó</h4>' : ''}
+      <div class="fl-ke-list">${list.map(item).join('')}</div>
+      ${isToday ? (left > 0 ? `<form class="fl-ke-f"><textarea rows="2" maxlength="800" placeholder="${list.length ? 'Kể tiếp…' : 'Kể nghe, chuyện gì cũng được…'}" aria-label="Kể chuyện hôm nay"></textarea><button type="submit" class="btn-primary btn-sm">Gửi</button></form>`
+        : `<p class="small muted">Hôm nay bạn kể đủ ${KE_MAX} lần rồi, mai kể tiếp nhé.</p>`) : ''}
+      <p class="fl-ke-st small" aria-live="polite"></p>
+      ${isToday || days ? `<p class="fl-ke-note small muted">Chỉ lưu trên máy này. Lời kể được gửi tới dịch vụ AI để viết câu đáp, Tứ Chiếu không lưu lại. <a href="/chinh-sach-bao-mat.html" target="_blank" rel="noopener">Chính sách bảo mật</a>.${days ? ` <button type="button" class="fl-ke-old">Những ngày đã kể (${days})</button>` : ''}</p>` : ''}`;
+    const ob = box.querySelector('.fl-ke-old'); if (ob) ob.onclick = () => keSheet(R);
+    const f = box.querySelector('form'); if (!f) return;
+    const ta = f.querySelector('textarea'), st = box.querySelector('.fl-ke-st');
+    ta.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); f.requestSubmit(); } };
+    f.onsubmit = async e => {
+      e.preventDefault(); const q = ta.value.trim(); if (!q) return;
+      // lần đầu: hỏi đồng ý gửi lời kể tới dịch vụ AI (im lặng không tính là đồng ý)
+      let agreed = false; try { agreed = !!localStorage.getItem('tuchieu:ke-ok'); } catch (x) {}
+      if (!agreed) {
+        if (!box.querySelector('.fl-ke-ok')) {
+          f.insertAdjacentHTML('beforebegin', `<div class="fl-ke-ok">Để viết câu đáp, lời kể của bạn sẽ được gửi tới dịch vụ AI (Google Gemini, máy chủ ở nước ngoài). Tứ Chiếu không lưu lời kể, nó chỉ nằm trên máy này. <a href="/chinh-sach-bao-mat.html" target="_blank" rel="noopener">Đọc thêm</a><br><button type="button" class="btn-primary btn-sm">Đồng ý và gửi</button></div>`);
+          box.querySelector('.fl-ke-ok button').onclick = () => { try { localStorage.setItem('tuchieu:ke-ok', new Date().toISOString()); } catch (x) {} box.querySelector('.fl-ke-ok').remove(); f.requestSubmit(); };
+        }
+        return;
+      }
+      const it = document.createElement('div'); it.className = 'fl-ke-it'; it.innerHTML = `<div class="fl-ke-q">${esc(q)}</div>${risky(q) ? HELP : ''}<div class="fl-ke-a"><p class="muted">Đang nghe…</p></div>`;
+      box.querySelector('.fl-ke-list').append(it); const a = it.querySelector('.fl-ke-a');
+      ta.value = ''; ta.disabled = f.querySelector('button').disabled = true; st.textContent = '';
+      keCtl = new AbortController(); let text = '';
+      try {
+        const res = await fetch('/api/luangiai', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-access-code': UI.code() }, signal: keCtl.signal,
+          body: JSON.stringify({ mode: 'ke', brief: UI.brief(), today: dayTxt, text: q, history: list.slice(-4) }) });
+        if (!res.ok) { let m = 'Máy chủ báo lỗi (' + res.status + ').'; try { m = (await res.json()).error || m; } catch (x) {} throw new Error(m); }
+        const rd = res.body.getReader(), dec = new TextDecoder();
+        for (;;) { const { done, value } = await rd.read(); if (done) break; text += dec.decode(value, { stream: true }); a.innerHTML = UI.md(text.split('\u0000ERR:')[0]); }
+        if (text.includes('\u0000ERR:')) throw new Error(text.split('\u0000ERR:')[1] || 'AI bị gián đoạn.');
+        kePut(R, ymd, [...list, { q, a: text, t: Date.now() }]);
+        renderKe(R, ymd, isToday, dayTxt);
+      } catch (err) {
+        if (!text) { it.remove(); ta.value = q; }
+        else kePut(R, ymd, [...list, { q, a: text.split('\u0000ERR:')[0], t: Date.now() }]);
+        st.innerHTML = `<span class="err">${esc(err.message)}</span>`; ta.disabled = f.querySelector('button').disabled = false;
+      }
+    };
+  }
+  function keSheet(R) {
+    const mine = keAll()[keId(R)] || {}, ds = Object.keys(mine).sort().reverse();
+    const fmt = d => { const [y, m, dd] = d.split('-'); return `${+dd}/${+m}/${y}`; };
+    UI.openSheet(`<h3 id="sheetTitle" style="margin:0 0 6px">Những ngày đã kể</h3><p class="small muted" style="margin:0 0 14px">Chỉ nằm trên máy này. Xóa là mất hẳn.</p>
+      ${ds.length ? ds.map(d => `<section class="fl-ke-day" data-d="${d}"><div class="fl-ke-dh"><b>${fmt(d)}</b><button type="button" class="btn-ghost btn-sm" data-del="${d}">Xóa ngày này</button></div>
+        ${mine[d].map(e => `<div class="fl-ke-q">${esc(e.q)}</div><div class="fl-ke-a">${UI.md(e.a)}</div>`).join('')}</section>`).join('') : '<p class="muted">Chưa có ngày nào.</p>'}`);
+    document.querySelectorAll('#sheet [data-del]').forEach(b => b.onclick = () => { kePut(R, b.dataset.del, []); b.closest('.fl-ke-day').remove(); renderToday(R, localYmd(new Date())); });
   }
 
   let tm; new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(tidy, 30); }).observe($('#result'), { childList: true, subtree: true });
