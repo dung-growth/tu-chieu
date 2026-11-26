@@ -7,8 +7,8 @@
 <meta name="description" content="Lập cùng lúc Bát tự, Bản đồ sao, Tử vi, Thần số học và để AI đối chiếu các trường phái.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%231C1917%22/%3E%3Cg%20fill%3D%22%23FAF8F6%22%3E%3Cpath%20d%3D%22M32%209%2036%2028%2032%2032%2028%2028Z%22/%3E%3Cpath%20d%3D%22M55%2032%2036%2036%2032%2032%2036%2028Z%22%20opacity%3D%22.55%22/%3E%3Cpath%20d%3D%22M32%2055%2028%2036%2032%2032%2036%2036Z%22%20opacity%3D%22.55%22/%3E%3Cpath%20d%3D%22M9%2032%2028%2028%2032%2032%2028%2036Z%22%20opacity%3D%22.55%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%225.2%22%20fill%3D%22%23C8431B%22/%3E%3C/svg%3E">
 <title>Tứ Chiếu</title>
-<script>/* áp giao diện sáng/tối trước khi vẽ trang để không bị nháy */
-try { const t = localStorage.getItem('tuchieu:theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch(e) {}</script>
+<script>/* áp giao diện trước khi vẽ trang để không bị nháy: Yên (tối, mặc định) hoặc Vui (sáng, nhiều màu) */
+try { const k = localStorage.getItem('tuchieu:skin') === 'vui' ? 'vui' : 'yen'; document.documentElement.dataset.skin = k; document.documentElement.dataset.theme = k === 'vui' ? 'light' : 'dark'; } catch(e) { document.documentElement.dataset.theme = 'dark'; }</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600&display=swap">
@@ -803,7 +803,11 @@ tr.cur td{background:var(--seal-soft)}
       <a href="#ket-qua" data-tab="t-ai" data-focus="ask">Gieo quẻ</a>
     </nav>
     <div class="top-actions">
-      <button class="icon-btn" id="themeBtn" type="button" aria-label="Đổi giao diện sáng hoặc tối">
+      <button class="skin-btn" id="skinBtn" type="button" aria-haspopup="true" aria-expanded="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/></svg><span>Giao diện: <b id="skinName">Yên</b></span></button>
+      <div class="skin-pop" id="skinPop" hidden><div class="skin-pop-h"><b>Giao diện</b><span>Hôm nay bạn thấy sao?</span></div>
+        <button type="button" data-skin="yen"><i class="sw sw-yen"></i><span><b>Yên</b><small>tối, dịu mắt</small></span></button>
+        <button type="button" data-skin="vui"><i class="sw sw-vui"></i><span><b>Vui</b><small>sáng, nhiều màu</small></span></button></div>
+      <button class="icon-btn" id="themeBtn" type="button" hidden aria-label="Đổi giao diện sáng hoặc tối">
         <svg class="theme-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
         <svg class="theme-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       </button>
@@ -2496,6 +2500,7 @@ $('#aiGo').onclick = async () => {
     firstText = lastText = text; $('#chat').hidden = false; $('#aiCopy').hidden = false; $('#aiPdf').hidden = false; updateSteps();
     structureReading();
     $('#aiOut').insertAdjacentHTML('beforeend', byNote());
+    document.dispatchEvent(new CustomEvent('tc:reading', { detail: text }));
     window.TCHIST && TCHIST.add({ kind: 'tong', q: 'Bài đọc tổng hợp' + ($('#focus').value !== 'tổng quát' ? ' · ' + $('#focus').value : ''), a: text, el: $('#aiOut') });
   } catch(e) {
     if (e.name === 'AbortError') { $('#aiStatus').textContent = 'Đã dừng.'; }
@@ -2592,12 +2597,18 @@ const go = (el, block = 'start') => el.scrollIntoView({ behavior: reduce() ? 'au
 const topbar = $('#topbar');
 const onScroll = () => topbar.classList.toggle('scrolled', scrollY > 4);
 addEventListener('scroll', onScroll, { passive: true }); onScroll();
-$('#themeBtn').onclick = () => {
-  const root = document.documentElement;
-  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  root.dataset.theme = dark ? 'light' : 'dark';
-  try { localStorage.setItem('tuchieu:theme', root.dataset.theme); } catch(e) {}
-};
+// Giao diện theo tâm trạng: Yên (tối) / Vui (sáng, nhiều màu)
+function setSkin(k, silent){
+  const root = document.documentElement, f = () => { root.dataset.skin = k; root.dataset.theme = k === 'vui' ? 'light' : 'dark'; $('#skinName').textContent = k === 'vui' ? 'Vui' : 'Yên';
+    document.querySelectorAll('#skinPop [data-skin]').forEach(b => b.setAttribute('aria-pressed', b.dataset.skin === k)); };
+  if (!silent && document.startViewTransition && !reduce()) document.startViewTransition(f); else f();
+  try { localStorage.setItem('tuchieu:skin', k); } catch(e) {}
+  document.dispatchEvent(new CustomEvent('tc:skin', { detail: k }));
+}
+setSkin(document.documentElement.dataset.skin || 'yen', true);
+$('#skinBtn').onclick = e => { e.stopPropagation(); const p = $('#skinPop'); p.hidden = !p.hidden; $('#skinBtn').setAttribute('aria-expanded', !p.hidden); };
+document.addEventListener('click', e => { if (!e.target.closest('#skinPop')) { $('#skinPop').hidden = true; $('#skinBtn').setAttribute('aria-expanded', 'false'); } });
+document.querySelectorAll('#skinPop [data-skin]').forEach(b => b.onclick = () => { setSkin(b.dataset.skin); $('#skinPop').hidden = true; });
 let toastTimer;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2800); }
 document.querySelectorAll('[data-soon]').forEach(b => b.addEventListener('click', () => toast('Tài khoản và lưu lá số sắp ra mắt.')));
@@ -2611,7 +2622,9 @@ document.querySelectorAll('[data-tab]').forEach(el => el.addEventListener('click
 $('#heroGo').onclick = () => { go($('#lap')); setTimeout(() => $('#date').focus({ preventScroll: true }), 450); };
 
 run(false);
-window.TCUI = { R: () => R, show, go, labOpen, hook, openSheet, brief, md, toast, code: () => $('#code').value.trim(),
+// mở lại luận giải đã viết (lưu trên máy), không gọi lại AI
+function setReading(text){ if (!R || !text) return; clearToc(); $('#aiOut').innerHTML = md(text); firstText = lastText = text; $('#chat').hidden = false; $('#aiCopy').hidden = false; $('#aiPdf').hidden = false; updateSteps(); structureReading(); }
+window.TCUI = { R: () => R, show, go, labOpen, hook, openSheet, brief, md, toast, setReading, setSkin, code: () => $('#code').value.trim(),
   saved: () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e) { return null; } },
   load: s => { fillForm(s); setCal(); updateTimeUI(); updateTzNote(); $('#f').requestSubmit(); } };
 })();

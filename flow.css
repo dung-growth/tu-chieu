@@ -62,9 +62,9 @@ body.flow #chat{margin:0;padding:0;border:0}
 .fl-help{margin-top:6px!important}
 
 @media (max-width:640px){
-  .fl-nav{display:none}
-  body.flow.has-result{padding-bottom:76px}
-  .fl-bottom{display:grid;grid-template-columns:repeat(3,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:color-mix(in srgb,var(--paper) 96%,transparent);backdrop-filter:saturate(1.6) blur(12px);-webkit-backdrop-filter:saturate(1.6) blur(12px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+  .fl-nav{width:100%;top:56px} .fl-nav button{flex:1;justify-content:center;padding:9px 8px;font-size:14px}
+  body.flow.has-result{padding-bottom:150px}
+  .fl-bottom{display:none!important;grid-template-columns:repeat(3,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;background:color-mix(in srgb,var(--paper) 96%,transparent);backdrop-filter:saturate(1.6) blur(12px);-webkit-backdrop-filter:saturate(1.6) blur(12px);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
   .fl-bottom button{flex-direction:column;gap:3px;font-size:12px;padding:6px 2px;justify-content:center;text-align:center}
   .fl-bottom svg{width:22px;height:22px}
   .fl-bottom button[aria-current=page]{color:var(--seal);font-weight:600}
@@ -211,3 +211,112 @@ body.flow .fl-hero{margin-bottom:16px}
 .hist-ask{padding:10px 14px} .hist-ask a,.fl-ke-ok a{color:var(--ink-3);font-size:13px}
 details.auth-danger summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ink-2)}
 .h-term{font-weight:400;font-size:.72em;color:var(--ink-3);white-space:nowrap}
+
+/* ===== Thiết kế mới: ba màn Bạn / Hôm nay / Lá số ===== */
+body[data-sec=ban] #p-sum{display:none}
+.fl-ctop-r{display:flex;align-items:center;gap:8px}
+.fl-sharebtn{all:unset;cursor:pointer;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff}
+.fl-sharebtn:hover{background:rgba(255,255,255,.22)} .fl-sharebtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.fl-link{all:unset;cursor:pointer;color:var(--seal);font-weight:600;font-size:14.5px} .fl-link:hover{text-decoration:underline} .fl-link:focus-visible{outline:2px solid var(--seal);outline-offset:2px;border-radius:4px}
+.fl-ct .fl-storyb{color:rgba(255,255,255,.85);font-size:14px;margin:2px 0 6px} .fl-storyx[hidden]{display:none} .fl-storyx{margin-top:8px}
+
+/* Luận giải */
+.fl-luan[hidden]{display:none}
+.fl-luan{margin:16px 0 18px}
+.fl-lab{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--seal);margin-bottom:8px}
+.fl-say{padding:22px 24px;border:1px solid color-mix(in srgb,var(--seal) 28%,var(--line));border-radius:var(--r);background:linear-gradient(160deg,var(--seal-soft),var(--sheet) 60%)}
+.fl-say-big{font:600 21px/1.45 var(--display);letter-spacing:-.01em;margin:0 0 14px;color:var(--ink);max-width:62ch}
+.fl-say-list{margin:0 0 12px;padding-left:20px;font-size:15px;line-height:1.6} .fl-say-list li{margin:4px 0}
+.fl-say .btn-primary{margin-top:2px}
+.fl-chap-h{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 0 10px} .fl-chap-h[hidden]{display:none} .fl-chap-h .fl-lab{margin:0;color:var(--ink-2)}
+.fl-vtog{display:flex;gap:2px;padding:3px;border-radius:10px;background:var(--sunken);border:1px solid var(--line)}
+.fl-vtog button{all:unset;cursor:pointer;font-size:13px;padding:5px 11px;border-radius:7px;color:var(--ink-2)}
+.fl-vtog button[aria-pressed=true]{background:var(--sheet);color:var(--ink);font-weight:600;box-shadow:var(--shadow-sm)}
+.fl-chlist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);background:var(--sheet);overflow:hidden}
+.fl-chlist:empty{display:none}
+.fl-ch{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:14px 18px;border-top:1px solid var(--line-2);position:relative}
+.fl-ch:first-child{border-top:0} .fl-ch:hover{background:var(--sunken)} .fl-ch:focus-visible{outline:2px solid var(--seal);outline-offset:-2px}
+.fl-ch::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--chc)}
+.fl-ch-t{font:650 16px/1.35 var(--display);color:var(--ink)} .fl-ch-s{grid-column:1;font-size:14px;line-height:1.5;color:var(--ink-2)}
+.fl-ch-go{grid-row:1/3;grid-column:2;align-self:center;font-size:22px;color:var(--ink-3)}
+.el-moc{--chc:#3F9B6B} .el-hoa{--chc:#D9573B} .el-tho{--chc:#B8862F} .el-kim{--chc:#8A8F99} .el-thuy{--chc:#3B78C2} .el-diff{--chc:#8B5CF6}
+.fl-ch.el-diff .fl-ch-t::after{content:"Chỗ vênh";margin-left:8px;font:700 11px/1 var(--sans,inherit);letter-spacing:.05em;text-transform:uppercase;color:var(--chc);vertical-align:2px}
+.fl-chlist.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;border:0;background:none;overflow:visible}
+.fl-chlist.grid .fl-ch{border:1px solid var(--line);border-radius:var(--r);background:var(--sheet);padding:16px;grid-template-columns:1fr;align-content:start;min-height:130px;border-top:4px solid var(--chc)}
+.fl-chlist.grid .fl-ch::before{display:none} .fl-chlist.grid .fl-ch-go{display:none}
+.fl-luan-foot{margin:12px 2px 0} .fl-luan-foot[hidden]{display:none}
+.fl-luan-src{margin-top:12px}
+.fl-luan-src .ai-head .ai-title{display:none}
+.fl-luan-src .ai-head{padding:0;border:0;background:none}
+.fl-luan:not(.has-luan) .fl-luan-src #aiGo{display:none}
+.fl-luan.has-luan:not(.show-full) .fl-luan-src{display:none}
+.fl-luan.has-luan .fl-luan-src .rd-toc{display:none}
+.fl-luan .fl-luan-src .ai-out{padding:4px 0 0}
+
+/* Hôm nay: số ngày lớn, gợi ý tâm trạng */
+.fl-td-head{align-items:center} .fl-td-hx{flex:1;min-width:180px}
+.fl-td-num{font:800 56px/0.9 var(--display);letter-spacing:-.04em;color:var(--seal);min-width:64px}
+.fl-mood{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 2px;padding:10px 12px 10px 14px;border-radius:var(--r);background:var(--sunken);border:1px dashed var(--line)}
+.fl-mood[hidden]{display:none} .fl-mood p{margin:0;flex:1 1 220px;font-size:14px}
+.fl-mood-x{all:unset;cursor:pointer;width:26px;height:26px;display:grid;place-items:center;border-radius:50%;color:var(--ink-2);font-size:18px} .fl-mood-x:hover{background:var(--sheet)}
+
+/* Thanh hỏi ở đáy */
+.fl-dock{position:fixed;z-index:45;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));width:min(720px,calc(100% - 24px));display:none;flex-direction:column;gap:8px}
+body.flow.has-result .fl-dock{display:flex}
+body.sheet-open .fl-dock, body.asking .fl-dock{display:none!important}
+body.flow.has-result{padding-bottom:140px}
+.fl-dock-chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.fl-chip{all:unset;cursor:pointer;flex:0 0 auto;font-size:13px;padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--sheet) 92%,transparent);border:1px solid var(--line);color:var(--ink-2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.fl-chip:hover{color:var(--ink);border-color:var(--ink-3)} .fl-chip:focus-visible{outline:2px solid var(--seal)}
+.fl-dock-row{display:flex;gap:6px;padding:6px 6px 6px 16px;border-radius:16px;background:color-mix(in srgb,var(--sheet) 94%,transparent);border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.18);backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px)}
+.fl-dock-row input{flex:1;border:0;background:none;font-size:15.5px;min-width:0;padding:8px 0;color:var(--ink);box-shadow:none;outline:none}
+.fl-dock-go{all:unset;cursor:pointer;display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:var(--seal);color:var(--on-seal)} .fl-dock-go:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* Khung hỏi đáp */
+.fl-asksheet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.fl-asksheet[hidden]{display:none}
+.fl-as-bg{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.fl-as-panel{position:relative;width:min(760px,100%);max-height:88vh;display:flex;flex-direction:column;background:var(--paper);border:1px solid var(--line);border-radius:20px 20px 0 0;animation:rise .28s var(--ease) both}
+.fl-as-top{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)} .fl-as-top b{font:650 17px var(--display)}
+.fl-as-x{all:unset;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;font-size:22px;color:var(--ink-2)} .fl-as-x:hover{background:var(--sunken)}
+.fl-as-body{overflow:auto;padding:14px 18px calc(18px + env(safe-area-inset-bottom))}
+.fl-as-body .fl-chatslot{display:block}
+body.asking{overflow:hidden}
+@media (min-width:900px){ .fl-asksheet{align-items:center} .fl-as-panel{border-radius:20px;max-height:82vh} }
+
+/* Nút chọn giao diện */
+.skin-btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink-2);padding:7px 11px;border-radius:999px;border:1px solid var(--line)}
+.skin-btn b{color:var(--ink)} .skin-btn:hover{border-color:var(--ink-3)} .skin-btn:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.skin-pop{position:absolute;right:12px;top:58px;z-index:70;width:260px;padding:12px;border-radius:14px;background:var(--sheet);border:1px solid var(--line);box-shadow:0 14px 40px rgba(0,0,0,.25)}
+.skin-pop[hidden]{display:none}
+.skin-pop-h{display:flex;flex-direction:column;margin:2px 4px 10px} .skin-pop-h span{font-size:13px;color:var(--ink-2)}
+.skin-pop [data-skin]{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);margin-top:6px}
+.skin-pop [data-skin] small{color:var(--ink-2);font-size:12.5px}
+.skin-pop [data-skin][aria-pressed=true]{border-color:var(--seal);background:var(--seal-soft)}
+.skin-pop [data-skin]:focus-visible{outline:2px solid var(--seal)}
+@media (max-width:640px){ .skin-btn span{display:none} .skin-btn{padding:8px} }
+
+/* ===== Giao diện Vui: sáng, viền đậm, bóng cứng ===== */
+:root[data-skin=vui]{--paper:#FFF6E9;--sheet:#FFFFFF;--sunken:#FFEFD6;--ink:#141414;--ink-2:#3E3A36;--ink-3:#6E6862;--line:#141414;--line-2:#14141433;--seal:#FF5A1F;--seal-hover:#E84A12;--seal-soft:#FFE1CF;--on-seal:#141414;--r:10px;--shadow-sm:none}
+:root[data-skin=vui] body{background:var(--paper)}
+:root[data-skin=vui] .fl-say,:root[data-skin=vui] .fl-chlist:not(.grid),:root[data-skin=vui] .fl-chlist.grid .fl-ch,:root[data-skin=vui] .fl-today,:root[data-skin=vui] .fl-who,:root[data-skin=vui] .fl-nav,:root[data-skin=vui] .fl-dock-row,:root[data-skin=vui] .panel,:root[data-skin=vui] .fl-as-panel,:root[data-skin=vui] .skin-pop,:root[data-skin=vui] .sheet-card{border:2px solid var(--ink)!important;box-shadow:4px 4px 0 var(--ink)!important}
+:root[data-skin=vui] .fl-say{background:#FFD84D}
+:root[data-skin=vui] .fl-say .fl-lab{color:var(--ink)}
+:root[data-skin=vui] .fl-say-big,:root[data-skin=vui] .fl-ch-t,:root[data-skin=vui] .fl-sec-h,:root[data-skin=vui] .fl-td-theme{font-weight:800}
+:root[data-skin=vui] .fl-card{border:2px solid var(--ink);box-shadow:6px 6px 0 var(--ink)}
+:root[data-skin=vui] .fl-chlist.grid .fl-ch:nth-child(4n+1){background:#C9F0D6} :root[data-skin=vui] .fl-chlist.grid .fl-ch:nth-child(4n+2){background:#FFD6E0} :root[data-skin=vui] .fl-chlist.grid .fl-ch:nth-child(4n+3){background:#D4E4FF} :root[data-skin=vui] .fl-chlist.grid .fl-ch:nth-child(4n+4){background:#FFE9B3}
+:root[data-skin=vui] .fl-chlist.grid .fl-ch{border-top-width:2px!important}
+:root[data-skin=vui] .btn-primary,:root[data-skin=vui] .fl-dock-go,:root[data-skin=vui] .fl-chip,:root[data-skin=vui] .fl-vtog,:root[data-skin=vui] .skin-btn,:root[data-skin=vui] .fl-sys button,:root[data-skin=vui] body.flow #askGo{border:2px solid var(--ink)!important;box-shadow:2px 2px 0 var(--ink);color:var(--ink)}
+:root[data-skin=vui] .btn-primary,:root[data-skin=vui] .fl-dock-go{background:var(--seal)}
+:root[data-skin=vui] .fl-chip{background:#fff}
+:root[data-skin=vui] .btn-primary:active,:root[data-skin=vui] .fl-dock-go:active,:root[data-skin=vui] .fl-chip:active,:root[data-skin=vui] .fl-ch:active{transform:translate(2px,2px);box-shadow:none!important}
+:root[data-skin=vui] .fl-nav button[aria-current=page]{background:var(--ink);color:#fff}
+:root[data-skin=vui] .fl-sys button[aria-pressed=true]{background:var(--ink);color:#fff}
+:root[data-skin=vui] .fl-td-num{color:var(--ink);-webkit-text-stroke:0;text-shadow:3px 3px 0 var(--seal)}
+:root[data-skin=vui] .fl-mood{border:2px solid var(--ink);background:#D4E4FF}
+:root[data-skin=vui] .fl-link{color:var(--ink);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+@media (prefers-reduced-motion:reduce){ .fl-as-panel{animation:none} }
+:root[data-skin=vui] .fl-ct .fl-link{color:rgba(255,255,255,.9)}
+.fl-dock::before{content:"";position:absolute;z-index:-1;left:-50vw;right:-50vw;top:-18px;bottom:calc(-12px - env(safe-area-inset-bottom));background:linear-gradient(to bottom,transparent,var(--paper) 40%);pointer-events:none}
+.fl-ch.el-diff .fl-ch-t::after{display:inline-block}
+@media (max-width:640px){ .fl-chlist.grid{grid-template-columns:1fr 1fr} .fl-chlist.grid .fl-ch{min-height:0;padding:12px} .fl-chlist.grid .fl-ch-t{font-size:15px} .fl-chlist.grid .fl-ch-s{font-size:13px} }

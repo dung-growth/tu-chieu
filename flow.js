@@ -12,19 +12,21 @@
     { k: 'qm', name: 'Kỳ Môn', tab: 't-lab', lab: 'qm', beta: true }, { k: 'hd', name: 'Human Design', tab: 't-lab', lab: 'hd', beta: true }, { k: 'kd', name: 'Kinh Dịch', tab: 't-lab', lab: 'kd', beta: true }
   ];
   const ICON = {
-    sum: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+    ban: '<path d="M12 3 13.6 10.4 21 12 13.6 13.6 12 21 10.4 13.6 3 12 10.4 10.4Z"/>',
+    homnay: '<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
     laso: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
     hop: '<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/>'
   };
-  const SEC = [['sum', 'Tổng quan'], ['laso', 'Lá số'], ['hop', 'Hợp nhau']];
-  let cur = 'sum', sys = 'tv';
+  // ba màn: Bạn (thẻ + luận giải) · Hôm nay (ngày, năm, Kể nghe) · Lá số (từng môn, Hợp nhau)
+  const SEC = [['ban', 'Bạn'], ['homnay', 'Hôm nay'], ['laso', 'Lá số']];
+  let cur = 'ban', sys = 'tv';
 
   const res = $('#ket-qua .container');
   const bar = el('div', 'fl-who'); bar.id = 'flWho';
   const nav = el('nav', 'fl-nav'); nav.setAttribute('aria-label', 'Các mục kết quả');
   nav.innerHTML = SEC.map(([k, n]) => `<button type="button" data-sec="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg><span>${n}</span></button>`).join('');
   const pick = el('div', 'fl-sys'); pick.setAttribute('role', 'group'); pick.setAttribute('aria-label', 'Chọn môn');
-  pick.innerHTML = SYS.map((s, i) => `${s.beta && !SYS[i - 1].beta ? '<span class="fl-beta">Beta</span>' : ''}<button type="button" data-sys="${s.k}">${s.name}</button>`).join('');
+  pick.innerHTML = SYS.map((s, i) => `${s.beta && !SYS[i - 1].beta ? '<span class="fl-beta">Beta</span>' : ''}<button type="button" data-sys="${s.k}">${s.name}</button>`).join('') + '<span class="fl-beta"></span><button type="button" data-hop>Hợp nhau</button>';
   res.prepend(bar, nav, pick);
   const bottom = nav.cloneNode(true); bottom.className = 'fl-bottom'; document.body.append(bottom);
   function el(t, c) { const e = document.createElement(t); e.className = c; return e; }
@@ -32,7 +34,7 @@
   function open(sec, s) {
     cur = sec; if (s) sys = s;
     const S = SYS.find(x => x.k === sys);
-    UI.show(sec === 'sum' ? 't-sum' : sec === 'hop' ? 't-hop' : S.tab);
+    UI.show(sec === 'ban' || sec === 'homnay' ? 't-sum' : sec === 'hop' ? 't-hop' : S.tab);
     if (sec === 'laso' && S.lab) UI.labOpen(S.lab);
     sync();
     const y = res.getBoundingClientRect().top + scrollY - 64; if (scrollY > y + 10) scrollTo({ top: y });
@@ -41,16 +43,20 @@
     // trang cũ vẫn tự gọi show() (nút "Xem Tử vi →", "Hỏi AI về điều này"): suy ra mục đang mở từ tab đang chọn
     const t = (document.querySelector('.tabs [role=tab][aria-selected=true]') || {}).id || 't-sum';
     // nút cũ mở "Luận giải AI" (Hỏi AI về năm…, Hỏi AI về điều này): đưa về Tổng quan, cuộn tới ô hỏi
-    if (t === 't-ai') { UI.show('t-sum'); cur = 'sum'; requestAnimationFrame(() => { const a = $('#ask'); if (a) { a.scrollIntoView({ block: 'center' }); a.focus({ preventScroll: true }); } }); }
-    else if (t === 't-sum') cur = 'sum'; else if (t === 't-hop') cur = 'hop';
+    if (t === 't-ai') { UI.show('t-sum'); if (cur !== 'homnay') cur = 'ban'; askOpen(); }
+    else if (t === 't-sum') { if (cur !== 'homnay') cur = 'ban'; } else if (t === 't-hop') cur = 'hop';
     else { cur = 'laso'; const S = SYS.find(x => x.tab === t && (!x.lab || x.lab === (document.querySelector('#labNav [aria-pressed=true]') || {}).dataset?.lab)); if (S) sys = S.k; }
-    [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === cur ? 'page' : 'false')));
-    pick.hidden = cur !== 'laso';
-    pick.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sys === sys));
-    read.hidden = traits.hidden = hero.hidden = tiles.hidden = todayBox.hidden = synth.hidden = cur !== 'sum';
+    const navCur = cur === 'hop' ? 'laso' : cur;
+    [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === navCur ? 'page' : 'false')));
+    document.body.dataset.sec = cur;
+    pick.hidden = cur !== 'laso' && cur !== 'hop';
+    pick.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', cur === 'laso' && b.dataset.sys === sys));
+    pick.querySelector('[data-hop]').setAttribute('aria-pressed', cur === 'hop');
+    hero.hidden = synth.hidden = cur !== 'ban'; todayBox.hidden = cur !== 'homnay'; read.hidden = traits.hidden = tiles.hidden = true;
   }
   [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => open(b.dataset.sec)));
   pick.querySelectorAll('[data-sys]').forEach(b => b.onclick = () => open('laso', b.dataset.sys));
+  pick.querySelector('[data-hop]').onclick = () => open('hop');
   new MutationObserver(sync).observe($('.tabs'), { attributes: true, subtree: true, attributeFilter: ['aria-selected'] });
 
   /* ---------- Hai chế độ: nhập thông tin / xem kết quả ---------- */
@@ -61,7 +67,7 @@
     $('#flEdit').onclick = () => { document.body.classList.remove('has-result'); scrollTo({ top: 0 }); };
   }
   function showResult() { document.body.classList.add('has-result'); who(); sync(); }
-  $('#f').addEventListener('submit', () => setTimeout(() => { if (!UI.R()) return; arrange(false); showResult(); open('sum'); scrollTo({ top: 0 }); }, 0));
+  $('#f').addEventListener('submit', () => setTimeout(() => { if (!UI.R()) return; arrange(false); showResult(); open('ban'); scrollTo({ top: 0 }); restoreReading(); }, 0));
 
   /* ---------- Tổng quan chứa luôn bài luận AI; mục Hỏi chỉ còn ô hỏi ---------- */
   const read = el('section', 'fl-read'); read.setAttribute('aria-label', 'Luận giải');
@@ -69,9 +75,13 @@
   const ctxField = $('#ctx').closest('.field'); ctxField.hidden = true; $('#ctx').value = '';
   const head = $('#p-ai .ai-head'); head.querySelector('h2').textContent = 'Luận giải của bạn';
   const chatSlot = el('div', 'fl-chatslot');
-  const synth = el('section', 'fl-read fl-synth'); synth.setAttribute('aria-label', 'Luận giải của bạn');
-  synth.insertAdjacentHTML('afterbegin', '<h2 class="fl-sec-h">Luận giải của bạn</h2><p class="small muted" style="margin:4px 0 10px">Bốn lá số đọc chéo với nhau: chỗ cùng nói một điều, chỗ nói khác nhau, và nên làm gì.</p>');
-  synth.append(head, $('#aiOut'));
+  const synth = el('section', 'fl-luan'); synth.setAttribute('aria-label', 'Luận giải của bạn');
+  synth.innerHTML = `<div class="fl-say"></div>
+    <div class="fl-chap-h" hidden><span class="fl-lab">Đọc theo từng mảng</span><span class="fl-vtog" role="group" aria-label="Cách hiện"><button type="button" data-v="list" aria-pressed="true">Danh sách</button><button type="button" data-v="grid" aria-pressed="false">Dạng ô</button></span></div>
+    <div class="fl-chlist"></div>
+    <div class="fl-luan-foot" hidden><button type="button" class="fl-link" id="flFull">Đọc luận giải đầy đủ ›</button></div>
+    <div class="fl-luan-src"></div>`;
+  synth.querySelector('.fl-luan-src').append(head, $('#aiOut'));
   read.append(chatSlot);
   // đặt ngoài #p-sum (khối đó bị vẽ lại mỗi lần lập lá số), ẩn hiện theo mục Tổng quan
   const traits = el('div', 'fl-traits'); traits.hidden = true;
@@ -87,7 +97,7 @@
   // ô hỏi: tiêu đề và gợi ý
   // ô hỏi: chỉ một chỗ, ngay dưới bài luận ở Tổng quan
   const chat = $('#chat'); chatSlot.append(chat);
-  chat.insertAdjacentHTML('afterbegin', '<h2 class="fl-h">Hỏi Tứ Chiếu</h2><p class="small muted" style="margin:0 0 10px">Hỏi về tính cách, công việc, tình cảm, năm nay… Câu "có nên…" sẽ được đọc bằng Kỳ Môn theo đúng lúc hỏi.</p>');
+  chat.insertAdjacentHTML('afterbegin', '<p class="small muted" style="margin:0 0 10px">Hỏi về tính cách, công việc, tình cảm, năm nay… Câu "có nên…" sẽ được đọc bằng Kỳ Môn theo đúng lúc hỏi.</p>');
   const hint = chat.querySelector('.chat-hint'); if (hint) hint.remove();
   chat.append($('#askStatus'));
 
@@ -154,10 +164,10 @@
     const [g0, g1, g2] = K.sky.g, tint = K.main ? K.INK[K.main] : '#5a6aa0';
     hero.innerHTML = `<div class="fl-card${S ? ' has-sil' : ''}" style="--g0:${g0};--g1:${g1};--g2:${g2};--tint:${tint}">
         <div class="fl-sky"><div class="fl-grain"></div>${stars}${S ? `<img class="fl-sil" src="${S.sil.replace('/bong/', '/bong-rong/')}" alt="" width="1440" height="720" decoding="async">` : ''}</div>
-        <div class="fl-ctop"><span>${K.timeKnown ? esc(i.time) + ' · ' : ''}${d}.${mo}.${y}</span>${moonSvg}</div>
+        <div class="fl-ctop"><span>${K.timeKnown ? esc(i.time) + ' · ' : ''}${d}.${mo}.${y}</span><span class="fl-ctop-r">${moonSvg}${typeof SHARE !== 'undefined' ? '<button type="button" class="fl-sharebtn" id="flShare" aria-label="Tạo ảnh story"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v13"/><path d="m7 8 5-5 5 5"/></svg></button>' : ''}</span></div>
         <svg class="fl-mark" width="200" height="200" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="flh"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
           <circle cx="100" cy="100" r="62" fill="none" stroke="#fff" stroke-opacity=".14"/><circle cx="100" cy="100" r="30" fill="url(#flh)"/>${rays}<circle cx="100" cy="100" r="3.5" fill="#fff"/></svg>
-        <div class="fl-ct">${S ? `<span class="fl-k">${esc(i.name)} · ${esc(K.title)}</span><h2>${S.lines.map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' ')}</h2><p class="fl-story">${esc(S.story)}</p><p>${esc(S.trait)}</p><p class="fl-nhu">${esc(S.nhu)}</p>`
+        <div class="fl-ct">${S ? `<span class="fl-k">${esc(i.name)} · ${esc(K.title)}</span><h2>${S.lines.map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' ')}</h2><p class="fl-nhu">${esc(S.nhu)}</p><button type="button" class="fl-link fl-storyb" aria-expanded="false">Câu chuyện lúc bạn sinh ›</button><div class="fl-storyx" hidden><p class="fl-story">${esc(S.story)}</p><p>${esc(S.trait)}</p></div>`
           : `<span class="fl-k">${esc(i.name)}</span><h2>${esc(K.title)}</h2><p>${esc(K.body)}</p>`}</div>
       </div>`;
     const tv = R.tuvi, menh = tv && tv.palaces.find(p => p.name === 'Mệnh'), pts = R.astro.points, known = i.timeMode !== 'unknown';
@@ -166,13 +176,14 @@
       ['tv', 'Tử vi', !tv ? 'Cần giờ sinh để lập' : menh.major.length ? `Mệnh có ${menh.major.map(x => x.name).join(', ')}` : 'Mệnh vô chính diệu', by.tv],
       ['as', 'Chiêm tinh', `Mặt Trời ${pts[0].sign}, Trăng ${pts[1].sign}${known && R.astro.asc ? `, Mọc ${R.astro.asc.sign}` : ''}`, by.as],
       ['nm', 'Thần số', `Đường đời ${K.num}`, null]];
-    tiles.innerHTML = `<div class="fl-four-h"><h2 class="fl-sec-h">Xem từng lá số</h2>${typeof SHARE !== 'undefined' ? '<button type="button" class="fl-chip fl-chip-share" id="flShare">Tạo ảnh story</button>' : ''}</div>
+    tiles.innerHTML = `<div class="fl-four-h"><h2 class="fl-sec-h">Xem từng lá số</h2></div>
       <div class="fl-four">${four.map(([k, name, line, v]) => `<button type="button" class="fl-fc" data-open="${k}"><span class="fl-fc-n"><i style="background:${v ? K.INK[v.el] : '#C9A95A'}"></i>${name}${v ? ` <small>${v.el}${K.main && !v.agree ? ', nói khác' : ''}</small>` : ''}</span><span class="fl-fc-l">${esc(line)}</span><span class="fl-fc-go">Xem lá số →</span></button>`).join('')}</div>`;
     tiles.querySelectorAll('[data-open]').forEach(x => x.onclick = () => open('laso', x.dataset.open));
-    const sb = tiles.querySelector('#flShare');
-    if (sb) sb.onclick = async () => { sb.disabled = true; const t = sb.textContent; sb.textContent = 'Đang tạo ảnh…';
-      try { await SHARE.share(R, UI.openSheet); sb.textContent = t; } catch (e) { console.error(e); sb.textContent = 'Không tạo được ảnh, thử lại'; setTimeout(() => sb.textContent = t, 2500); }
-      sb.disabled = false; };
+    const stb = hero.querySelector('.fl-storyb'); if (stb) stb.onclick = () => { const x = hero.querySelector('.fl-storyx'); x.hidden = !x.hidden; stb.setAttribute('aria-expanded', !x.hidden); };
+    const sb = hero.querySelector('#flShare');
+    if (sb) sb.onclick = async () => { sb.disabled = true; const t = sb.innerHTML; UI.toast('Đang tạo ảnh story…');
+      try { await SHARE.share(R, UI.openSheet); } catch (e) { console.error(e); UI.toast('Không tạo được ảnh, thử lại'); }
+      sb.innerHTML = t; sb.disabled = false; };
   }
 
   /* ---------- Hôm nay của bạn: tính bằng công thức (today.js), chọn được ngày khác ---------- */
@@ -182,9 +193,10 @@
     let T; try { T = TODAY.build(R, ymd); } catch (e) { console.error(e); todayBox.innerHTML = ''; return; }
     const isToday = ymd === localYmd(new Date()), li = a => a.map(x => `<li>${esc(x)}</li>`).join('');
     const mood = T.moon ? [T.moon.hit ? T.moon.hit.text + '.' : '', T.moon.houseTxt].filter(Boolean).join(' ') : '';
-    todayBox.innerHTML = `<div class="fl-td-head"><div><h2 class="fl-sec-h">${isToday ? 'Hôm nay của bạn' : 'Ngày bạn chọn'}</h2>
+    todayBox.innerHTML = `<div class="fl-td-head"><div class="fl-td-num" aria-hidden="true">${T.d}</div><div class="fl-td-hx"><h2 class="fl-sec-h">${isToday ? 'Hôm nay của bạn' : 'Ngày bạn chọn'}</h2>
         <div class="fl-td-date">${T.thu}, ${T.d}/${T.m}/${T.y} · ngày ${esc(T.gz)}${T.lunar ? ' · ' + T.lunar : ''}</div></div>
         <div class="fl-td-nav"><button type="button" class="btn-ghost btn-sm" data-step="-1" aria-label="Ngày trước">‹</button><input type="date" value="${ymd}" aria-label="Chọn ngày"><button type="button" class="btn-ghost btn-sm" data-step="1" aria-label="Ngày sau">›</button>${isToday ? '' : '<button type="button" class="btn-ghost btn-sm" data-today>Hôm nay</button>'}</div></div>
+      <div class="fl-mood" hidden></div>
       <h3 class="fl-td-theme">${esc(T.theme)}</h3>
       <div class="fl-td-tags"><span class="fl-td-tag ${T.hoang ? 'good' : 'bad'}">Ngày ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} (${T.dayThan})</span>${T.notes.slice(0, 1).map(n => `<span class="fl-td-tag ${/xung|hại/.test(n) ? 'bad' : 'good'}">${esc(n[0].toUpperCase() + n.slice(1))}</span>`).join('')}</div>
       <div class="fl-td-cols"><div><h4>Nên</h4><ul>${li(T.nen.slice(0, 2))}</ul></div><div><h4>Tránh</h4><ul>${li(T.tranh.slice(0, 2))}</ul></div></div>
@@ -198,7 +210,7 @@
     todayBox.querySelectorAll('[data-step]').forEach(bt => bt.onclick = () => { const [y, m, d] = ymd.split('-').map(Number); go(localYmd(new Date(y, m - 1, d + +bt.dataset.step))); });
     const tb = todayBox.querySelector('[data-today]'); if (tb) tb.onclick = () => go(localYmd(new Date()));
     const dayTxt = `Ngày ${T.thu}, ${T.d}/${T.m}/${T.y} (${T.gz}${T.lunar ? ', ' + T.lunar : ''}): chủ đề "${T.theme}"; ngày ${T.god} với nhật chủ; ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} ${T.dayThan}${T.notes.length ? '; ' + T.notes.join(', ') : ''}; nên: ${T.nen.join('; ')}; nên tránh: ${T.tranh.join('; ')}; giờ tốt: ${T.gio.map(g => g.gio).join(', ') || 'không'}; Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ' nhà ' + T.moon.house : ''}${mood ? ' (' + mood + ')' : ''}; số ngày cá nhân ${T.pday.n}.`;
-    lastYmd = ymd; renderKe(R, ymd, isToday, dayTxt);
+    lastYmd = ymd; renderKe(R, ymd, isToday, dayTxt); moodTip(T, ymd);
   }
 
   /* ---------- Kể nghe: than riêng, chỉ lưu trên máy này ---------- */
@@ -277,9 +289,72 @@
     document.querySelectorAll('#sheet [data-del]').forEach(b => b.onclick = () => { kePut(R, b.dataset.del, []); b.closest('.fl-ke-day').remove(); renderToday(R, localYmd(new Date())); });
   }
 
+  /* ---------- Bạn: luận giải là phần chính ---------- */
+  const say = synth.querySelector('.fl-say'), chList = synth.querySelector('.fl-chlist'), chHead = synth.querySelector('.fl-chap-h'), lFoot = synth.querySelector('.fl-luan-foot'), lSrc = synth.querySelector('.fl-luan-src');
+  const CH_EL = [[/tính cách/i, 'moc'], [/sự nghiệp|tài chính|tiền/i, 'kim'], [/tình cảm|quan hệ/i, 'hoa'], [/thời vận|năm/i, 'tho'], [/khác nhau/i, 'diff'], [/lời khuyên|nên làm/i, 'thuy']];
+  function rKey() { const s = UI.saved(); return s ? 'tuchieu:reading:' + [s.name, s.date, s.time, s.placeName, s.gender].join('|') : ''; }
+  function firstSentence(t) { t = t.replace(/\s+/g, ' ').trim(); const m = t.match(/^.{20,160}?[.!?](\s|$)/); return m ? m[0].trim() : t.slice(0, 140) + (t.length > 140 ? '…' : ''); }
+  let view = 'list'; try { view = localStorage.getItem('tuchieu:chview') || 'list'; } catch (e) {}
+  function buildLuan() {
+    const secs = [...$('#aiOut').querySelectorAll('.rd-sec')];
+    if (!secs.length) { // chưa có luận giải: một lời mời
+      chHead.hidden = lFoot.hidden = true; chList.innerHTML = ''; synth.classList.remove('has-luan');
+      say.innerHTML = `<span class="fl-lab">Bốn lá số cùng nói</span><p class="fl-say-big">Bát tự, Tử vi, Chiêm tinh và Thần số đọc chéo nhau, ra một kết luận về bạn.</p><button type="button" class="btn-primary" id="flRead">Đọc luận giải</button>`;
+      say.querySelector('#flRead').onclick = () => { $('#aiGo').click(); synth.classList.add('streaming'); };
+      return; }
+    synth.classList.add('has-luan'); synth.classList.remove('streaming');
+    const get = sec => ({ title: sec.querySelector('.rd-toggle').textContent.trim(), body: sec.querySelector('.rd-body') });
+    const all = secs.map(get), quick = all.find(x => /đọc nhanh/i.test(x.title)), main = all.find(x => /cùng nói|chân dung/i.test(x.title));
+    const mp = main && main.body.querySelector('p');
+    say.innerHTML = `<span class="fl-lab">Bốn lá số cùng nói</span>${mp ? `<p class="fl-say-big">${mp.innerHTML}</p>` : ''}${quick ? `<ul class="fl-say-list">${[...quick.body.querySelectorAll('li')].slice(0, 4).map(li => `<li>${li.innerHTML}</li>`).join('')}</ul>` : ''}${main && main.body.children.length > 1 ? '<button type="button" class="fl-link" data-ch="main">Đọc tiếp ›</button>' : ''}`;
+    const chs = all.filter(x => x !== quick && x !== main);
+    chList.innerHTML = chs.map((c, i) => { const e = (CH_EL.find(([r]) => r.test(c.title)) || [0, 'tho'])[1];
+      return `<button type="button" class="fl-ch el-${e}" data-ch="${i}"><span class="fl-ch-t">${esc(c.title)}</span><span class="fl-ch-s">${esc(firstSentence(c.body.textContent))}</span><span class="fl-ch-go" aria-hidden="true">›</span></button>`; }).join('');
+    chHead.hidden = !chs.length; lFoot.hidden = false; setView(view);
+    const openCh = (c, from) => UI.openSheet(`<div class="sh-top"><div><span class="fl-lab">Luận giải</span><h3 id="sheetTitle">${esc(c.title)}</h3></div></div><div class="ai-out">${c.body.innerHTML}</div>`, from);
+    chList.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => openCh(chs[+b.dataset.ch], b));
+    const more = say.querySelector('[data-ch=main]'); if (more) more.onclick = () => openCh(main, more);
+  }
+  function setView(v) { view = v; chList.classList.toggle('grid', v === 'grid'); chHead.querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); try { localStorage.setItem('tuchieu:chview', v); } catch (e) {} }
+  chHead.querySelectorAll('[data-v]').forEach(b => b.onclick = () => setView(b.dataset.v));
+  synth.querySelector('#flFull').onclick = () => { synth.classList.toggle('show-full'); const on = synth.classList.contains('show-full'); synth.querySelector('#flFull').textContent = on ? 'Thu gọn luận giải đầy đủ' : 'Đọc luận giải đầy đủ ›'; if (on) lSrc.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  document.addEventListener('tc:reading', e => { const k = rKey(); if (k && e.detail) try { localStorage.setItem(k, e.detail); } catch (er) {} setTimeout(buildLuan, 0); });
+  function restoreReading() { const k = rKey(); let t = null; try { t = k && localStorage.getItem(k); } catch (e) {} if (t) UI.setReading(t); buildLuan(); }
+
+  /* ---------- Thanh hỏi ở đáy: mở khung hỏi đáp ---------- */
+  const askSheet = el('div', 'fl-asksheet'); askSheet.hidden = true; askSheet.setAttribute('role', 'dialog'); askSheet.setAttribute('aria-label', 'Hỏi Tứ Chiếu');
+  askSheet.innerHTML = '<div class="fl-as-bg"></div><div class="fl-as-panel"><div class="fl-as-top"><b>Hỏi Tứ Chiếu</b><button type="button" class="fl-as-x" aria-label="Đóng">×</button></div><div class="fl-as-body"></div></div>';
+  document.body.append(askSheet); askSheet.querySelector('.fl-as-body').append(chatSlot); chat.hidden = false;
+  const CHIPS = ['Tháng này của tôi thế nào?', 'Năm sau có nên đổi việc không?', 'Tiền bạc của tôi nên giữ thế nào?'];
+  const dock = el('form', 'fl-dock'); dock.setAttribute('aria-label', 'Hỏi Tứ Chiếu');
+  dock.innerHTML = `<div class="fl-dock-chips">${CHIPS.map(c => `<button type="button" class="fl-chip">${c}</button>`).join('')}</div><div class="fl-dock-row"><input name="q" placeholder="Hỏi Tứ Chiếu về bạn…" autocomplete="off" aria-label="Câu hỏi"><button type="submit" class="fl-dock-go" aria-label="Hỏi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>`;
+  document.body.append(dock);
+  function askOpen(q) { askSheet.hidden = false; document.body.classList.add('asking');
+    if (q) { $('#ask').value = q; $('#askGo').click(); } else requestAnimationFrame(() => $('#ask').focus({ preventScroll: true }));
+    const l = $('#qaList'); requestAnimationFrame(() => { const b = askSheet.querySelector('.fl-as-body'); b.scrollTop = b.scrollHeight; }); }
+  function askClose() { askSheet.hidden = true; document.body.classList.remove('asking'); }
+  dock.onsubmit = e => { e.preventDefault(); const q = dock.q.value.trim(); dock.q.value = ''; askOpen(q); };
+  dock.querySelectorAll('.fl-chip').forEach(b => b.onclick = () => askOpen(b.textContent));
+  askSheet.querySelector('.fl-as-x').onclick = askSheet.querySelector('.fl-as-bg').onclick = askClose;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !askSheet.hidden) askClose(); });
+
+  /* ---------- Gợi ý theo tâm trạng: ngày Mặt Trăng chiếu khó mà đang dùng Vui ---------- */
+  function moodTip(T, ymd) {
+    const box = todayBox.querySelector('.fl-mood'); if (!box) return;
+    const k = 'tuchieu:moodtip:' + ymd; let off = false; try { off = !!localStorage.getItem(k); } catch (e) {}
+    const hard = T.moon && T.moon.hit && T.moon.hit.kind === 'khó';
+    if (!hard || off || document.documentElement.dataset.skin !== 'vui' || ymd !== localYmd(new Date())) { box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = `<p>Hôm nay Mặt Trăng chiếu khó, dễ mệt hơn thường. Đổi sang giao diện Yên cho dịu mắt?</p><button type="button" class="btn-ghost btn-sm" data-yen>Đổi sang Yên</button><button type="button" class="fl-mood-x" aria-label="Ẩn gợi ý">×</button>`;
+    const done = () => { try { localStorage.setItem(k, 1); } catch (e) {} box.hidden = true; };
+    box.querySelector('[data-yen]').onclick = () => { done(); UI.setSkin('yen'); };
+    box.querySelector('.fl-mood-x').onclick = done;
+  }
+  document.addEventListener('tc:skin', () => { if (UI.R() && lastYmd) renderToday(UI.R(), lastYmd); });
+
   let tm; new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(tidy, 30); }).observe($('#result'), { childList: true, subtree: true });
   tidy();
   // mở lại lá số đã lưu: chạy sau cùng, khi mọi khối ở trên đã dựng xong
   let saved = null; try { saved = localStorage.getItem('tuchieu:last'); } catch (e) {}
-  if (saved && UI.R()) { arrange(true); showResult(); }
+  if (saved && UI.R()) { arrange(true); showResult(); restoreReading(); } else buildLuan();
 })();
