@@ -320,3 +320,55 @@ body.asking{overflow:hidden}
 .fl-dock::before{content:"";position:absolute;z-index:-1;left:-50vw;right:-50vw;top:-18px;bottom:calc(-12px - env(safe-area-inset-bottom));background:linear-gradient(to bottom,transparent,var(--paper) 40%);pointer-events:none}
 .fl-ch.el-diff .fl-ch-t::after{display:inline-block}
 @media (max-width:640px){ .fl-chlist.grid{grid-template-columns:1fr 1fr} .fl-chlist.grid .fl-ch{min-height:0;padding:12px} .fl-chlist.grid .fl-ch-t{font-size:15px} .fl-chlist.grid .fl-ch-s{font-size:13px} }
+
+/* ===== Chuyển động ===== */
+.fl-star{opacity:var(--o,.6);animation:fl-tw 3.2s ease-in-out infinite}
+@keyframes fl-tw{50%{opacity:calc(var(--o,.6) * .25);transform:scale(.7)}}
+.fl-mark .fl-rays{transform-origin:100px 100px;animation:fl-breathe 5s ease-in-out infinite}
+@keyframes fl-breathe{50%{transform:scale(1.06) rotate(2deg);opacity:.85}}
+.fl-mark .fl-halo{transform-origin:100px 100px;animation:fl-breathe 5s ease-in-out infinite}
+.fl-mark .fl-ring{transform-origin:100px 100px;opacity:0;animation:fl-ring 1.8s ease-out .3s forwards}
+@keyframes fl-ring{0%{opacity:.7;transform:scale(.3)}100%{opacity:0;transform:scale(1.6)}}
+.fl-wait{font:600 18px/1.4 var(--display);margin:0 0 14px;color:var(--ink)}
+.fl-dots{display:inline-flex;gap:3px;margin-left:6px} .fl-dots i{width:5px;height:5px;border-radius:50%;background:var(--seal);animation:fl-dot 1.1s infinite} .fl-dots i:nth-child(2){animation-delay:.15s} .fl-dots i:nth-child(3){animation-delay:.3s}
+@keyframes fl-dot{0%,60%,100%{opacity:.25;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+.fl-skel{display:flex;flex-direction:column;gap:10px} .fl-skel i{display:block;height:14px;border-radius:7px;background:linear-gradient(90deg,var(--line-2) 0%,color-mix(in srgb,var(--seal) 22%,var(--line-2)) 50%,var(--line-2) 100%);background-size:200% 100%;animation:fl-sh 1.2s linear infinite}
+@keyframes fl-sh{from{background-position:200% 0}to{background-position:-200% 0}}
+.fl-ch.rv{opacity:0;transform:translateY(14px)}
+.fl-ch.rv.seen{opacity:1;transform:none;transition:opacity .5s ease calc(var(--i,0) * 70ms),transform .55s cubic-bezier(.2,.8,.2,1) calc(var(--i,0) * 70ms)}
+:root[data-skin=vui] .fl-ch.rv.seen{transition-timing-function:ease,cubic-bezier(.34,1.56,.64,1)}
+.fl-ch{transition:background .2s}
+.fl-chlist.grid .fl-ch{transition:transform .2s,box-shadow .2s} .fl-chlist.grid .fl-ch:hover{transform:translateY(-2px)}
+:root[data-skin=vui] .fl-chlist.grid .fl-ch:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)!important}
+.fl-nav{position:sticky} .fl-nav button{position:relative;z-index:1;transition:color .25s}
+.fl-nav-ind{position:absolute;left:0;z-index:0;border-radius:9px;background:var(--sheet);box-shadow:var(--shadow-sm);transition:transform .35s cubic-bezier(.2,.8,.2,1),width .35s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.fl-nav button[aria-current=page]{background:none!important;box-shadow:none!important}
+:root[data-skin=vui] .fl-nav-ind{background:var(--ink);transition-timing-function:cubic-bezier(.34,1.56,.64,1)}
+:root[data-skin=vui] .fl-nav button[aria-current=page]{color:#fff}
+.fl-dock-go,.fl-chip,.skin-btn{transition:transform .15s,box-shadow .15s}
+.fl-dock-go:hover{transform:scale(1.05)}
+.fl-mood:not([hidden]){animation:fl-pop .4s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes fl-pop{from{opacity:0;transform:scale(.94)}}
+.skin-pop:not([hidden]){animation:fl-pop .22s ease both}
+@media (prefers-reduced-motion:reduce){
+  .fl-star,.fl-mark .fl-rays,.fl-mark .fl-halo,.fl-mark .fl-ring,.fl-dots i,.fl-skel i,.fl-mood,.skin-pop{animation:none!important}
+  .fl-ch.rv{opacity:1;transform:none} .fl-nav-ind,.fl-ch,.fl-chlist.grid .fl-ch{transition:none!important}
+}
+.fl-luan.streaming #aiOut > p.muted:only-child{display:none}
+
+/* ===== Sửa chỗ chật: bài đọc full bề ngang, thanh trên và dưới gọn lại ===== */
+.fl-luan .rd-wrap{display:block}
+.fl-luan .ai-out p,.fl-luan .ai-out li{max-width:none}
+.fl-luan.has-luan .ai-head{display:none}
+/* thanh hỏi: chỉ một dòng; câu gợi ý chỉ hiện khi bấm vào ô hỏi */
+.fl-dock-chips{display:none}
+.fl-dock:focus-within .fl-dock-chips{display:flex}
+body.flow.has-result{padding-bottom:96px}
+.fl-dock::before{top:-10px}
+.fl-dock-row{padding:5px 5px 5px 14px} .fl-dock-go{width:38px;height:38px;border-radius:10px}
+.fl-dock-row input{padding:6px 0}
+/* thanh chọn màn: cuộn xuống thì ẩn, cuộn lên thì hiện lại */
+.fl-nav{transition:transform .25s ease,opacity .2s}
+body.fl-down .fl-nav{transform:translateY(-120%);opacity:0;pointer-events:none}
+:root[data-skin=vui] .fl-nav{box-shadow:3px 3px 0 var(--ink)!important}
+:root[data-skin=vui] .fl-dock-row{box-shadow:3px 3px 0 var(--ink)!important}

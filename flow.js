@@ -20,6 +20,11 @@
   // ba màn: Bạn (thẻ + luận giải) · Hôm nay (ngày, năm, Kể nghe) · Lá số (từng môn, Hợp nhau)
   const SEC = [['ban', 'Bạn'], ['homnay', 'Hôm nay'], ['laso', 'Lá số']];
   let cur = 'ban', sys = 'tv';
+  // chuyển động: Yên chậm, êm; Vui nảy hơn. Máy bật "giảm chuyển động" thì bỏ hết
+  const RM = matchMedia('(prefers-reduced-motion: reduce)');
+  const vui = () => document.documentElement.dataset.skin === 'vui';
+  const EASE = () => vui() ? 'cubic-bezier(.34,1.56,.64,1)' : 'cubic-bezier(.2,.8,.2,1)';
+  const anim = (node, kf, ms) => !RM.matches && node && node.animate ? node.animate(kf, { duration: ms * (vui() ? .8 : 1), easing: EASE(), fill: 'backwards' }) : null;
 
   const res = $('#ket-qua .container');
   const bar = el('div', 'fl-who'); bar.id = 'flWho';
@@ -28,15 +33,17 @@
   const pick = el('div', 'fl-sys'); pick.setAttribute('role', 'group'); pick.setAttribute('aria-label', 'Chọn môn');
   pick.innerHTML = SYS.map((s, i) => `${s.beta && !SYS[i - 1].beta ? '<span class="fl-beta">Beta</span>' : ''}<button type="button" data-sys="${s.k}">${s.name}</button>`).join('') + '<span class="fl-beta"></span><button type="button" data-hop>Hợp nhau</button>';
   res.prepend(bar, nav, pick);
+  const ind = el('span', 'fl-nav-ind'); nav.append(ind);
   const bottom = nav.cloneNode(true); bottom.className = 'fl-bottom'; document.body.append(bottom);
   function el(t, c) { const e = document.createElement(t); e.className = c; return e; }
 
   function open(sec, s) {
-    cur = sec; if (s) sys = s;
+    const changed = sec !== cur; cur = sec; if (s) sys = s;
     const S = SYS.find(x => x.k === sys);
     UI.show(sec === 'ban' || sec === 'homnay' ? 't-sum' : sec === 'hop' ? 't-hop' : S.tab);
     if (sec === 'laso' && S.lab) UI.labOpen(S.lab);
     sync();
+    if (changed) { anim($('#result'), [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], 320); if (sec === 'homnay') countDay(); }
     const y = res.getBoundingClientRect().top + scrollY - 64; if (scrollY > y + 10) scrollTo({ top: y });
   }
   function sync() {
@@ -48,7 +55,7 @@
     else { cur = 'laso'; const S = SYS.find(x => x.tab === t && (!x.lab || x.lab === (document.querySelector('#labNav [aria-pressed=true]') || {}).dataset?.lab)); if (S) sys = S.k; }
     const navCur = cur === 'hop' ? 'laso' : cur;
     [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === navCur ? 'page' : 'false')));
-    document.body.dataset.sec = cur;
+    document.body.dataset.sec = cur; moveInd();
     pick.hidden = cur !== 'laso' && cur !== 'hop';
     pick.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', cur === 'laso' && b.dataset.sys === sys));
     pick.querySelector('[data-hop]').setAttribute('aria-pressed', cur === 'hop');
@@ -115,6 +122,7 @@
     const yp = $('#yearPanel');
     if (yp && !yp.querySelector('.fl-yr-more')) { const t = el('button', 'btn-ghost btn-sm fl-yr-more'); t.type = 'button'; t.textContent = 'Xem chi tiết năm';
       t.onclick = () => { const o = yp.classList.toggle('open'); t.textContent = o ? 'Thu gọn' : 'Xem chi tiết năm'; }; yp.append(t); }
+    if (synth.classList.contains('streaming') && !$('#aiGo').disabled && !$('#aiOut .rd-sec')) { synth.classList.remove('streaming'); buildLuan(); }
     // bài luận: chưa viết thì ẩn khung chữ hướng dẫn
     const ao = $('#aiOut'); if (ao) ao.hidden = /Bấm\s*Đọc luận giải/.test(ao.textContent) && ao.children.length <= 1;
     // Tử vi: hiện liền mọi phần (cách cục, nét tính cách, đại hạn, 12 tháng)
@@ -159,14 +167,14 @@
     const rays = ray(by.bz, 'M100 10 102.5 92 100 100 97.5 92Z') + ray(by.as, 'M190 100 108 102.5 100 100 108 97.5Z') + ray(by.tv, 'M100 190 97.5 108 100 100 102.5 108Z')
       + `<path d="M10 100 92 97.5 100 100 92 102.5Z" fill="#f1dca8" opacity=".55"/>`;
     const stars = [[14, 22, 2, .8], [31, 14, 1.5, .5], [70, 20, 2, .7], [84, 36, 1.5, .5], [9, 46, 1.5, .4], [58, 10, 1.5, .6], [42, 30, 1.2, .35]]
-      .map(([x, yy, r, o]) => `<span class="fl-star" style="left:${x}%;top:${yy}%;width:${r}px;height:${r}px;opacity:${o}"></span>`).join('');
+      .map(([x, yy, r, o]) => `<span class="fl-star" style="left:${x}%;top:${yy}%;width:${r}px;height:${r}px;--o:${o};animation-delay:${(x * 7 % 30) / 10}s"></span>`).join('');
     const moonSvg = K.moon ? `<svg width="26" height="26" viewBox="-23 -23 46 46" role="img" aria-label="${K.moon.name}, ngày ${K.lunarDay} âm"><circle r="18" fill="#fff" opacity=".1"/>${K.moon.dark ? '' : `<path d="${K.moon.path}" fill="#F6EEDC"/>`}</svg>` : '';
     const [g0, g1, g2] = K.sky.g, tint = K.main ? K.INK[K.main] : '#5a6aa0';
     hero.innerHTML = `<div class="fl-card${S ? ' has-sil' : ''}" style="--g0:${g0};--g1:${g1};--g2:${g2};--tint:${tint}">
         <div class="fl-sky"><div class="fl-grain"></div>${stars}${S ? `<img class="fl-sil" src="${S.sil.replace('/bong/', '/bong-rong/')}" alt="" width="1440" height="720" decoding="async">` : ''}</div>
         <div class="fl-ctop"><span>${K.timeKnown ? esc(i.time) + ' · ' : ''}${d}.${mo}.${y}</span><span class="fl-ctop-r">${moonSvg}${typeof SHARE !== 'undefined' ? '<button type="button" class="fl-sharebtn" id="flShare" aria-label="Tạo ảnh story"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v13"/><path d="m7 8 5-5 5 5"/></svg></button>' : ''}</span></div>
         <svg class="fl-mark" width="200" height="200" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="flh"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
-          <circle cx="100" cy="100" r="62" fill="none" stroke="#fff" stroke-opacity=".14"/><circle cx="100" cy="100" r="30" fill="url(#flh)"/>${rays}<circle cx="100" cy="100" r="3.5" fill="#fff"/></svg>
+          <circle cx="100" cy="100" r="62" fill="none" stroke="#fff" stroke-opacity=".14"/><circle class="fl-ring" cx="100" cy="100" r="62" fill="none" stroke="#fff" stroke-width="1.5"/><circle class="fl-halo" cx="100" cy="100" r="30" fill="url(#flh)"/><g class="fl-rays">${rays}</g><circle cx="100" cy="100" r="3.5" fill="#fff"/></svg>
         <div class="fl-ct">${S ? `<span class="fl-k">${esc(i.name)} · ${esc(K.title)}</span><h2>${S.lines.map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' ')}</h2><p class="fl-nhu">${esc(S.nhu)}</p><button type="button" class="fl-link fl-storyb" aria-expanded="false">Câu chuyện lúc bạn sinh ›</button><div class="fl-storyx" hidden><p class="fl-story">${esc(S.story)}</p><p>${esc(S.trait)}</p></div>`
           : `<span class="fl-k">${esc(i.name)}</span><h2>${esc(K.title)}</h2><p>${esc(K.body)}</p>`}</div>
       </div>`;
@@ -205,7 +213,7 @@
       
       <details class="fl-td-why"><summary>Vì sao?</summary> Bát tự, ngày ${esc(T.gz)} là ngày ${T.god} với nhật chủ ${esc(R.bazi.dayMaster)}${T.notes.length ? '; ' + esc(T.notes.join(', ')) : ''}. Chiêm tinh, Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ', nhà ' + T.moon.house : ''}. Lịch Việt, ngày ${T.dayThan}, giờ hoàng đạo theo 12 thần. Thần số, số ngày cá nhân ${T.pday.n}.</details>
       <div class="fl-ke"></div>`;
-    const go = v => renderToday(R, v);
+    const go = v => { renderToday(R, v); anim(todayBox, [{ opacity: .3, transform: 'perspective(900px) rotateX(8deg) translateY(6px)' }, { opacity: 1, transform: 'none' }], 380); };
     todayBox.querySelector('input[type=date]').onchange = e => e.target.value && go(e.target.value);
     todayBox.querySelectorAll('[data-step]').forEach(bt => bt.onclick = () => { const [y, m, d] = ymd.split('-').map(Number); go(localYmd(new Date(y, m - 1, d + +bt.dataset.step))); });
     const tb = todayBox.querySelector('[data-today]'); if (tb) tb.onclick = () => go(localYmd(new Date()));
@@ -300,7 +308,8 @@
     if (!secs.length) { // chưa có luận giải: một lời mời
       chHead.hidden = lFoot.hidden = true; chList.innerHTML = ''; synth.classList.remove('has-luan');
       say.innerHTML = `<span class="fl-lab">Bốn lá số cùng nói</span><p class="fl-say-big">Bát tự, Tử vi, Chiêm tinh và Thần số đọc chéo nhau, ra một kết luận về bạn.</p><button type="button" class="btn-primary" id="flRead">Đọc luận giải</button>`;
-      say.querySelector('#flRead').onclick = () => { $('#aiGo').click(); synth.classList.add('streaming'); };
+      say.querySelector('#flRead').onclick = () => { $('#aiGo').click(); synth.classList.add('streaming');
+        say.innerHTML = `<span class="fl-lab">Bốn lá số cùng nói</span><p class="fl-wait">Đang đọc chéo bốn lá số<span class="fl-dots"><i></i><i></i><i></i></span></p><div class="fl-skel"><i></i><i></i><i style="width:62%"></i></div>`; };
       return; }
     synth.classList.add('has-luan'); synth.classList.remove('streaming');
     const get = sec => ({ title: sec.querySelector('.rd-toggle').textContent.trim(), body: sec.querySelector('.rd-body') });
@@ -311,12 +320,22 @@
     chList.innerHTML = chs.map((c, i) => { const e = (CH_EL.find(([r]) => r.test(c.title)) || [0, 'tho'])[1];
       return `<button type="button" class="fl-ch el-${e}" data-ch="${i}"><span class="fl-ch-t">${esc(c.title)}</span><span class="fl-ch-s">${esc(firstSentence(c.body.textContent))}</span><span class="fl-ch-go" aria-hidden="true">›</span></button>`; }).join('');
     chHead.hidden = !chs.length; lFoot.hidden = false; setView(view);
-    const openCh = (c, from) => UI.openSheet(`<div class="sh-top"><div><span class="fl-lab">Luận giải</span><h3 id="sheetTitle">${esc(c.title)}</h3></div></div><div class="ai-out">${c.body.innerHTML}</div>`, from);
+    anim(say, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], 600);
+    [...say.children].forEach((c, i) => anim(c, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], 500 + i * 120));
+    revealChs();
+    const openCh = (c, from) => { UI.openSheet(`<div class="sh-top"><div><span class="fl-lab">Luận giải</span><h3 id="sheetTitle">${esc(c.title)}</h3></div></div><div class="ai-out">${c.body.innerHTML}</div>`, from); popFrom(from); };
     chList.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => openCh(chs[+b.dataset.ch], b));
     const more = say.querySelector('[data-ch=main]'); if (more) more.onclick = () => openCh(main, more);
   }
-  function setView(v) { view = v; chList.classList.toggle('grid', v === 'grid'); chHead.querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); try { localStorage.setItem('tuchieu:chview', v); } catch (e) {} }
-  chHead.querySelectorAll('[data-v]').forEach(b => b.onclick = () => setView(b.dataset.v));
+  function setView(v, flip) {
+    const items = [...chList.children], before = flip && !RM.matches ? items.map(x => x.getBoundingClientRect()) : null;
+    view = v; chList.classList.toggle('grid', v === 'grid'); chHead.querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); try { localStorage.setItem('tuchieu:chview', v); } catch (e) {}
+    if (before) items.forEach((x, i) => { const a = before[i], b = x.getBoundingClientRect();
+      x.animate([{ transform: `translate(${a.left - b.left}px,${a.top - b.top}px)`, opacity: .5 }, { transform: 'none', opacity: 1 }], { duration: vui() ? 420 : 380, easing: EASE(), delay: i * 25, fill: 'backwards' }); }); }
+  chHead.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { if (b.dataset.v !== view) setView(b.dataset.v, true); });
+  // các chương hiện lần lượt khi cuộn tới
+  const chObs = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { en.target.classList.add('seen'); chObs.unobserve(en.target); } }), { rootMargin: '0px 0px -8% 0px' }) : null;
+  function revealChs() { [...chList.children].forEach((x, i) => { x.style.setProperty('--i', i % 6); if (chObs && !RM.matches) { x.classList.add('rv'); chObs.observe(x); } }); }
   synth.querySelector('#flFull').onclick = () => { synth.classList.toggle('show-full'); const on = synth.classList.contains('show-full'); synth.querySelector('#flFull').textContent = on ? 'Thu gọn luận giải đầy đủ' : 'Đọc luận giải đầy đủ ›'; if (on) lSrc.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
   document.addEventListener('tc:reading', e => { const k = rKey(); if (k && e.detail) try { localStorage.setItem(k, e.detail); } catch (er) {} setTimeout(buildLuan, 0); });
   function restoreReading() { const k = rKey(); let t = null; try { t = k && localStorage.getItem(k); } catch (e) {} if (t) UI.setReading(t); buildLuan(); }
@@ -337,6 +356,18 @@
   dock.querySelectorAll('.fl-chip').forEach(b => b.onclick = () => askOpen(b.textContent));
   askSheet.querySelector('.fl-as-x').onclick = askSheet.querySelector('.fl-as-bg').onclick = askClose;
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !askSheet.hidden) askClose(); });
+
+  /* ---------- Chuyển động phụ ---------- */
+  function moveInd() { const b = nav.querySelector('[aria-current=page]'); if (!b) return; ind.style.width = b.offsetWidth + 'px'; ind.style.transform = `translateX(${b.offsetLeft}px)`; ind.style.height = b.offsetHeight + 'px'; ind.style.top = b.offsetTop + 'px'; }
+  addEventListener('resize', moveInd);
+  // cuộn xuống: ẩn thanh chọn màn cho rộng chỗ đọc; cuộn lên: hiện lại
+  let lastY = scrollY, tick = false;
+  addEventListener('scroll', () => { if (tick) return; tick = true; requestAnimationFrame(() => { const y = scrollY, d = y - lastY;
+    if (Math.abs(d) > 6) { document.body.classList.toggle('fl-down', d > 0 && y > 260); lastY = y; } tick = false; }); }, { passive: true });
+  function countDay() { const n = todayBox.querySelector('.fl-td-num'); if (!n || RM.matches) return; const to = +n.textContent, t0 = performance.now(), dur = 550;
+    const step = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); n.textContent = Math.max(1, Math.round(to * e)); if (k < 1) requestAnimationFrame(step); else n.textContent = to; }; requestAnimationFrame(step); }
+  function popFrom(from) { const card = $('#sheet .sheet-card'); if (!card || !from || RM.matches) return; const a = from.getBoundingClientRect(), b = card.getBoundingClientRect();
+    card.animate([{ transform: `translate(${a.left + a.width / 2 - (b.left + b.width / 2)}px,${a.top + a.height / 2 - (b.top + b.height / 2)}px) scale(${Math.max(.2, a.width / b.width)},${Math.max(.1, a.height / b.height)})`, opacity: .4 }, { transform: 'none', opacity: 1 }], { duration: vui() ? 380 : 340, easing: EASE() }); }
 
   /* ---------- Gợi ý theo tâm trạng: ngày Mặt Trăng chiếu khó mà đang dùng Vui ---------- */
   function moodTip(T, ymd) {
