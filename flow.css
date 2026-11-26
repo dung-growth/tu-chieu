@@ -210,3 +210,4 @@ body.flow .fl-hero{margin-bottom:16px}
 .fl-ke-ok{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px} .fl-ke-ok .btn-primary{margin-top:0}
 .hist-ask{padding:10px 14px} .hist-ask a,.fl-ke-ok a{color:var(--ink-3);font-size:13px}
 details.auth-danger summary{cursor:pointer;font-weight:600;font-size:14px;color:var(--ink-2)}
+.h-term{font-weight:400;font-size:.72em;color:var(--ink-3);white-space:nowrap}

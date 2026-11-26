@@ -67,10 +67,10 @@
   const read = el('section', 'fl-read'); read.setAttribute('aria-label', 'Luận giải');
   // bỏ ô "bối cảnh": bài Tổng quan luôn là bài tổng quát, muốn hỏi gì thì hỏi ở ô ngay dưới bài
   const ctxField = $('#ctx').closest('.field'); ctxField.hidden = true; $('#ctx').value = '';
-  const head = $('#p-ai .ai-head'); head.querySelector('h2').textContent = 'Luận giải bốn lá số';
+  const head = $('#p-ai .ai-head'); head.querySelector('h2').textContent = 'Luận giải của bạn';
   const chatSlot = el('div', 'fl-chatslot');
-  const synth = el('section', 'fl-read fl-synth'); synth.setAttribute('aria-label', 'Đọc tổng hợp');
-  synth.insertAdjacentHTML('afterbegin', '<h2 class="fl-sec-h">Đọc tổng hợp</h2><p class="small muted" style="margin:4px 0 10px">AI đọc cả bốn lá số ở trên, chỉ ra chỗ các môn cùng nói một điều, chỗ nói khác nhau, rồi viết thành một bài.</p>');
+  const synth = el('section', 'fl-read fl-synth'); synth.setAttribute('aria-label', 'Luận giải của bạn');
+  synth.insertAdjacentHTML('afterbegin', '<h2 class="fl-sec-h">Luận giải của bạn</h2><p class="small muted" style="margin:4px 0 10px">Bốn lá số đọc chéo với nhau: chỗ cùng nói một điều, chỗ nói khác nhau, và nên làm gì.</p>');
   synth.append(head, $('#aiOut'));
   read.append(chatSlot);
   // đặt ngoài #p-sum (khối đó bị vẽ lại mỗi lần lập lá số), ẩn hiện theo mục Tổng quan
@@ -87,12 +87,12 @@
   // ô hỏi: tiêu đề và gợi ý
   // ô hỏi: chỉ một chỗ, ngay dưới bài luận ở Tổng quan
   const chat = $('#chat'); chatSlot.append(chat);
-  chat.insertAdjacentHTML('afterbegin', '<h2 class="fl-h">Bạn muốn hỏi gì?</h2><p class="small muted" style="margin:0 0 10px">Hỏi về tính cách, công việc, tình cảm, năm nay… Câu "có nên…" sẽ được đọc bằng Kỳ Môn theo đúng lúc hỏi.</p>');
+  chat.insertAdjacentHTML('afterbegin', '<h2 class="fl-h">Hỏi Tứ Chiếu</h2><p class="small muted" style="margin:0 0 10px">Hỏi về tính cách, công việc, tình cảm, năm nay… Câu "có nên…" sẽ được đọc bằng Kỳ Môn theo đúng lúc hỏi.</p>');
   const hint = chat.querySelector('.chat-hint'); if (hint) hint.remove();
   chat.append($('#askStatus'));
 
   /* ---------- Sau mỗi lần vẽ lại: gỡ tab con, gom khối về đúng chỗ ---------- */
-  const TECH = ['Bảng góc chiếu', 'Vị trí các sao', '12 nhà và chủ tinh'];
+  const TECH = ['Các hành tinh tác động lẫn nhau', 'Các hành tinh lúc bạn sinh', '12 mảng đời sống'];
   function tidy() {
     // nét tính cách nổi bật (Tử vi), ngay dưới bài luận; tính lại khi lá số đổi
     const R = UI.R();
@@ -106,7 +106,7 @@
     if (yp && !yp.querySelector('.fl-yr-more')) { const t = el('button', 'btn-ghost btn-sm fl-yr-more'); t.type = 'button'; t.textContent = 'Xem chi tiết năm';
       t.onclick = () => { const o = yp.classList.toggle('open'); t.textContent = o ? 'Thu gọn' : 'Xem chi tiết năm'; }; yp.append(t); }
     // bài luận: chưa viết thì ẩn khung chữ hướng dẫn
-    const ao = $('#aiOut'); if (ao) ao.hidden = /Bấm\s*Viết luận giải/.test(ao.textContent) && ao.children.length <= 1;
+    const ao = $('#aiOut'); if (ao) ao.hidden = /Bấm\s*Đọc luận giải/.test(ao.textContent) && ao.children.length <= 1;
     // Tử vi: hiện liền mọi phần (cách cục, nét tính cách, đại hạn, 12 tháng)
     document.querySelectorAll('#p-tv [role=tabpanel][hidden]').forEach(x => x.hidden = false);
     // Kỳ Môn: bỏ nút chuyển chế độ, hiện liền hai phần: Hỏi việc ở trên, Mệnh bàn ở dưới
@@ -115,7 +115,7 @@
     if (qmM && qmH && !qmH.dataset.fl) {
       qmH.dataset.fl = 1; qmH.hidden = false; qmM.hidden = false; qmM.before(qmH);
       qmH.insertAdjacentHTML('afterbegin', '<h3 class="fl-qmh">Hỏi một việc cụ thể</h3><p class="small muted" style="margin:0 0 8px">Bàn lập đúng lúc bạn hỏi. Hợp với câu kiểu "có nên…", "…được không", "khi nào nên…".</p>');
-      qmM.insertAdjacentHTML('afterbegin', '<h3 class="fl-qmh" style="margin-top:28px">Mệnh bàn (lập theo giờ sinh)</h3>');
+      qmM.insertAdjacentHTML('afterbegin', '<h3 class="fl-qmh" style="margin-top:28px">Bàn Kỳ Môn lúc bạn sinh</h3>');
       // câu hỏi việc từ ô Hỏi ở Tổng quan có thể đã mang khung kết quả đi; hỏi ở đây thì trả khung về chỗ cũ
       const go = $('#qmGo'), orig = go && go.onclick;
       if (go && orig) go.onclick = e => { const out = $('#qmHoiOut');
@@ -126,7 +126,7 @@
     // bài luận: mở hết các phần, không gập
     document.querySelectorAll('#aiOut .rd-body[hidden]').forEach(b => b.hidden = false);
     // chiêm tinh: bảng kỹ thuật xuống cuối trang
-    document.querySelectorAll('#p-as .panel h3').forEach(h => { if (TECH.includes(h.textContent.trim())) h.closest('.panel').classList.add('fl-tech'); });
+    document.querySelectorAll('#p-as .panel h3').forEach(h => { if (TECH.includes(h.textContent.split('·')[0].trim())) h.closest('.panel').classList.add('fl-tech'); });
     // đoạn giải thích dài dưới tiêu đề: thu thành nút (?), không phải nội dung chính
     document.querySelectorAll('#result .panel h3, #result .cc-head h3').forEach(h => {
       if (h.dataset.fl) return; h.dataset.fl = 1;
@@ -166,7 +166,7 @@
       ['tv', 'Tử vi', !tv ? 'Cần giờ sinh để lập' : menh.major.length ? `Mệnh có ${menh.major.map(x => x.name).join(', ')}` : 'Mệnh vô chính diệu', by.tv],
       ['as', 'Chiêm tinh', `Mặt Trời ${pts[0].sign}, Trăng ${pts[1].sign}${known && R.astro.asc ? `, Mọc ${R.astro.asc.sign}` : ''}`, by.as],
       ['nm', 'Thần số', `Đường đời ${K.num}`, null]];
-    tiles.innerHTML = `<div class="fl-four-h"><h2 class="fl-sec-h">Bốn lá số của bạn</h2>${typeof SHARE !== 'undefined' ? '<button type="button" class="fl-chip fl-chip-share" id="flShare">Tạo ảnh story</button>' : ''}</div>
+    tiles.innerHTML = `<div class="fl-four-h"><h2 class="fl-sec-h">Xem từng lá số</h2>${typeof SHARE !== 'undefined' ? '<button type="button" class="fl-chip fl-chip-share" id="flShare">Tạo ảnh story</button>' : ''}</div>
       <div class="fl-four">${four.map(([k, name, line, v]) => `<button type="button" class="fl-fc" data-open="${k}"><span class="fl-fc-n"><i style="background:${v ? K.INK[v.el] : '#C9A95A'}"></i>${name}${v ? ` <small>${v.el}${K.main && !v.agree ? ', nói khác' : ''}</small>` : ''}</span><span class="fl-fc-l">${esc(line)}</span><span class="fl-fc-go">Xem lá số →</span></button>`).join('')}</div>`;
     tiles.querySelectorAll('[data-open]').forEach(x => x.onclick = () => open('laso', x.dataset.open));
     const sb = tiles.querySelector('#flShare');
@@ -187,7 +187,7 @@
         <div class="fl-td-nav"><button type="button" class="btn-ghost btn-sm" data-step="-1" aria-label="Ngày trước">‹</button><input type="date" value="${ymd}" aria-label="Chọn ngày"><button type="button" class="btn-ghost btn-sm" data-step="1" aria-label="Ngày sau">›</button>${isToday ? '' : '<button type="button" class="btn-ghost btn-sm" data-today>Hôm nay</button>'}</div></div>
       <h3 class="fl-td-theme">${esc(T.theme)}</h3>
       <div class="fl-td-tags"><span class="fl-td-tag ${T.hoang ? 'good' : 'bad'}">Ngày ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} (${T.dayThan})</span>${T.notes.slice(0, 1).map(n => `<span class="fl-td-tag ${/xung|hại/.test(n) ? 'bad' : 'good'}">${esc(n[0].toUpperCase() + n.slice(1))}</span>`).join('')}</div>
-      <div class="fl-td-cols"><div><h4>Nên</h4><ul>${li(T.nen.slice(0, 2))}</ul></div><div><h4>Nên tránh</h4><ul>${li(T.tranh.slice(0, 2))}</ul></div></div>
+      <div class="fl-td-cols"><div><h4>Nên</h4><ul>${li(T.nen.slice(0, 2))}</ul></div><div><h4>Tránh</h4><ul>${li(T.tranh.slice(0, 2))}</ul></div></div>
       <p class="fl-td-line"><b>Giờ tốt:</b> ${T.gio.map(g => g.gio).join(', ') || 'không có giờ hoàng đạo ban ngày'}</p>
       ${mood ? `<p class="fl-td-line"><b>Tâm trạng:</b> ${esc(mood)}</p>` : ''}
       

@@ -1,11 +1,14 @@
 // Bộ hướng dẫn luận giải: dùng chung cho máy chủ (api/luangiai.js) và nút "Sao chép lời nhắc" trên trang.
 // Sửa ở đây là cả hai nơi cùng đổi.
 // Giọng văn chung cho mọi bài: viết như người thật nói chuyện, tránh các kiểu câu đọc lên là biết máy viết.
-export const STYLE = `GIỌNG VĂN (bắt buộc):
-- Viết như một người luận số lâu năm đang nói chuyện trực tiếp: câu ngắn, chữ thường ngày, nói thẳng ý.
+export const STYLE = `GIỌNG VĂN (bắt buộc, theo "Giọng Tứ Chiếu"):
+- Viết như một người bạn biết đọc lá số đang nói chuyện trực tiếp: câu ngắn (thường 12–18 chữ, không quá 25), chữ thường ngày, ý chính nói trước.
 - Tả bằng hành vi nhìn thấy được ("hay để tin nhắn tới tối mới trả lời", "chốt việc nhanh rồi mới thấy thiếu") thay cho tính từ trừu tượng ("sâu sắc", "tinh tế", "đầy tiềm năng", "mạnh mẽ").
-- KHÔNG dùng các chữ và kiểu câu sau: "hành trình", "bức tranh", "chìa khóa", "nguồn năng lượng", "thăng hoa", "vũ trụ", "khám phá bản thân", "phiên bản tốt nhất", "không chỉ… mà còn", "điều này cho thấy", "có thể nói", "đáng chú ý là", "nhìn chung", "tóm lại", "hãy nhớ rằng", "đừng quên", "bạn là người…" mở đầu đoạn.
-- Không liệt kê ba tính từ liền nhau. Không câu hỏi tu từ. Không dùng dấu gạch ngang dài để chêm ý. Không kết đoạn bằng câu cổ vũ hay bài học đạo lý.
+- Thuật ngữ nào cũng giải thích ngay lần đầu bằng một mệnh đề ngắn, ví dụ "thân vượng (bản thân đủ sức, tự đứng được)". Không dùng chữ Hán.
+- Gọi người đọc là "bạn". Không tự gọi mình là AI, không nhắc tới "dữ liệu", "prompt", "mô hình".
+- Gọi đúng tên: bài đọc chéo là "luận giải"; điều các lá số cùng chỉ ra là "bốn lá số cùng nói"; việc không nên làm là "tránh".
+- KHÔNG dùng các chữ và kiểu câu sau: "hành trình", "bức tranh", "chìa khóa", "nguồn năng lượng", "thăng hoa", "vũ trụ", "khám phá bản thân", "phiên bản tốt nhất", "không chỉ… mà còn", "điều này cho thấy", "có thể nói", "đáng chú ý là", "nhìn chung", "tóm lại", "hãy nhớ rằng", "đừng quên", "đóng vai trò quan trọng", "mang lại", "độc đáo", "tuyệt vời", "hoàn hảo", "kỳ diệu", "bạn là người…" mở đầu đoạn.
+- Không liệt kê ba tính từ liền nhau. Không câu hỏi tu từ. Không dùng dấu gạch ngang dài để chêm ý. Không emoji. Không kết đoạn bằng câu cổ vũ hay bài học đạo lý.
 - Không lặp một khuôn câu cho mọi ý; đổi cách mở câu. Đoạn nào không có gì mới để nói thì bỏ.`;
 
 export const FOCUS = ['tổng quát', 'sự nghiệp và tài chính', 'tình cảm và các mối quan hệ', 'thời vận 3 năm tới'];
@@ -26,7 +29,7 @@ CÁCH VIẾT CHO SÂU (áp dụng cho mọi phần):
 Cấu trúc (dùng Markdown với tiêu đề ##):
 ## Đọc nhanh
 Đúng 5 gạch đầu dòng, mỗi dòng một câu ngắn nói thẳng một điều quan trọng nhất của người này (ưu tiên trọng tâm người đọc chọn), cuối câu ghi căn cứ trong ngoặc, ví dụ "(Tử vi: cách Cơ Lương)". Không chào hỏi, không mở bài.
-## Chân dung chung
+## Bốn lá số cùng nói
 Những điểm mà NHIỀU trường phái cùng chỉ ra, và những điểm kéo ngược nhau trong cùng một người.
 ## Tính cách: điểm mạnh và điểm cần lưu ý
 ## Sự nghiệp và tài chính

@@ -798,8 +798,8 @@ tr.cur td{background:var(--seal-soft)}
     <a class="brand" href="#top" aria-label="Tứ Chiếu, về đầu trang"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="var(--ink)"/><g fill="var(--paper)"><path d="M32 9 36 28 32 32 28 28Z"/><path d="M55 32 36 36 32 32 36 28Z" opacity=".55"/><path d="M32 55 28 36 32 32 36 36Z" opacity=".55"/><path d="M9 32 28 28 32 32 28 36Z" opacity=".55"/></g><circle cx="32" cy="32" r="5.2" fill="var(--seal)"/></svg>Tứ Chiếu</a>
     <nav class="nav" aria-label="Điều hướng chính">
       <a href="#lap">Lập lá số</a>
-      <a href="#ket-qua">Kết quả</a>
-      <a href="#ket-qua" data-tab="t-ai">Luận giải AI</a>
+      <a href="#ket-qua">Lá số của bạn</a>
+      <a href="#ket-qua" data-tab="t-ai">Luận giải</a>
       <a href="#ket-qua" data-tab="t-ai" data-focus="ask">Gieo quẻ</a>
     </nav>
     <div class="top-actions">
@@ -820,8 +820,8 @@ tr.cur td{background:var(--seal-soft)}
         <h1 class="reveal" style="--d:.05s">Một ngày sinh,<br><span>bốn góc nhìn.</span></h1>
         <p class="lede reveal" style="--d:.1s">Lập cùng lúc bốn lá số rồi để AI đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng khác nhau, và bạn nên làm gì tiếp theo.</p>
         <div class="hero-cta reveal" style="--d:.15s">
-          <button class="btn-primary btn-lg" type="button" id="heroGo">Lập lá số miễn phí</button>
-          <button class="btn-ghost btn-lg" type="button" data-tab="t-ai">Xem luận giải AI</button>
+          <button class="btn-primary btn-lg" type="button" id="heroGo">Lập lá số</button>
+          <button class="btn-ghost btn-lg" type="button" data-tab="t-ai">Đọc luận giải mẫu</button>
         </div>
         <ul class="facts reveal" style="--d:.2s">
           <li><span><b>Tính ngay trên máy</b><br>Kết quả hiện sau một giây</span></li>
@@ -873,7 +873,7 @@ tr.cur td{background:var(--seal-soft)}
             <p class="err" id="geoErr" role="alert" hidden style="grid-column:1/-1;margin:0"></p>
           </div>
           <div class="field wide"><label for="ctx">Bối cảnh hoặc câu hỏi cho AI <span class="muted" style="font-weight:400">(không bắt buộc)</span></label>
-            <textarea id="ctx" placeholder="Ví dụ:"></textarea></div>
+            <textarea id="ctx" placeholder="Ví dụ: tháng này có nên đổi việc không?"></textarea></div>
           <div class="row-actions">
             <button class="btn-primary btn-lg" type="submit" id="go">Lập lá số</button>
             <span class="hint" id="tzNote">Giờ sinh tính theo giờ địa phương lúc sinh.</span>
@@ -886,12 +886,12 @@ tr.cur td{background:var(--seal-soft)}
   <section class="results" id="ket-qua">
     <div class="container">
       <div class="section-head">
-        <div><h2>Kết quả</h2><p>Bốn lá số của cùng một người, và phần AI đối chiếu.</p></div>
+        <div><h2>Lá số của bạn</h2><p>Bốn lá số của cùng một người, đọc chéo với nhau.</p></div>
       </div>
       <ol class="steps" id="steps" aria-label="Các bước xem">
         <li><button type="button" data-step="1"><span class="st-n">1</span><span class="st-t"><b>Xem lá số</b><small>Tổng quan và 4 hệ ở các tab bên dưới</small></span></button></li>
         <li><button type="button" data-step="2"><span class="st-n">2</span><span class="st-t"><b>AI luận giải</b><small>Bài đối chiếu cả 4 hệ, khoảng 1 phút</small></span></button></li>
-        <li><button type="button" data-step="3"><span class="st-n">3</span><span class="st-t"><b>Hỏi thêm</b><small>Hỏi AI, gieo quẻ, xem độ hợp, Khám phá</small></span></button></li>
+        <li><button type="button" data-step="3"><span class="st-n">3</span><span class="st-t"><b>Hỏi thêm</b><small>Hỏi Tứ Chiếu, gieo quẻ, xem độ hợp, Khám phá</small></span></button></li>
       </ol>
       <div id="result" aria-live="polite">
         <div class="tabs" role="tablist" aria-label="Kết quả">
@@ -901,7 +901,7 @@ tr.cur td{background:var(--seal-soft)}
           <button role="tab" id="t-tv" aria-selected="false" aria-controls="p-tv">Tử vi</button>
           <button role="tab" id="t-nm" aria-selected="false" aria-controls="p-nm">Thần số học</button>
           <button role="tab" id="t-hop" aria-selected="false" aria-controls="p-hop">Xem độ hợp</button>
-          <button role="tab" id="t-ai" class="tab-ai" aria-selected="false" aria-controls="p-ai">Luận giải AI</button>
+          <button role="tab" id="t-ai" class="tab-ai" aria-selected="false" aria-controls="p-ai">Luận giải</button>
           <button role="tab" id="t-lab" aria-selected="false" aria-controls="p-lab">Khám phá <span class="beta">Beta</span></button>
         </div>
         <div class="tabpanel" role="tabpanel" id="p-sum" aria-labelledby="t-sum"></div>
@@ -944,7 +944,7 @@ tr.cur td{background:var(--seal-soft)}
             <div class="ai-head">
               <div class="ai-title">
                 <span class="ai-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span>
-                <div><h2>AI đối chiếu bốn lá số</h2><p>Đọc cả bốn trường phái cùng lúc, chỉ ra chỗ trùng, chỗ vênh, rồi trả lời tiếp các câu hỏi của bạn.</p></div>
+                <div><h2>Luận giải của bạn</h2><p>Đọc cả bốn trường phái cùng lúc, chỉ ra chỗ trùng, chỗ vênh, rồi trả lời tiếp các câu hỏi của bạn.</p></div>
               </div>
               <div class="ai-controls">
                 <label for="focus" class="small" style="font-weight:500">Trọng tâm</label>
@@ -955,23 +955,23 @@ tr.cur td{background:var(--seal-soft)}
                   <option value="thời vận 3 năm tới">Thời vận 3 năm tới</option>
                 </select>
                 <input id="code" type="password" placeholder="Mã truy cập (nếu có)" aria-label="Mã truy cập" autocomplete="off">
-                <button class="btn-primary" id="aiGo" type="button">Viết bài đọc tổng hợp</button>
+                <button class="btn-primary" id="aiGo" type="button">Đọc luận giải</button>
                 <button class="btn-ghost" id="aiStop" type="button" hidden>Dừng</button>
-                <button class="btn-ghost" id="copyPrompt" type="button">Sao chép lời nhắc</button>
+                <button class="btn-ghost" id="copyPrompt" type="button">Dùng với ChatGPT hoặc Gemini</button>
                 <button class="btn-ghost" id="aiCopy" type="button" hidden>Sao chép</button>
                 <button class="btn-ghost" id="aiPdf" type="button" hidden title="Tải bài luận, các câu hỏi và tóm tắt lá số thành file PDF">Tải PDF</button>
                 <span class="ai-status" id="aiStatus"></span>
               </div>
             </div>
             <div class="ai-body">
-              <div class="ai-out" id="aiOut"><p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p></div>
+              <div class="ai-out" id="aiOut"><p class="muted">Bấm <b>Đọc luận giải</b> để Tứ Chiếu đọc chéo cả bốn lá số và viết thành bài: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p></div>
               <div id="chat" class="chat" hidden>
                 <div id="qaList"></div>
                 <p class="chat-hint">Hỏi tiếp, hoặc gieo một quẻ Kinh Dịch (Mai Hoa Dịch Số, lấy năm, tháng, ngày, giờ âm lịch lúc bấm). Mỗi câu hỏi chỉ gieo một lần trong ngày.</p>
                 <div class="chat-row">
                   <input id="ask" placeholder="Ví dụ: tính tôi hợp nghề gì?">
                   <button class="btn-ghost" id="askGo" type="button">Hỏi</button>
-                  <button class="btn-que" id="castGo" type="button" title="Gieo một quẻ Kinh Dịch theo thời điểm bấm, rồi luận cho câu hỏi này">☯ Gieo quẻ cho câu này</button>
+                  <button class="btn-que" id="castGo" type="button" title="Gieo một quẻ Kinh Dịch theo thời điểm bấm, rồi luận cho câu hỏi này">Gieo quẻ cho câu này</button>
                 </div>
                 <p id="askStatus" class="small" role="status" style="margin:8px 0 0"></p>
               </div>
@@ -993,7 +993,7 @@ tr.cur td{background:var(--seal-soft)}
     </div>
     <nav aria-label="Liên kết cuối trang">
       <a href="#lap">Lập lá số</a>
-      <a href="#ket-qua" data-tab="t-ai">Luận giải AI</a>
+      <a href="#ket-qua" data-tab="t-ai">Luận giải</a>
       <a href="#top">Về đầu trang</a>
     </nav>
   </div>
@@ -1351,7 +1351,7 @@ function renderSummary(){
   <button type="button" class="hd-hook" id="hdHook" data-go="t-lab" hidden></button>
   ${input.timeMode==='unknown' ? '<div class="warn">Không rõ giờ sinh: Thần số học đầy đủ; Bát tự còn 3 trụ (thiếu trụ giờ); Bản đồ sao tính theo 12 giờ trưa, không có cung Mọc và các nhà; Tử vi chưa lập được. Nếu biết khoảng giờ, chọn canh giờ để có thêm Tử vi và trụ giờ.</div>' : input.timeMode==='canh' ? '<div class="warn">Tính theo canh giờ: Bát tự và Tử vi đầy đủ. Bản đồ sao lấy giờ giữa canh nên cung Mọc và các nhà chỉ là ước lượng.</div>' : ''}
   <div class="panel" id="yearPanel"></div>
-  <div class="callout"><p>Các lá số đã sẵn sàng. Để AI đọc tất cả và viết bài luận đối chiếu giữa các trường phái.</p><button class="btn-primary" type="button" id="sumAi">Mở luận giải AI</button></div>`;
+  <div class="callout"><p>Các lá số đã sẵn sàng. Tứ Chiếu sẽ đọc chéo cả bốn và viết thành bài luận giải.</p><button class="btn-primary" type="button" id="sumAi">Đọc luận giải</button></div>`;
   $('#sumAi').onclick = () => { show('t-ai'); $('#t-ai').focus(); };
   $('#p-sum').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { show(b.dataset.go); go($('#result')); });
   renderYearPanel();
@@ -1402,7 +1402,7 @@ function renderBazi(){
   <p class="small muted" style="margin:-6px 0 0">Thần sát tra theo can ngày (Quý Nhân, Văn Xương, Lộc Thần, Dương Nhận), theo chi năm và chi ngày (Đào Hoa, Dịch Mã, Hoa Cái, Kiếp Sát), theo chi tháng (Nguyệt Đức). Không vong theo trụ ngày: ${b.khongVong.join(', ')}. Rê chuột vào thần sát để xem nghĩa.</p>
   <div class="two">
     <div class="panel">
-      <h3>Thân vượng hay nhược</h3>
+      <h3>Bạn đủ sức tự đứng tới đâu <span class="h-term">· thân vượng, nhược</span></h3>
       <div class="strength"><span class="st-level">${st.level}</span><span class="muted num">${st.ratio}% phe trợ</span></div>
       <div class="meter" role="img" aria-label="Phe trợ ${st.ratio}%"><span class="zone weak">Nhược</span><span class="zone mid">Trung hòa</span><span class="zone strong">Vượng</span><i style="left:${Math.min(98,Math.max(2,st.ratio))}%"></i></div>
       <p class="small" style="margin:12px 0 0">Nhật chủ <b>${dm.can} <span class="el-${dm.canHanh}">${dm.canHanh}</span></b>, sinh tháng ${b.pillars[1].chi} (<span class="el-${st.monthH}">${st.monthH}</span>): <b>${st.deLenh?'đắc lệnh':'thất lệnh'}</b>. Phe trợ (cùng hành và hành sinh ra Nhật chủ) được ${st.support}/${st.total} điểm. ${helpTxt}</p>
@@ -1412,11 +1412,11 @@ function renderBazi(){
       <div class="bar"><span class="el-${k}" style="font-weight:600">${k}</span><div class="track"><div class="fill" style="width:${(v/total*100).toFixed(0)}%;background:${EL_COLOR[k]}"></div></div><span class="num muted">${(v/total*100).toFixed(0)}%</span></div>`).join('')}</div>
       <p class="small muted" style="margin:12px 0 0">Tính cả thiên can, địa chi và tàng can (tàng can chính 0,5, phụ 0,25). Đếm thô: ${Object.entries(b.count).map(([k,v])=>k+' '+v).join(' · ')}.</p></div>
   </div>
-  <div class="panel"><h3>Hợp, xung, hình, hại trong lá số</h3>
+  <div class="panel"><h3>Các trụ hợp nhau hay kéo nhau <span class="h-term">· hợp, xung, hình, hại</span></h3>
     ${rel.length ? `<div class="rel-list">${rel.map(r=>`<span class="rel rel-${relClass(r.kind)}"><b>${r.kind}</b> ${r.text}</span>`).join('')}</div>` : '<p class="muted small" style="margin:8px 0 0">Bốn trụ không có cặp hợp, xung, hình, hại nào đáng kể.</p>'}
   </div>
   <div class="panel">
-    <div class="dv-head"><h3>Đại vận</h3><span class="small muted">Khởi vận sau khoảng ${b.startYun.y} năm ${b.startYun.m} tháng. Bấm một đại vận để xem từng năm.</span></div>
+    <div class="dv-head"><h3>Các giai đoạn 10 năm <span class="h-term">· đại vận</span></h3><span class="small muted">Khởi vận sau khoảng ${b.startYun.y} năm ${b.startYun.m} tháng. Bấm một đại vận để xem từng năm.</span></div>
     <div class="timeline" id="dvList">${b.daiVan.map((v,k)=>`<button type="button" class="tl ${dvNow(v)?'now':''}" data-k="${k}" aria-pressed="false"><b>${v.gz}</b><span class="num">${v.startYear}–${v.endYear}</span><span class="muted">${v.thapThan}</span></button>`).join('')}</div>
     <div id="dvYears"></div>
   </div>`;
@@ -1503,26 +1503,26 @@ function renderAstro(){
   <div class="astro-top">
     <div class="wheel-box">${wheelSVG(a)}
       <div class="wheel-legend small muted"><span><i style="background:var(--wood)"></i>Tam hợp</span><span><i style="background:var(--air)"></i>Lục hợp</span><span><i style="background:var(--fire)"></i>Vuông góc, đối đỉnh</span><span>℞ nghịch hành</span></div></div>
-    <div class="panel"><h3>Bảng góc chiếu</h3><p class="small muted" style="margin:4px 0 10px">Ô giao giữa hai sao: ký hiệu góc chiếu và độ lệch. ☌ trùng tụ, ⚹ lục hợp, □ vuông góc, △ tam hợp, ☍ đối đỉnh.</p><div class="table-wrap">${aspectGrid(a)}</div>
+    <div class="panel"><h3>Các hành tinh tác động lẫn nhau <span class="h-term">· góc chiếu</span></h3><p class="small muted" style="margin:4px 0 10px">Ô giao giữa hai sao: ký hiệu góc chiếu và độ lệch. ☌ trùng tụ, ⚹ lục hợp, □ vuông góc, △ tam hợp, ☍ đối đỉnh.</p><div class="table-wrap">${aspectGrid(a)}</div>
       ${ruler ? `<div class="ruler"><span class="label">Sao chủ lá số</span><p><b>${ruler.rulerName}</b>, chủ của cung Mọc ${ruler.sign}, nằm ở ${ruler.inSign}${ruler.inHouse?', nhà '+ruler.inHouse:''}.</p></div>` : ''}</div>
   </div>
   <div class="two">
-    <div class="panel"><h3>Vị trí các sao</h3><div class="table-wrap"><table><thead><tr><th>Sao</th><th>Vị trí</th><th>Nhà</th></tr></thead><tbody>
+    <div class="panel"><h3>Các hành tinh lúc bạn sinh</h3><div class="table-wrap"><table><thead><tr><th>Sao</th><th>Vị trí</th><th>Nhà</th></tr></thead><tbody>
       ${F.hasHour ? `<tr><td><b>Cung Mọc</b></td><td class="num">${a.asc.text}${F.approxHouses?' <span class="muted">(ước lượng)</span>':''}</td><td>1</td></tr><tr><td><b>Thiên Đỉnh (MC)</b></td><td class="num">${a.mc.text}${F.approxHouses?' <span class="muted">(ước lượng)</span>':''}</td><td>10</td></tr>` : ''}
       ${a.points.map(p=>`<tr><td><span style="color:${SIGN_COL[p.signIdx%4]}">${p.glyph}︎</span> <span data-tip="planet" data-key="${p.key}" data-ctx="${p.name}|${p.sign}|${F.hasHour?p.house:''}">${p.name}</span></td><td class="num">${p.key==='Moon'&&F.moonRange ? `${F.moonRange.from} → ${F.moonRange.to}` : p.text} ${p.retro&&p.key!=='Node'?'<span class="retro">℞</span>':''}</td><td class="num">${F.hasHour ? p.house+(F.approxHouses?'?':'') : '—'}</td></tr>`).join('')}
       ${a.extra.filter(e=>F.hasHour||e.key!=='PoF').map(p=>`<tr><td class="muted">${p.glyph}︎ <span data-tip="planet" data-key="${p.key}" data-ctx="${p.name}|${p.sign}|${F.hasHour?p.house:''}">${p.name}</span></td><td class="num">${p.text}</td><td class="num">${F.hasHour ? p.house : '—'}</td></tr>`).join('')}
       </tbody></table></div>
       <p class="small muted" style="margin:10px 0 0">Hoàng đạo nhiệt đới, hệ nhà Placidus. ℞ là nghịch hành. La Hầu là giao điểm thật của quỹ đạo Mặt Trăng; Lilith tính theo vị trí trung bình.${F.hasHour?` Điểm may mắn tính theo công thức sinh ${a.extra[1].dayBirth?'ban ngày':'ban đêm'}.`:''}</p></div>
-    ${F.hasHour ? `<div class="panel"><h3>12 nhà và chủ tinh</h3><div class="table-wrap"><table><thead><tr><th>Nhà</th><th>Cung đầu nhà</th><th>Chủ tinh</th><th>Chủ tinh nằm ở</th></tr></thead><tbody>
+    ${F.hasHour ? `<div class="panel"><h3>12 mảng đời sống <span class="h-term">· 12 nhà</span></h3><div class="table-wrap"><table><thead><tr><th>Nhà</th><th>Cung đầu nhà</th><th>Chủ tinh</th><th>Chủ tinh nằm ở</th></tr></thead><tbody>
       ${a.rulers.map(r=>`<tr><td class="num"><b>${r.house}</b></td><td>${r.sign}</td><td>${r.rulerName}${r.trad?` <span class="muted">(cổ điển: ${r.trad})</span>`:''}</td><td>${r.inSign}, nhà ${r.inHouse}</td></tr>`).join('')}
-      </tbody></table></div></div>` : `<div class="panel"><h3>12 nhà và chủ tinh</h3><p class="muted small">Cần giờ sinh để tính các nhà.</p></div>`}
+      </tbody></table></div></div>` : `<div class="panel"><h3>12 mảng đời sống <span class="h-term">· 12 nhà</span></h3><p class="muted small">Cần giờ sinh để tính các nhà.</p></div>`}
   </div>
   <div class="two">
-    <div class="panel"><h3>Nguyên tố và tính chất</h3><div class="table-wrap"><table class="matrix"><thead><tr><th></th>${MODES.map(m=>`<th>${m}</th>`).join('')}<th>Tổng</th></tr></thead><tbody>
+    <div class="panel"><h3>Bạn nghiêng về lửa, đất, khí hay nước</h3><div class="table-wrap"><table class="matrix"><thead><tr><th></th>${MODES.map(m=>`<th>${m}</th>`).join('')}<th>Tổng</th></tr></thead><tbody>
       ${ELS.map(e=>`<tr><th scope="row" style="color:${elCol[e]}">${e}</th>${MODES.map(m=>`<td>${(a.matrix[e+'|'+m]||[]).map(gl=>gl+'︎').join(' ')}</td>`).join('')}<td class="num"><b>${a.elements[e]}</b></td></tr>`).join('')}
       <tr><th scope="row">Tổng</th>${MODES.map(m=>`<td class="num"><b>${a.modes[m]}</b></td>`).join('')}<td></td></tr></tbody></table></div>
       <p class="small muted" style="margin:10px 0 0">Mặt Trời và Mặt Trăng tính 2 điểm, các sao khác 1 điểm. Khởi phát: Bạch Dương, Cự Giải, Thiên Bình, Ma Kết. Kiên định: Kim Ngưu, Sư Tử, Bọ Cạp, Bảo Bình. Linh hoạt: Song Tử, Xử Nữ, Nhân Mã, Song Ngư.</p></div>
-    <div class="panel"><h3>Quá cảnh 18 tháng tới</h3>
+    <div class="panel"><h3>18 tháng tới các hành tinh đi qua đâu <span class="h-term">· quá cảnh</span></h3>
       ${R.transits.length ? `<div class="asp-list">${R.transits.map(t=>`<div><span>${t.mover} <b>${t.aspect}</b> ${t.target}</span><span class="num muted">${nowStr(t.start)} – ${nowStr(t.end)}</span></div>`).join('')}</div>` : '<p class="muted">Không có quá cảnh lớn nào chạm các điểm chính trong 18 tháng tới.</p>'}
       <p class="small muted" style="margin:10px 0 0">Sao Mộc, Sao Thổ, Thiên Vương, Hải Vương, Diêm Vương chạm Mặt Trời, Mặt Trăng, Sao Kim, Cung Mọc, Thiên Đỉnh, lệch trong 1°. Một góc có thể lặp lại vài lần do nghịch hành.</p></div>
   </div>`;
@@ -1648,7 +1648,7 @@ function renderMonths(ML){
       <div class="small muted">${d(x.start)}–${d(x.end)} · ${x.gz}${x.m === cur ? ' · <b>tháng này</b>' : ''}</div>
       <div class="mo-p">Cung ${x.palace}</div>
       <p class="mo-chot">${esc(x.chot.charAt(0).toUpperCase() + x.chot.slice(1))}.</p>
-      <div class="mo-more"><p class="small">${esc(x.line)}</p><button type="button" class="btn-ghost btn-sm mo-ask">Hỏi AI tháng này</button></div>
+      <div class="mo-more"><p class="small">${esc(x.line)}</p><button type="button" class="btn-ghost btn-sm mo-ask">Tháng này của tôi thế nào?</button></div>
     </div>`).join('')}</div></div>`;
   box.querySelectorAll('.mo').forEach(el => {
     const x = list.find(v => v.m === +el.dataset.m);
@@ -1697,7 +1697,7 @@ function cachHTML(A){
   CC = A.cach.map(c => TVP.cach(R.tuvi, c));
   const groups = [3, 2, 1].map(w => [w, CC.map((c, i) => ({ c, i })).filter(x => x.c.w === w)]).filter(g => g[1].length);
   const strong = CC.filter(c => c.ung >= 70).length;
-  return `<div class="panel"><div class="cc-head"><h3>Cách cục trên lá số</h3><span class="small muted">${CC.length} cách · <b>${strong}</b> đang ứng mạnh</span></div>
+  return `<div class="panel"><div class="cc-head"><h3>Những thế mạnh, thế khó nổi bật <span class="h-term">· cách cục</span></h3><span class="small muted">${CC.length} cách · <b>${strong}</b> đang ứng mạnh</span></div>
     <p class="small muted" style="margin:4px 0 12px">Mỗi cách có hai thông số. Nhãn <b>Tốt / Lưu ý</b> là bản chất của cách theo phú đoán. Thanh <b>mức ứng</b> là cách đó hiện ra mạnh tới đâu trên lá số này, tùy độ sáng của sao, cát tinh, sát tinh và Tuần Triệt. Bấm vào một cách để xem vì sao.</p>
     ${groups.map(([w, L]) => `<div class="cc-group"><div class="label">${L[0].c.rank} · ${L.length}</div>${L.map(({ c, i }) => `
       <button type="button" class="cc-row cc-${c.tone}" data-cc="${i}">
@@ -1716,7 +1716,7 @@ function openCach(c, from){
     ${c.form.length ? `<h4>Sao làm nên cách</h4><div class="sh-rows">${c.form.map(x => `<div class="sh-row"><span><b>${esc(x.name)}</b> <span class="muted small">${x.rel}</span></span><span>${x.bright ? `<span class="br-tag">${TVP.briTxt(x.bright)}</span>` : ''}</span></div>`).join('')}</div>` : ''}
     <h4>Sao tốt ${c.tone === 'luuy' ? 'làm nhẹ đi' : 'giúp thêm'}</h4>${starRows(c.help.slice(0, 8), 'good')}
     <h4>Sao xấu ${c.tone === 'luuy' ? 'làm nặng thêm' : 'cản trở'}</h4>${starRows(c.hurt.slice(0, 8), 'bad')}
-    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi AI về cách này</button></div>`, from);
+    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Cách này nghĩa là gì?</button></div>`, from);
   $('#shAsk').onclick = () => { closeSheet(); askAbout(`Lá số Tử vi của tôi có ${c.name} (${c.toneTxt.toLowerCase()}, ${c.ungTxt}, luận cho cung ${c.palace}). Cách này ứng vào đời tôi thế nào?`); };
 }
 
@@ -1785,7 +1785,7 @@ function openPalaceSheet(b){
     ${PAL_LIFE[P.name] ? `<h4>Ngoài đời thường thấy</h4><p style="margin:2px 0">${PAL_LIFE[P.name][P.label][0]}</p><h4>Nên làm</h4><p style="margin:2px 0">${PAL_LIFE[P.name][P.label][1]}</p>` : ''}
     <h4>Điều giúp bạn</h4>${bullets(help.length ? help : P.help, false)}
     <h4>Điều làm bạn chùn lại</h4>${bullets(hurt.length ? hurt : P.hurt, true)}
-    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi AI về cung này</button></div>
+    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Cung này nói gì về tôi?</button></div>
     <div class="pal-tech"><h4>Chi tiết cho người rành Tử vi</h4>
       <p class="small muted">${P.stem} ${b}. Điểm tính từ độ sáng của sao chính${P.borrow ? ' (cung trống nên mượn sao ở cung đối diện, tính bảy phần)' : ''}, cộng sao tốt và trừ sao xấu ở cung này cùng các cung chiếu về. Sao càng gần cung càng mạnh (ngay trong cung, rồi đối diện, tam hợp, kề bên); sao tốt càng sáng càng giúp nhiều, sao xấu bị tối lại càng gây khó. Đây là cách đọc gợi ý của Tứ Chiếu.</p>
       <h4>${P.borrow ? 'Sao chính (mượn cung đối diện)' : 'Sao chính'}</h4>
@@ -1822,7 +1822,7 @@ function openTrait(x, from){
       ${up.length ? `<div class="sh-rows">${up.map(p => row(p)).join('')}</div>` : '<p class="small muted">Không có sao nào đẩy nét này lên.</p>'}
       ${down.length ? `<div class="sh-rows" style="margin-top:8px">${down.map(p => row(p, true)).join('')}</div>` : ''}</details>
     <p class="small muted">So với ${x.n.toLocaleString('vi-VN')} lá số ngẫu nhiên lập bằng cùng cách an sao (${R.tuvi.school === 'vn' ? 'Việt Nam' : 'Trung Quốc'}).</p>
-    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi AI về nét này</button></div>`, from);
+    <div class="sh-act"><button type="button" class="btn-ghost btn-sm" id="shAsk">Hỏi thêm về nét này</button></div>`, from);
   $('#shAsk').onclick = () => { closeSheet(); askAbout(`Theo Tử vi, nét "${x.name}" của tôi ở mức ${x.level.toLowerCase()} (hơn ${x.pct}% người). Điều này thể hiện ra sao trong đời sống và nên tận dụng thế nào?`); };
 }
 
@@ -1904,9 +1904,9 @@ function buildPrint(){
     <div class="pd-head"><span class="pd-brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="var(--ink)"/><g fill="var(--paper)"><path d="M32 9 36 28 32 32 28 28Z"/><path d="M55 32 36 36 32 32 36 28Z" opacity=".55"/><path d="M32 55 28 36 32 32 36 36Z" opacity=".55"/><path d="M9 32 28 28 32 32 28 36Z" opacity=".55"/></g><circle cx="32" cy="32" r="5.2" fill="var(--seal)"/></svg>Tứ Chiếu</span><span class="pd-date">Bản luận giải · ${now.toLocaleDateString('vi-VN')}</span></div>
     <h1 class="pd-name">${esc(i.name)}</h1>
     <p class="pd-meta">${i.gender==='nam'?'Nam':'Nữ'} · ${esc(i.timeLabel)}, ${fmtDate(i.date)} · ${esc(i.place)} (${gmt(i.tz)}) · Âm lịch ${R.bazi.lunarDate.d}/${R.bazi.lunarDate.m} ${esc(R.bazi.lunarDate.yearGZ)} · Trọng tâm: ${esc($('#focus').value)}</p>
-    <h2 class="pd-h">Tóm tắt bốn lá số</h2>${printSummary()}
-    <h2 class="pd-h">Bài luận</h2><div class="pd-reading">${reading.innerHTML}</div>
-    ${qa.children.length ? `<h2 class="pd-h">Hỏi đáp và gieo quẻ</h2><div class="pd-reading">${qa.innerHTML}</div>` : ''}
+    <h2 class="pd-h">Bốn lá số cùng nói</h2>${printSummary()}
+    <h2 class="pd-h">Luận giải đầy đủ</h2><div class="pd-reading">${reading.innerHTML}</div>
+    ${qa.children.length ? `<h2 class="pd-h">Hỏi và gieo quẻ</h2><div class="pd-reading">${qa.innerHTML}</div>` : ''}
     <p class="pd-foot">Tạo bởi Tứ Chiếu (tu-chieu.vercel.app). Bát tự, Tử vi, chiêm tinh, thần số học và Kinh Dịch là các hệ thống diễn giải văn hóa, không phải dự đoán khoa học. Dùng để tự soi lại mình, đừng dùng thay cho quyết định y tế, tài chính hay pháp lý.</p>`;
 }
 $('#aiPdf').onclick = () => {
@@ -1977,7 +1977,7 @@ function drawYear(y){
       <div><span class="label">Chiêm tinh</span>Sao Mộc ở ${sign(movers[0][1])}${F.hasHouses ? `, nhà ${houseOfLon(movers[0][1])}` : ''}. Sao Thổ ở ${sign(movers[1][1])}${F.hasHouses ? `, nhà ${houseOfLon(movers[1][1])}` : ''}.<br>${hits.length ? hits.join('<br>') : '<span class="muted">Không có góc lớn chạm điểm chính.</span>'}</div>
       <div><span class="label">Thần số học</span>Năm cá nhân <b><span data-tip="num" data-key="${py}" data-ctx="Năm cá nhân ${y}">${py}</span></b>: ${NGHIA.num[py] || ''}${R.numerology.peaks.filter(p => y >= p.year).slice(-1).map(p => `<br>Đang trong đỉnh cao số ${p.n} (từ ${p.year}).`).join('')}</div>
     </div>
-    <button type="button" class="btn-ghost btn-sm" id="yrAsk" style="margin-top:12px">Hỏi AI về năm ${y}</button>`;
+    <button type="button" class="btn-ghost btn-sm" id="yrAsk" style="margin-top:12px">Năm ${y} của tôi thế nào?</button>`;
   $('#yrAsk').onclick = () => askAbout(`Năm ${y} (${g.can} ${g.chi}) của tôi thế nào? Nên tập trung vào điều gì, cẩn thận điều gì?`);
 }
 
@@ -2007,7 +2007,7 @@ function renderKD(){
   const box = $('#lab-kd'); if (!box) return;
   box.innerHTML = `<div class="panel"><h3>Gieo quẻ Kinh Dịch</h3>
     <p class="small muted" style="margin:4px 0 12px">Dùng cho một câu hỏi cụ thể, ví dụ "tháng này có nên chuyển nhà không". Quẻ lập theo Mai Hoa Dịch Số từ năm, tháng, ngày, giờ âm lịch lúc bấm; AI luận quẻ cùng lá số của bạn. Mỗi câu hỏi chỉ gieo một lần trong ngày.</p>
-    <div class="chat-row"><input id="kdQ" placeholder="Câu hỏi của bạn" aria-label="Câu hỏi để gieo quẻ"><button class="btn-que" id="kdGo" type="button">☯ Gieo quẻ</button></div>
+    <div class="chat-row"><input id="kdQ" placeholder="Bạn đang băn khoăn chuyện gì?" aria-label="Câu hỏi để gieo quẻ"><button class="btn-que" id="kdGo" type="button">Gieo quẻ</button></div>
     <div id="kdList" class="kd-list"></div></div>`;
   const go_ = () => { const q = $('#kdQ').value.trim(); if (!q) { $('#kdQ').focus(); return; } $('#kdQ').value = ''; castAsk(q, $('#kdList')); };
   $('#kdGo').onclick = go_; $('#kdQ').addEventListener('keydown', e => { if (e.key === 'Enter') go_(); });
@@ -2070,12 +2070,12 @@ function renderHD(){
       ${HD.reading(c, vary)}
       <div class="hd-ai">
         <div><b>Muốn đọc sâu hơn?</b><br><span class="small muted">AI viết một bài riêng dựa trên biểu đồ của bạn${readInput().ctx ? ' và bối cảnh bạn đã kể' : ''}, tốn 1 lượt AI.</span></div>
-        <button type="button" class="btn-primary" id="hdAiGo">AI luận sâu</button>
+        <button type="button" class="btn-primary" id="hdAiGo">Đọc kỹ hơn</button>
       </div>
       <div id="hdAiOut" class="ai-out"></div>
     </div>
   </div>
-  <div class="panel" style="margin-top:20px"><h3>Kích hoạt</h3>
+  <div class="panel" style="margin-top:20px"><h3>Các cổng được bật lúc bạn sinh <span class="h-term">· kích hoạt</span></h3>
     <div style="overflow-x:auto"><table class="hd-act"><thead><tr><th>Thiên thể</th><th>Design</th><th>Personality</th><th>Nghĩa (Personality)</th></tr></thead>
     <tbody>${c.pers.map((x, k) => `<tr><td>${x.glyph}︎ ${x.name}</td>${row(c.des[k], 'd')}${row(x, '')}<td class="small muted">${HD.GATE[x.gate]}</td></tr>`).join('')}</tbody></table></div>
     <p class="small muted" style="margin:12px 0 0">Design là thời điểm Mặt Trời lùi 88° trước ngày sinh (${c.designDate.toLocaleDateString('vi-VN')}). Human Design là hệ thống hiện đại (từ 1987), Tứ Chiếu để riêng, không trộn vào bài luận 4 hệ. Muốn hỏi thêm thì hỏi AI, nhắc chữ "Human Design" trong câu hỏi.</p>
@@ -2154,7 +2154,7 @@ function renderQM(){
       <div class="panel qm-ask"><label for="qmQ"><b>Câu hỏi của bạn</b></label>
         <textarea id="qmQ" rows="2" maxlength="300" placeholder="Ví dụ: Tháng này có nên nhận lời mời làm việc ở công ty mới không?"></textarea>
         <div class="qm-ask-row"><label class="small" for="qmTopic">Loại việc</label><select id="qmTopic">${topics}</select>
-          <button type="button" class="btn-primary" id="qmGo">Lập bàn theo giờ này và hỏi AI</button></div>
+          <button type="button" class="btn-primary" id="qmGo">Hỏi việc này</button></div>
         <p class="small muted" style="margin:6px 0 0">Bàn lập đúng thời điểm bạn bấm (giờ Việt Nam). Mỗi câu hỏi chỉ lập một bàn trong ngày; hỏi lại sẽ dùng bàn cũ.</p></div>
       <div id="qmHoiOut"></div></div>`;
   box.querySelectorAll('[data-qm]').forEach(b => b.onclick = () => { qmMode = b.dataset.qm; box.querySelectorAll('[data-qm]').forEach(o => o.setAttribute('aria-pressed', o === b)); $('#qmMenh').hidden = qmMode !== 'menh'; $('#qmHoi').hidden = qmMode !== 'hoi'; });
@@ -2201,7 +2201,7 @@ async function qmAsk(){
 // Ô trả lời / hỏi tiếp ngay dưới câu trả lời Kỳ Môn, vẫn dùng đúng bàn đã lập
 function qmChat(c, q, topic, firstAns, thread){
   const box = document.createElement('div'); box.className = 'qm-chat';
-  box.innerHTML = `<div class="qm-thread"></div><div class="chat-row"><input class="qm-fu" maxlength="300" placeholder="Trả lời câu hỏi của AI hoặc hỏi thêm về bàn này"><button type="button" class="btn-ghost qm-fu-go">Gửi</button></div>`;
+  box.innerHTML = `<div class="qm-thread"></div><div class="chat-row"><input class="qm-fu" maxlength="300" placeholder="Trả lời hoặc hỏi thêm"><button type="button" class="btn-ghost qm-fu-go">Gửi</button></div>`;
   $('#qmHoiOut .qm-res').append(box);
   const list = box.querySelector('.qm-thread'), inp = box.querySelector('.qm-fu'), go = box.querySelector('.qm-fu-go');
   const show = (fq, fa) => { const d = document.createElement('div'); d.className = 'qa'; d.innerHTML = `<div class="q">${esc(fq)}</div><div class="a">${fa ? md(fa) : '<p class="muted">Đang luận tiếp…</p>'}</div>`; list.append(d); return d.querySelector('.a'); };
@@ -2265,7 +2265,7 @@ function openTip(el){
     else { const def = c.defined.includes(id), t = HD.CENTER_TEXT[id]; title = HD.CENTERS[id].name; sub = def ? 'Có định nghĩa' : 'Để mở';
       body = `${t[0]}. ${def ? 'Có định nghĩa: ' + t[1] : 'Để mở: ' + t[2]}.`; q = `Trung tâm ${HD.CENTERS[id].name} ${def ? 'có định nghĩa' : 'để mở'} trong Human Design của tôi nghĩa là gì trong đời thường?`; } }
   const pop = $('#tipPop');
-  pop.querySelector('.tip-body').innerHTML = `<h4 id="tipTitle">${esc(title)}</h4>${sub ? `<div class="tip-sub">${esc(sub)}</div>` : ''}<p>${esc(body)}</p>${q ? '<button type="button" class="btn-ghost btn-sm" id="tipAsk">Hỏi AI về điều này</button>' : ''}`;
+  pop.querySelector('.tip-body').innerHTML = `<h4 id="tipTitle">${esc(title)}</h4>${sub ? `<div class="tip-sub">${esc(sub)}</div>` : ''}<p>${esc(body)}</p>${q ? '<button type="button" class="btn-ghost btn-sm" id="tipAsk">Hỏi thêm về điều này</button>' : ''}`;
   pop.hidden = false; closeTip.from = el;
   const r = el.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
   pop.style.left = Math.max(12, Math.min(innerWidth - w - 12, r.left)) + 'px';
@@ -2361,7 +2361,7 @@ function renderHop(){
       <text x="48" y="48" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="700" fill="var(--ink)">${score}</text></svg>
       <div><b class="big">${label}</b><span class="muted small">Bạn và ${esc(nameB)} · ${esc(hopData.relType)} · điểm tham khảo, cộng trừ từ các điểm hợp và vênh bên dưới</span></div></div>
     ${secs.map(([t, li]) => `<div class="hop-sec"><h4>${t}</h4><ul>${li.map(([k, x]) => `<li class="${k}">${esc(x)}</li>`).join('')}</ul></div>`).join('')}
-    <div class="row-actions" style="margin-top:16px"><button class="btn-primary" type="button" id="hopAiGo">Nhờ AI bình độ hợp</button><span class="hint">Tốn 1 lượt AI.</span></div>
+    <div class="row-actions" style="margin-top:16px"><button class="btn-primary" type="button" id="hopAiGo">Đọc độ hợp của hai người</button><span class="hint">Tốn 1 lượt AI.</span></div>
     <div class="ai-out" id="hopAi" style="margin-top:12px"></div></div>`;
   $('#hopAiGo').onclick = hopAI;
 }
@@ -2423,11 +2423,11 @@ function renderNum(){
       <p class="small muted" style="margin:10px 0 0">Họ tên được bỏ dấu, đổi chữ thành số theo bảng Pythagoras (A=1 … I=9, J=1 …).</p></div>
   </div>
   <div class="two">
-    <div class="panel"><h3>Thử thách và nợ nghiệp</h3>
+    <div class="panel"><h3>Bài học lặp lại trong đời <span class="h-term">· thử thách, nợ nghiệp</span></h3>
       <div class="chal">${n.challenges.map((c,i)=>`<div><span class="label">Thử thách ${i+1}</span><b class="num">${c}</b><span class="small muted">${NUM_TEXT[c]||''}</span></div>`).join('')}</div>
       <div class="debts">${n.debts.length ? n.debts.map(d=>`<div><b>Nợ nghiệp ${d.n}</b> <span class="muted small">(ở ${d.where})</span><br><span class="small muted">${DEBT_TEXT[d.n]}</span></div>`).join('') : '<p class="small muted">Không có số nợ nghiệp (13, 14, 16, 19) trong ngày sinh và họ tên.</p>'}</div>
       <p class="small muted" style="margin:10px 0 0">Thử thách 1, 2 ứng với nửa đầu đời, thử thách 3 là thử thách chính, thử thách 4 ứng với nửa sau.</p></div>
-    <div class="panel"><h3>Chu kỳ 9 năm và đỉnh cao</h3>
+    <div class="panel"><h3>Bạn đang ở năm thứ mấy trong chu kỳ 9 năm</h3>
       <div class="cycle" role="img" aria-label="Năm ${nowY} là năm cá nhân số ${cyc}">${[1,2,3,4,5,6,7,8,9].map(k=>`<div class="${k===cyc?'cur':''}"><b>${k}</b><span>${nowY-cyc+k}</span></div>`).join('')}</div>
       <div class="table-wrap" style="margin-top:12px"><table><tbody>
       ${n.personalYears.map(p=>`<tr><td class="num">${p.year}</td><td>Năm cá nhân <b>${p.n}</b></td><td class="muted">${NUM_TEXT[p.n]||''}</td></tr>`).join('')}
@@ -2469,7 +2469,7 @@ const md = s => DOMPurify.sanitize(marked.parse(s || ''));
 const CODE_KEY = 'tuchieu:code';
 try { $('#code').value = localStorage.getItem(CODE_KEY) || ''; } catch(e) {}
 function resetAI(){ clearToc(); history = []; firstText = ''; lastText=''; $('#qaList').innerHTML=''; $('#chat').hidden = false; $('#aiCopy').hidden = true; $('#aiPdf').hidden = true; $('#aiStatus').textContent='';
-  $('#aiOut').innerHTML = `<p class="muted">Bấm <b>Viết luận giải</b> để AI đọc cả bốn lá số của <b>${esc(R.input.name)}</b> và viết một bài đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p>`; }
+  $('#aiOut').innerHTML = `<p class="muted">Bấm <b>Đọc luận giải</b> để Tứ Chiếu đọc chéo cả bốn lá số của <b>${esc(R.input.name)}</b> và viết thành bài: chỗ các trường phái cùng nói một điều, chỗ chúng mâu thuẫn, thời vận sắp tới và lời khuyên cụ thể. Mất khoảng 30–90 giây.</p>`; }
 function busy(on){ $('#aiGo').disabled = on; $('#askGo').disabled = on; $('#castGo').disabled = on; $('#aiStop').hidden = !on; }
 $('#aiStop').onclick = () => ctl && ctl.abort();
 
@@ -2499,7 +2499,7 @@ $('#aiGo').onclick = async () => {
     window.TCHIST && TCHIST.add({ kind: 'tong', q: 'Bài đọc tổng hợp' + ($('#focus').value !== 'tổng quát' ? ' · ' + $('#focus').value : ''), a: text, el: $('#aiOut') });
   } catch(e) {
     if (e.name === 'AbortError') { $('#aiStatus').textContent = 'Đã dừng.'; }
-    else { if (e.partial) lastText = e.partial; $('#aiStatus').innerHTML = `<span class="err">${esc(e.message)}</span>${e.partial ? ' Bấm <b>Viết luận giải</b> để viết lại.' : ''}`; }
+    else { if (e.partial) lastText = e.partial; $('#aiStatus').innerHTML = `<span class="err">${esc(e.message)}</span>${e.partial ? ' Bấm <b>Đọc luận giải</b> để viết lại.' : ''}`; }
   } finally { busy(false); }
 };
 $('#aiCopy').onclick = async () => { try { await navigator.clipboard.writeText(lastText); $('#aiStatus').textContent = 'Đã sao chép.'; } catch(e) { const r = document.createRange(); r.selectNodeContents($('#aiOut')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $('#aiStatus').textContent = 'Đã chọn sẵn bài luận, bấm Ctrl/Cmd + C để sao chép.'; } };
@@ -2554,12 +2554,12 @@ async function castAsk(qArg, listEl){
   const box = document.createElement('div'); box.className = 'qa';
   list.append(box); if (!listEl) $('#ask').value = ''; $('#askStatus').textContent = '';
   if (saved && saved.answer) {
-    box.innerHTML = `<div class="q">☯ ${esc(q)}</div>${queCard(saved.que)}<p class="small muted">Câu này đã gieo hôm nay, theo lệ "một việc không hỏi hai lần" nên dùng lại quẻ cũ.</p><div class="a">${md(saved.answer)}</div>`;
+    box.innerHTML = `<div class="q">Gieo quẻ · ${esc(q)}</div>${queCard(saved.que)}<p class="small muted">Câu này đã gieo hôm nay, theo lệ "một việc không hỏi hai lần" nên dùng lại quẻ cũ.</p><div class="a">${md(saved.answer)}</div>`;
     return;
   }
   const que = saved ? saved.que : ICHING.cast(new Date());
   try { localStorage.setItem(QUE_KEY(q), JSON.stringify({ que })); } catch(e) {}
-  box.innerHTML = `<div class="q">☯ ${esc(q)}</div>${queCard(que)}<div class="a"><p class="muted">Đang luận quẻ…</p></div>`;
+  box.innerHTML = `<div class="q">Gieo quẻ · ${esc(q)}</div>${queCard(que)}<div class="a"><p class="muted">Đang luận quẻ…</p></div>`;
   const a = box.querySelector('.a'); let got = false;
   ctl = new AbortController(); busy(true);
   try {
@@ -2604,7 +2604,7 @@ document.querySelectorAll('[data-soon]').forEach(b => b.addEventListener('click'
 document.querySelectorAll('[data-tab]').forEach(el => el.addEventListener('click', e => {
   e.preventDefault(); show(el.dataset.tab); go($('#result'));
   if (el.dataset.focus) setTimeout(() => {
-    if ($('#chat').hidden) { toast('Bấm "Viết luận giải" trước, rồi gieo quẻ ở khung hỏi thêm.'); $('#aiGo').focus({ preventScroll: true }); }
+    if ($('#chat').hidden) { toast('Bấm "Đọc luận giải" trước, rồi gieo quẻ ở khung hỏi thêm.'); $('#aiGo').focus({ preventScroll: true }); }
     else { go($('#ask'), 'center'); $('#ask').focus({ preventScroll: true }); }
   }, 450);
 }));
