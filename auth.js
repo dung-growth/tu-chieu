@@ -105,7 +105,7 @@
     const box = $('#sheet .auth-list');
     try {
       const list = await listCharts();
-      if (!list.length) { box.innerHTML = '<p class="muted small">Chưa có lá số nào. Lập một lá số là tự lưu vào đây.</p>'; return; }
+      if (!list.length) { box.innerHTML = `<div class="fl-empty">${(window.DOODLE && DOODLE.D) || ''}<p class="muted small">Chưa có lá số nào. Lập một lá số là tự lưu vào đây.</p></div>`; return; }
       box.innerHTML = list.map(r => `<div class="auth-row" data-id="${r.id}"><div><b>${esc(r.name)}</b><span class="small muted">${esc(when(r.data))}${r.data.placeName ? ' · ' + esc(r.data.placeName) : ''}</span></div>
         <button type="button" class="btn-primary btn-sm" data-open>Mở</button><button type="button" class="btn-ghost btn-sm" data-del aria-label="Xóa lá số ${esc(r.name)}">Xóa</button></div>`).join('');
       box.querySelectorAll('.auth-row').forEach((row, i) => {
@@ -202,7 +202,7 @@
       <div class="hist-list"><p class="muted small">Đang tải…</p></div>`);
     const box = $('#sheet .hist-list');
     let list; try { list = await histList(); } catch (e) { box.innerHTML = `<p class="err small">Không tải được: ${esc(e.message)}</p>`; return; }
-    if (!list.length) { box.innerHTML = '<p class="muted small">Chưa có lần hỏi nào được lưu.</p>'; return; }
+    if (!list.length) { box.innerHTML = `<div class="fl-empty">${(window.DOODLE && DOODLE.D) || ''}<p class="muted small">Chưa có lần hỏi nào được lưu. Hỏi Tứ Chiếu một câu, bấm Lưu là câu đó nằm ở đây.</p></div>`; return; }
     box.innerHTML = list.map(it => `<button type="button" class="hist-row" data-lid="${esc(it.lid)}"><span class="hist-k">${esc(KIND[it.kind] || it.kind)}</span><b>${esc(it.q)}</b><span class="small muted">${esc(sub(it))}</span></button>`).join('')
       + '<button type="button" class="btn-ghost btn-sm hist-clear" style="margin-top:14px">Xóa hết</button>';
     box.querySelectorAll('.hist-row').forEach(b => b.onclick = () => histOne(b.dataset.lid));

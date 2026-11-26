@@ -21,18 +21,20 @@
   const SEC = [['ban', 'Bạn'], ['homnay', 'Hôm nay'], ['laso', 'Lá số']];
   let cur = 'ban', sys = 'tv';
   // chuyển động: Yên chậm, êm; Vui nảy hơn. Máy bật "giảm chuyển động" thì bỏ hết
+  const DD = k => (window.DOODLE && DOODLE[k]) || '';
   const RM = matchMedia('(prefers-reduced-motion: reduce)');
   const vui = () => document.documentElement.dataset.skin === 'vui';
   const EASE = () => vui() ? 'cubic-bezier(.34,1.56,.64,1)' : 'cubic-bezier(.2,.8,.2,1)';
   const anim = (node, kf, ms) => !RM.matches && node && node.animate ? node.animate(kf, { duration: ms * (vui() ? .8 : 1), easing: EASE(), fill: 'backwards' }) : null;
 
+  { const lede = $('.hero .lede'); if (lede && DD('A')) lede.insertAdjacentHTML('afterend', DD('A')); }
   const res = $('#ket-qua .container');
   const bar = el('div', 'fl-who'); bar.id = 'flWho';
   const nav = el('nav', 'fl-nav'); nav.setAttribute('aria-label', 'Các mục kết quả');
   nav.innerHTML = SEC.map(([k, n]) => `<button type="button" data-sec="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg><span>${n}</span></button>`).join('');
   const pick = el('div', 'fl-sys'); pick.setAttribute('role', 'group'); pick.setAttribute('aria-label', 'Chọn môn');
   pick.innerHTML = SYS.map((s, i) => `${s.beta && !SYS[i - 1].beta ? '<span class="fl-beta">Beta</span>' : ''}<button type="button" data-sys="${s.k}">${s.name}</button>`).join('') + '<span class="fl-beta"></span><button type="button" data-hop>Hợp nhau</button>';
-  res.prepend(bar, nav, pick);
+  const topRow = el('div', 'fl-head'); topRow.append(bar, nav); res.prepend(topRow, pick);
   const ind = el('span', 'fl-nav-ind'); nav.append(ind);
   const bottom = nav.cloneNode(true); bottom.className = 'fl-bottom'; document.body.append(bottom);
   function el(t, c) { const e = document.createElement(t); e.className = c; return e; }
@@ -118,6 +120,7 @@
       if (top.length) traits.innerHTML = `<span class="label">Nổi bật nhất theo Tử vi</span><div>${top.map(x => `<span class="fl-trait"><b>${x.name}</b> <span class="${x.pct >= 75 ? 't-tot' : 't-luuy'}">${x.level.toLowerCase()}</span> <small>hơn ${x.pct}% người</small></span>`).join('')}</div>`;
       traits.classList.toggle('empty', !top.length); }
     if (R && R !== tidy.r) { tidy.r = R; visuals(R); renderToday(R, localYmd(new Date())); }
+    const hp = $('#p-hop .panel h3'); if (hp && DD('F') && !$('#p-hop .dd-f')) hp.insertAdjacentHTML('beforebegin', DD('F'));
     // Năm của bạn: bản gọn (tên năm, nhãn); bấm mới mở bốn ô chi tiết
     const yp = $('#yearPanel');
     if (yp && !yp.querySelector('.fl-yr-more')) { const t = el('button', 'btn-ghost btn-sm fl-yr-more'); t.type = 'button'; t.textContent = 'Xem chi tiết năm';
@@ -247,7 +250,7 @@
     const list = keGet(R, ymd), days = Object.keys(keAll()[keId(R)] || {}).length;
     const item = e => `<div class="fl-ke-it"><div class="fl-ke-q">${esc(e.q)}</div>${risky(e.q) ? HELP : ''}<div class="fl-ke-a">${UI.md(e.a)}</div></div>`;
     const left = KE_MAX - list.length;
-    box.innerHTML = `${isToday ? `<h4>Hôm nay của bạn thế nào?</h4>` : list.length ? '<h4>Bạn đã kể hôm đó</h4>' : ''}
+    box.innerHTML = `${isToday ? `<div class="fl-ke-top">${list.length ? '' : DD('C')}<h4>Hôm nay của bạn thế nào?</h4></div>` : list.length ? '<h4>Bạn đã kể hôm đó</h4>' : ''}
       <div class="fl-ke-list">${list.map(item).join('')}</div>
       ${isToday ? (left > 0 ? `<form class="fl-ke-f"><textarea rows="2" maxlength="800" placeholder="${list.length ? 'Kể tiếp…' : 'Kể nghe, chuyện gì cũng được…'}" aria-label="Kể chuyện hôm nay"></textarea><button type="submit" class="btn-primary btn-sm">Gửi</button></form>`
         : `<p class="small muted">Hôm nay bạn kể đủ ${KE_MAX} lần rồi, mai kể tiếp nhé.</p>`) : ''}
@@ -284,7 +287,7 @@
       } catch (err) {
         if (!text) { it.remove(); ta.value = q; }
         else kePut(R, ymd, [...list, { q, a: text.split('\u0000ERR:')[0], t: Date.now() }]);
-        st.innerHTML = `<span class="err">${esc(err.message)}</span>`; ta.disabled = f.querySelector('button').disabled = false;
+        st.innerHTML = `<span class="fl-oops sm">${DD('E')}<span><span class="err">Chưa gửi được.</span> Kiểm tra mạng rồi bấm Gửi lại. <small class="muted">${esc(err.message)}</small></span></span>`; ta.disabled = f.querySelector('button').disabled = false;
       }
     };
   }
@@ -293,7 +296,7 @@
     const fmt = d => { const [y, m, dd] = d.split('-'); return `${+dd}/${+m}/${y}`; };
     UI.openSheet(`<h3 id="sheetTitle" style="margin:0 0 6px">Những ngày đã kể</h3><p class="small muted" style="margin:0 0 14px">Chỉ nằm trên máy này. Xóa là mất hẳn.</p>
       ${ds.length ? ds.map(d => `<section class="fl-ke-day" data-d="${d}"><div class="fl-ke-dh"><b>${fmt(d)}</b><button type="button" class="btn-ghost btn-sm" data-del="${d}">Xóa ngày này</button></div>
-        ${mine[d].map(e => `<div class="fl-ke-q">${esc(e.q)}</div><div class="fl-ke-a">${UI.md(e.a)}</div>`).join('')}</section>`).join('') : '<p class="muted">Chưa có ngày nào.</p>'}`);
+        ${mine[d].map(e => `<div class="fl-ke-q">${esc(e.q)}</div><div class="fl-ke-a">${UI.md(e.a)}</div>`).join('')}</section>`).join('') : `<div class="fl-empty">${DD('D')}<p class="muted">Chưa có ngày nào. Kể một chuyện ở thẻ Hôm nay là ngày đó được lưu ở đây.</p></div>`}`);
     document.querySelectorAll('#sheet [data-del]').forEach(b => b.onclick = () => { kePut(R, b.dataset.del, []); b.closest('.fl-ke-day').remove(); renderToday(R, localYmd(new Date())); });
   }
 
@@ -307,11 +310,14 @@
     const secs = [...$('#aiOut').querySelectorAll('.rd-sec')];
     if (!secs.length) { // chưa có luận giải: một lời mời
       chHead.hidden = lFoot.hidden = true; chList.innerHTML = ''; synth.classList.remove('has-luan');
-      say.innerHTML = `<span class="fl-lab">Bốn lá số cùng nói</span><p class="fl-say-big">Bát tự, Tử vi, Chiêm tinh và Thần số đọc chéo nhau, ra một kết luận về bạn.</p><button type="button" class="btn-primary" id="flRead">Đọc luận giải</button>`;
-      say.querySelector('#flRead').onclick = () => { $('#aiGo').click(); synth.classList.add('streaming');
-        say.innerHTML = `<span class="fl-lab">Bốn lá số cùng nói</span><p class="fl-wait">Đang đọc chéo bốn lá số<span class="fl-dots"><i></i><i></i><i></i></span></p><div class="fl-skel"><i></i><i></i><i style="width:62%"></i></div>`; };
+      const err = $('#aiStatus .err'); synth.classList.toggle('has-err', !!err);
+      say.innerHTML = err ? `<span class="fl-lab">Bốn lá số cùng nói</span><div class="fl-oops">${DD('E')}<div><p class="fl-say-big">Chưa đọc xong.</p><p class="small muted">Kiểm tra mạng rồi bấm Đọc lại. ${esc(err.textContent)}</p></div></div><button type="button" class="btn-primary" id="flRead">Đọc lại</button>`
+        : `<span class="fl-lab">Bốn lá số cùng nói</span><p class="fl-say-big">Bát tự, Tử vi, Chiêm tinh và Thần số đọc chéo nhau, ra một kết luận về bạn.</p><button type="button" class="btn-primary" id="flRead">Đọc luận giải</button>`;
+      say.querySelector('#flRead').onclick = () => { $('#aiGo').click(); synth.classList.add('streaming'); synth.classList.remove('has-err');
+        say.innerHTML = `<span class="fl-lab">Bốn lá số cùng nói</span><p class="fl-wait">Đang đọc chéo bốn lá số<span class="fl-dots"><i></i><i></i><i></i></span></p>${DD('B') || '<div class="fl-skel"><i></i><i></i><i style="width:62%"></i></div>'}`;
+        const w = say.querySelector('.fl-wait'), d = say.querySelector('.dd-b'); if (w && d) d.after(w); };
       return; }
-    synth.classList.add('has-luan'); synth.classList.remove('streaming');
+    synth.classList.add('has-luan'); synth.classList.remove('streaming', 'has-err');
     const get = sec => ({ title: sec.querySelector('.rd-toggle').textContent.trim(), body: sec.querySelector('.rd-body') });
     const all = secs.map(get), quick = all.find(x => /đọc nhanh/i.test(x.title)), main = all.find(x => /cùng nói|chân dung/i.test(x.title));
     const mp = main && main.body.querySelector('p');
