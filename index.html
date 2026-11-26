@@ -2192,6 +2192,7 @@ async function qmAsk(){
     const text = await callAI({ mode: 'qm-hoi', brief: QM.brief(c, 'hoi', topic), question: q, topic: QM.TOPICS[topic].name, focus: $('#focus').value, ctx: readInput().ctx }, x => { a.innerHTML = md(x); });
     try { localStorage.setItem(QM_KEY(q, topic), JSON.stringify({ t, answer: text })); } catch(e) {}
     a.insertAdjacentHTML('beforeend', byNote());
+    window.TCHIST && TCHIST.add({ kind: 'qm', q, a: text, meta: { topic: QM.TOPICS[topic].name, at: c.at }, el: a });
     qmMore(a, () => qmLong(c, q, topic, a));
     qmChat(c, q, topic, text, []);
   } catch(e) { if (e.name !== 'AbortError') a.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
@@ -2495,6 +2496,7 @@ $('#aiGo').onclick = async () => {
     firstText = lastText = text; $('#chat').hidden = false; $('#aiCopy').hidden = false; $('#aiPdf').hidden = false; updateSteps();
     structureReading();
     $('#aiOut').insertAdjacentHTML('beforeend', byNote());
+    window.TCHIST && TCHIST.add({ kind: 'tong', q: 'Bài đọc tổng hợp' + ($('#focus').value !== 'tổng quát' ? ' · ' + $('#focus').value : ''), a: text, el: $('#aiOut') });
   } catch(e) {
     if (e.name === 'AbortError') { $('#aiStatus').textContent = 'Đã dừng.'; }
     else { if (e.partial) lastText = e.partial; $('#aiStatus').innerHTML = `<span class="err">${esc(e.message)}</span>${e.partial ? ' Bấm <b>Viết luận giải</b> để viết lại.' : ''}`; }
@@ -2516,6 +2518,7 @@ async function ask(){
   try {
     const text = await callAI({ brief: brief() + hdBrief(q) + qmBriefFor(q), focus: $('#focus').value, ctx: readInput().ctx, first: firstText, history: history.slice(-3), question: q, style: ask.long ? '' : 'thay' }, t => { got = !!t; a.innerHTML = md(t); });
     history.push({ q, a: text }); a.insertAdjacentHTML('beforeend', byNote());
+    window.TCHIST && TCHIST.add({ kind: 'hoi', q, a: text, el: a });
     if (!ask.long) { const more = document.createElement('button'); more.type = 'button'; more.className = 'btn-ghost btn-sm qa-more'; more.textContent = 'Giải thích kỹ hơn';
       more.onclick = () => { more.remove(); ask.long = true; $('#ask').value = q; ask().finally(() => { ask.long = false; }); }; a.append(more); }
   } catch(e) { failAsk(box, q, e, got, ask); }
@@ -2564,6 +2567,7 @@ async function castAsk(qArg, listEl){
     history.push({ q: '[Gieo quẻ ' + que.main.fullName + '] ' + q, a: text });
     try { localStorage.setItem(QUE_KEY(q), JSON.stringify({ que, answer: text })); } catch(e) {}
     a.insertAdjacentHTML('beforeend', byNote());
+    window.TCHIST && TCHIST.add({ kind: 'kd', q, a: text, meta: { que: que.main.fullName, bien: que.changed.fullName }, el: a });
   } catch(e) { failAsk(box, q, e, got, () => castAsk(q, listEl)); }
   finally { busy(false); }
 }

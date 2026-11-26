@@ -30,13 +30,14 @@ footer{border-top:1px solid var(--line);margin-top:56px;padding:22px 0 40px;colo
 <header class="top"><div><a href="/">Tứ Chiếu</a><a class="back" href="/">← Về trang chính</a></div></header>
 <main class="wrap">
 <h1>Chính sách bảo mật</h1>
-<p class="meta">Cập nhật ngày 21/11/2026 · Phiên bản 1</p>
+<p class="meta">Cập nhật ngày 26/11/2026 · Phiên bản 2</p>
 
 <div class="short"><h2>Nói ngắn</h2><ul>
 <li>Không đăng nhập: thông tin bạn nhập chỉ nằm trên trình duyệt của bạn.</li>
-<li>Khi bạn bấm dùng AI, dữ liệu lá số và câu bạn viết được gửi tới dịch vụ AI để viết câu trả lời. Tứ Chiếu không lưu lại.</li>
+<li>Khi bạn bấm dùng AI, dữ liệu lá số và câu bạn viết được gửi tới dịch vụ AI để viết câu trả lời.</li>
+<li>Câu hỏi và câu trả lời chỉ được lưu khi bạn bấm đồng ý "Lưu lại để xem sau". Tắt và xóa được bất cứ lúc nào.</li>
 <li>Khi đăng nhập, tài khoản lưu email và các lá số bạn lập, để mở lại trên máy khác.</li>
-<li>Lời kể trong "Kể nghe" chỉ nằm trên máy của bạn.</li>
+<li>Lời kể trong "Kể nghe" mặc định chỉ nằm trên máy của bạn, chỉ lên tài khoản khi bạn tự bật đồng bộ.</li>
 <li>Tứ Chiếu không bán dữ liệu, không chạy quảng cáo, không dùng cookie theo dõi.</li>
 <li>Bạn tự xóa tài khoản được bất cứ lúc nào, hoặc viết cho <a href="mailto:tuchieusupport@gmail.com">tuchieusupport@gmail.com</a>.</li>
 </ul></div>
@@ -47,17 +48,18 @@ footer{border-top:1px solid var(--line);margin-top:56px;padding:22px 0 40px;colo
 <h2>2. Tứ Chiếu thu những gì, dùng làm gì</h2>
 <table><thead><tr><th>Khi nào</th><th>Dữ liệu</th><th>Để làm gì, lưu ở đâu</th></tr></thead><tbody>
 <tr><td>Lập lá số</td><td>Tên (hoặc biệt danh), giới tính, ngày giờ sinh, nơi sinh</td><td>Tính lá số ngay trên trình duyệt của bạn. Lưu trên trình duyệt để lần sau mở lại. Không gửi lên máy chủ.</td></tr>
-<tr><td>Dùng AI (luận giải, hỏi đáp, Kỳ Môn, Kinh Dịch, Kể nghe)</td><td>Phần lá số đã tính, câu hỏi hoặc lời kể bạn viết</td><td>Gửi qua máy chủ Tứ Chiếu tới nhà cung cấp AI để viết câu trả lời rồi trả về cho bạn. Tứ Chiếu không lưu nội dung này.</td></tr>
+<tr><td>Dùng AI (luận giải, hỏi đáp, Kỳ Môn, Kinh Dịch, Kể nghe)</td><td>Phần lá số đã tính, câu hỏi hoặc lời kể bạn viết</td><td>Gửi qua máy chủ Tứ Chiếu tới nhà cung cấp AI để viết câu trả lời rồi trả về cho bạn. Máy chủ AI của Tứ Chiếu không giữ lại nội dung này.</td></tr>
 <tr><td>Dùng AI</td><td>Địa chỉ IP</td><td>Đếm số lượt dùng AI để chống lạm dụng. Chỉ giữ trong bộ nhớ máy chủ, tối đa 1 giờ.</td></tr>
 <tr><td>Đăng nhập</td><td>Email; với Google thêm tên và ảnh đại diện</td><td>Tạo và nhận diện tài khoản. Lưu ở Supabase.</td></tr>
-<tr><td>Đăng nhập</td><td>Các lá số bạn lập (thông tin như dòng đầu) và thời điểm bạn đồng ý chính sách này</td><td>Mở lại lá số trên máy khác; chứng minh bạn đã đồng ý. Lưu ở Supabase. Không lưu bài AI.</td></tr>
-<tr><td>Kể nghe</td><td>Lời kể và câu đáp</td><td>Chỉ lưu trên trình duyệt của bạn. Lời kể được gửi tới dịch vụ AI để viết câu đáp như dòng thứ hai.</td></tr>
+<tr><td>Đăng nhập</td><td>Các lá số bạn lập (thông tin như dòng đầu) và thời điểm bạn đồng ý chính sách này</td><td>Mở lại lá số trên máy khác; chứng minh bạn đã đồng ý. Lưu ở Supabase.</td></tr>
+<tr><td>Bạn đồng ý "Lưu lại để xem sau"</td><td>Câu hỏi, câu trả lời AI (bài đọc, hỏi đáp, Kỳ Môn, Kinh Dịch), lá số lúc hỏi, thời điểm hỏi; thời điểm bạn bật hoặc tắt</td><td>Để bạn đọc lại. Lưu trên trình duyệt của bạn, và ở Supabase khi bạn đăng nhập. Bạn tắt hoặc xóa được trong mục Tài khoản.</td></tr>
+<tr><td>Kể nghe</td><td>Lời kể và câu đáp</td><td>Mặc định chỉ lưu trên trình duyệt của bạn. Nếu bạn bật "Đồng bộ lời kể" trong mục Tài khoản thì lưu thêm ở Supabase; tắt là xóa bản trên tài khoản. Lời kể được gửi tới dịch vụ AI để viết câu đáp như dòng thứ hai.</td></tr>
 <tr><td>Xem trang</td><td>Số liệu truy cập gộp (trang nào được xem, loại thiết bị, quốc gia)</td><td>Đếm lượt xem bằng Vercel Web Analytics, không dùng cookie, không gửi ngày giờ sinh.</td></tr>
 </tbody></table>
 <p>Tứ Chiếu chỉ dùng dữ liệu cho đúng các mục đích trên: lập lá số, viết bài đọc theo yêu cầu của bạn, giữ tài khoản, chống lạm dụng. Không dùng để quảng cáo, không bán, không chia sẻ cho ai ngoài các bên ở mục 4.</p>
 
 <h2>3. Về lời kể và thông tin nhạy cảm</h2>
-<p>Lời kể trong "Kể nghe" có thể chạm tới sức khỏe tinh thần, chuyện tình cảm hay chuyện riêng. Vì vậy Tứ Chiếu không lưu lời kể lên máy chủ hay tài khoản. Lần đầu dùng, trang sẽ hỏi bạn có đồng ý gửi lời kể tới dịch vụ AI không. Bạn nên tránh ghi số điện thoại, địa chỉ hay tên đầy đủ của người khác trong lời kể.</p>
+<p>Câu hỏi và lời kể có thể chạm tới sức khỏe tinh thần, chuyện tình cảm hay chuyện riêng. Vì vậy Tứ Chiếu chỉ lưu chúng khi bạn đồng ý: câu hỏi được hỏi ở lần hỏi đầu tiên, lời kể phải tự bật đồng bộ riêng. Lần đầu dùng "Kể nghe", trang sẽ hỏi bạn có đồng ý gửi lời kể tới dịch vụ AI không. Tứ Chiếu không đọc câu hỏi hay lời kể đã lưu của bạn, không dùng chúng để quảng cáo hay huấn luyện AI; chúng chỉ để bạn xem lại. Bạn nên tránh ghi số điện thoại, địa chỉ hay tên đầy đủ của người khác trong lời kể.</p>
 <p>Khi lập lá số cho người khác (người thân, bạn bè), bạn nên hỏi ý họ trước.</p>
 
 <h2>4. Bên nhận dữ liệu</h2>
@@ -74,13 +76,14 @@ footer{border-top:1px solid var(--line);margin-top:56px;padding:22px 0 40px;colo
 <ul>
 <li>Tài khoản và lá số: tới khi bạn xóa từng lá số hoặc xóa tài khoản.</li>
 <li>Dữ liệu trên trình duyệt: tới khi bạn xóa trong trang hoặc xóa dữ liệu trình duyệt.</li>
-<li>Câu hỏi, lời kể gửi tới AI: Tứ Chiếu không lưu.</li>
+<li>Câu hỏi, câu trả lời, lời kể đã lưu (khi bạn đồng ý): tới khi bạn xóa từng mục, bấm "Xóa hết", tắt đồng bộ lời kể, hoặc xóa tài khoản.</li>
+<li>Câu hỏi, lời kể khi bạn không đồng ý lưu: không lưu.</li>
 </ul>
 
 <h2>6. Quyền của bạn</h2>
 <p>Bạn có quyền được biết, xem, sửa, xóa dữ liệu của mình, rút lại sự đồng ý, yêu cầu hạn chế hoặc phản đối việc xử lý, và khiếu nại.</p>
 <ul>
-<li><b>Tự làm ngay trong trang:</b> bấm ảnh đại diện → Tài khoản để xem, xóa từng lá số, xóa tài khoản (xóa luôn mọi lá số đã lưu). Mục "Những ngày đã kể" có nút xóa lời kể.</li>
+<li><b>Tự làm ngay trong trang:</b> bấm ảnh đại diện → Tài khoản để xem, xóa từng lá số; mở "Những lần đã hỏi" để xem, xóa từng câu hoặc xóa hết; bật tắt việc lưu câu hỏi và đồng bộ lời kể; xóa tài khoản (xóa luôn mọi dữ liệu đã lưu). Mục "Những ngày đã kể" có nút xóa lời kể.</li>
 <li><b>Viết email:</b> gửi về <a href="mailto:tuchieusupport@gmail.com">tuchieusupport@gmail.com</a>. Tứ Chiếu xác nhận đã nhận trong 2 ngày làm việc; cung cấp hoặc sửa dữ liệu trong 10 ngày; xử lý rút đồng ý, hạn chế, phản đối trong 15 ngày; xóa dữ liệu trong 20 ngày.</li>
 </ul>
 <p>Rút lại đồng ý không làm mất hiệu lực những gì đã xử lý trước đó. Nếu bạn rút đồng ý lưu tài khoản, tài khoản sẽ bị xóa; bạn vẫn dùng Tứ Chiếu được mà không cần đăng nhập.</p>

@@ -198,7 +198,7 @@
     todayBox.querySelectorAll('[data-step]').forEach(bt => bt.onclick = () => { const [y, m, d] = ymd.split('-').map(Number); go(localYmd(new Date(y, m - 1, d + +bt.dataset.step))); });
     const tb = todayBox.querySelector('[data-today]'); if (tb) tb.onclick = () => go(localYmd(new Date()));
     const dayTxt = `Ngày ${T.thu}, ${T.d}/${T.m}/${T.y} (${T.gz}${T.lunar ? ', ' + T.lunar : ''}): chủ đề "${T.theme}"; ngày ${T.god} với nhật chủ; ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} ${T.dayThan}${T.notes.length ? '; ' + T.notes.join(', ') : ''}; nên: ${T.nen.join('; ')}; nên tránh: ${T.tranh.join('; ')}; giờ tốt: ${T.gio.map(g => g.gio).join(', ') || 'không'}; Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ' nhà ' + T.moon.house : ''}${mood ? ' (' + mood + ')' : ''}; số ngày cá nhân ${T.pday.n}.`;
-    renderKe(R, ymd, isToday, dayTxt);
+    lastYmd = ymd; renderKe(R, ymd, isToday, dayTxt);
   }
 
   /* ---------- Kể nghe: than riêng, chỉ lưu trên máy này ---------- */
@@ -207,7 +207,11 @@
   function keAll() { try { return JSON.parse(localStorage.getItem(KE_KEY)) || {}; } catch (e) { return {}; } }
   function keSave(all) { try { localStorage.setItem(KE_KEY, JSON.stringify(all)); } catch (e) {} }
   const keGet = (R, ymd) => ((keAll()[keId(R)] || {})[ymd]) || [];
-  function kePut(R, ymd, list) { const all = keAll(), id = keId(R); all[id] = all[id] || {}; if (list.length) all[id][ymd] = list; else delete all[id][ymd]; keSave(all); }
+  function kePut(R, ymd, list) { const all = keAll(), id = keId(R); all[id] = all[id] || {}; if (list.length) all[id][ymd] = list; else delete all[id][ymd]; keSave(all);
+    document.dispatchEvent(new CustomEvent('tc:ke', { detail: { id, ymd, list } })); } // auth.js đồng bộ nếu người dùng bật
+  // auth.js vừa kéo lời kể từ tài khoản về: vẽ lại thẻ Hôm nay
+  let lastYmd = null;
+  document.addEventListener('tc:ke-refresh', () => { if (UI.R() && lastYmd) renderToday(UI.R(), lastYmd); });
   // dấu hiệu nguy hiểm: hiện ngay chỗ có người thật hỗ trợ, không chờ AI
   const deacc = t => t.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd');
   function risky(t) {
@@ -228,7 +232,7 @@
       ${isToday ? (left > 0 ? `<form class="fl-ke-f"><textarea rows="2" maxlength="800" placeholder="${list.length ? 'Kể tiếp…' : 'Kể nghe, chuyện gì cũng được…'}" aria-label="Kể chuyện hôm nay"></textarea><button type="submit" class="btn-primary btn-sm">Gửi</button></form>`
         : `<p class="small muted">Hôm nay bạn kể đủ ${KE_MAX} lần rồi, mai kể tiếp nhé.</p>`) : ''}
       <p class="fl-ke-st small" aria-live="polite"></p>
-      ${isToday || days ? `<p class="fl-ke-note small muted">Chỉ lưu trên máy này. Lời kể được gửi tới dịch vụ AI để viết câu đáp, Tứ Chiếu không lưu lại. <a href="/chinh-sach-bao-mat.html" target="_blank" rel="noopener">Chính sách bảo mật</a>.${days ? ` <button type="button" class="fl-ke-old">Những ngày đã kể (${days})</button>` : ''}</p>` : ''}`;
+      ${days ? `<p class="fl-ke-note small"><button type="button" class="fl-ke-old">Những ngày đã kể (${days})</button></p>` : ''}`;
     const ob = box.querySelector('.fl-ke-old'); if (ob) ob.onclick = () => keSheet(R);
     const f = box.querySelector('form'); if (!f) return;
     const ta = f.querySelector('textarea'), st = box.querySelector('.fl-ke-st');
@@ -239,7 +243,7 @@
       let agreed = false; try { agreed = !!localStorage.getItem('tuchieu:ke-ok'); } catch (x) {}
       if (!agreed) {
         if (!box.querySelector('.fl-ke-ok')) {
-          f.insertAdjacentHTML('beforebegin', `<div class="fl-ke-ok">Để viết câu đáp, lời kể của bạn sẽ được gửi tới dịch vụ AI (Google Gemini, máy chủ ở nước ngoài). Tứ Chiếu không lưu lời kể, nó chỉ nằm trên máy này. <a href="/chinh-sach-bao-mat.html" target="_blank" rel="noopener">Đọc thêm</a><br><button type="button" class="btn-primary btn-sm">Đồng ý và gửi</button></div>`);
+          f.insertAdjacentHTML('beforebegin', `<div class="fl-ke-ok"><span>Tứ Chiếu dùng AI để nghe và đáp, không ai khác đọc lời kể của bạn. <a href="/chinh-sach-bao-mat.html" target="_blank" rel="noopener">chi tiết</a></span><button type="button" class="btn-primary btn-sm">Đồng ý và gửi</button></div>`);
           box.querySelector('.fl-ke-ok button').onclick = () => { try { localStorage.setItem('tuchieu:ke-ok', new Date().toISOString()); } catch (x) {} box.querySelector('.fl-ke-ok').remove(); f.requestSubmit(); };
         }
         return;
