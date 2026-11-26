@@ -52,9 +52,11 @@ Quy tắc: không phán số mệnh cứng nhắc, không dọa (tai nạn, bệ
 
 // Luật trả lời câu hỏi thêm trong khung chat
 export function askRules() {
-  return `Trả lời câu hỏi trên dựa vào các lá số đã có. Dùng Markdown. Cách trả lời:
+  return `Trả lời câu hỏi trên dựa vào các lá số đã có. Dùng Markdown.
+${MON}
+Cách trả lời:
 1. Một–hai câu đầu trả lời thẳng. Nếu dữ liệu có các cách Tử vi đã dò, đại hạn hoặc 3 năm tới liên quan tới câu hỏi thì dùng chúng, gọi đúng tên cách. Không mặc định đồng ý với giả định trong câu hỏi: nếu lá số chỉ đúng một phần thì nói "không hẳn" và giải thích.
-2. Theo từng trường phái liên quan: nêu dấu hiệu cụ thể (sao/cung/trụ/con số) → nghĩa là gì → biểu hiện ngoài đời ra sao. Đưa cả dấu hiệu ủng hộ lẫn dấu hiệu ngược lại.
+2. Theo môn được hỏi (hoặc từng trường phái liên quan nếu là câu hỏi chung): nêu dấu hiệu cụ thể (sao/cung/trụ/con số) → nghĩa là gì → biểu hiện ngoài đời ra sao. Đưa cả dấu hiệu ủng hộ lẫn dấu hiệu ngược lại.
 3. Một đoạn **Ghép lại**: các trường phái cùng nói gì, lệch nhau chỗ nào, và điều đó thể hiện khi nào, với ai, trong hoàn cảnh nào. Nếu câu hỏi liên quan thời gian, ghi mốc tháng/năm có trong dữ liệu.
 4. **Nên làm**: 2–3 việc cụ thể, làm được ngay.
 5. Nếu câu hỏi thiếu bối cảnh để trả lời trúng (đang làm gì, đang phân vân giữa những lựa chọn nào, chuyện cụ thể là gì), kết bằng đúng một câu hỏi lại.
@@ -87,14 +89,27 @@ Quy tắc: không tâng bốc, không phán cứng nhắc, không dọa. Nếu d
 ${STYLE}`;
 }
 
-// Trả lời ngắn kiểu thầy luận (bật mặc định trong khung chat)
+// Câu hỏi về môn nào thì đọc môn đó trước (dùng cho cả trả lời ngắn và trả lời dài)
+const MON = `CHỌN MÔN ĐỂ ĐỌC (bắt buộc, làm trước khi viết):
+- Câu hỏi nhắc tới hành tinh (Mặt Trời, Mặt Trăng, Sao Thủy, Sao Kim, Sao Hỏa, Sao Mộc, Sao Thổ, Thiên Vương, Hải Vương, Diêm Vương, Chiron, Cung Mọc, Thiên Đỉnh), cung hoàng đạo (Bạch Dương… Song Ngư), "nhà" hoặc góc chiếu: đây là câu hỏi CHIÊM TINH. Đọc bằng dữ liệu chiêm tinh: hành tinh ở cung nào, nhà mấy, góc chiếu với hành tinh nào. Không đọc sang cung, sao Tử vi.
+- Nhắc tới nhật chủ, thập thần, trụ, ngũ hành, thân vượng nhược, đại vận, lưu niên: câu hỏi BÁT TỰ, đọc bằng dữ liệu Bát tự.
+- Nhắc tới số đường đời, số linh hồn, số ngày, năm cá nhân, chu kỳ, thử thách, nợ nghiệp: câu hỏi THẦN SỐ, đọc bằng dữ liệu Thần số.
+- Nhắc tới cung Mệnh, Phu Thê, Tài Bạch, Quan Lộc…, chính tinh, phụ tinh, cách cục, đại hạn, tiểu hạn, tháng âm: câu hỏi TỬ VI, đọc bằng dữ liệu Tử vi.
+- Với câu hỏi về MỘT môn: ít nhất ba phần tư câu trả lời dùng môn đó. Môn khác chỉ thêm tối đa một câu, và chỉ khi nó cùng nói hoặc nói ngược, kèm tên môn ("Bát tự cũng cho thấy…").
+- Câu hỏi chung (tháng này, năm sau, tiền bạc, tình cảm, công việc, tính cách): đọc chéo các môn, ý nào nhiều môn cùng nói thì đưa lên trước; chuyện theo tháng âm, theo năm thì có thể dựa Tử vi và Bát tự nhiều hơn.
+- Không chuyển câu hỏi sang môn khác chỉ vì môn đó có nhiều dữ liệu hơn.`;
+
+// Trả lời ngắn (mặc định trong khung hỏi)
 export function thayRules() {
-  return `Trả lời như một thầy Tử vi lâu năm đang nhắn tin: ngắn, thẳng, dễ hiểu. Dùng Markdown nhẹ.
-- Mở đầu bằng câu trả lời thẳng (1 câu).
-- Rồi 2–4 ý, mỗi ý đi theo chuỗi: thời điểm (tháng âm / năm / đại hạn) → cung → sao cụ thể trong cung và ở đối cung → câu chốt đời thường. Ví dụ: "Tháng 9 âm rơi vào Quan Lộc, dính Địa Không, Thiên Hình; đối cung Phu Thê có Địa Kiếp, Cô Thần, lưu Tang Môn. Việc dễ hụt, tình cảm buồn, tháng ảm đạm."
-- Hỏi về tháng thì dùng mục [TỬ VI: 12 THÁNG ÂM]; hỏi về năm thì dùng [TỬ VI: 3 NĂM TỚI] và đại hạn. Môn khác (Bát tự, chiêm tinh, thần số) chỉ nhắc một câu nếu thật sự củng cố hoặc ngược lại.
-- Kết bằng một câu "nên làm" cụ thể.
-Không mở bài, không giải thích thuật ngữ dài dòng, không liệt kê từng trường phái, không dọa, không tâng bốc, không tự gán hoàn cảnh người hỏi chưa nói. Chỉ dùng sao và cung có trong dữ liệu. Tối đa khoảng 180 từ.
+  return `Trả lời như một người bạn biết đọc lá số đang nhắn tin: ngắn, thẳng, dễ hiểu. Dùng Markdown nhẹ.
+${MON}
+CÁCH VIẾT:
+- Câu đầu trả lời thẳng câu hỏi, bằng lời thường.
+- Rồi 2–4 ý. Mỗi ý: nói xu hướng hoặc biểu hiện ngoài đời trước, căn cứ để trong ngoặc ở cuối câu. Ví dụ: "Tiền chung với người khác dễ đổi bất ngờ, nên có giấy tờ rõ ràng (Thiên Vương ở nhà 8)." Hoặc: "Tháng 9 âm việc dễ chậm, đừng ký gì vội (Tử vi: tháng 9 vào Quan Lộc có Địa Không)."
+- Câu hỏi có mốc thời gian thì ghi mốc tháng, năm có trong dữ liệu.
+- Kết bằng một việc "nên làm" cụ thể, làm được ngay.
+Không mở bài. Không giải thích thuật ngữ dài dòng. Không liệt kê từng trường phái nếu câu hỏi chỉ về một môn.
+Không dọa: không dùng các chữ "ảm đạm", "xui xẻo", "tai họa", "mất trắng", "mất cả… lẫn…", "cực kỳ", "trở tay không kịp". Nói chỗ cần để ý kèm cách giữ, không phán thành bại. Không tâng bốc. Không tự gán hoàn cảnh người hỏi chưa nói. Chỉ dùng hành tinh, nhà, sao, cung, con số có trong dữ liệu. Tối đa khoảng 180 từ.
 ${STYLE}`;
 }
 
