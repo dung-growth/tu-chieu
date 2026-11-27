@@ -1,0 +1,16 @@
+{
+  "name": "Tứ Chiếu",
+  "short_name": "Tứ Chiếu",
+  "description": "Bốn lá số đọc chéo nhau: Bát tự, Tử vi, Chiêm tinh, Thần số. Xem hôm nay của bạn mỗi ngày.",
+  "lang": "vi",
+  "start_url": "/?nguon=app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#131110",
+  "theme_color": "#131110",
+  "icons": [
+    { "src": "/assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

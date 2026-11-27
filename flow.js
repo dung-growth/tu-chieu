@@ -215,13 +215,14 @@
       ${mood ? `<p class="fl-td-line"><b>Tâm trạng:</b> ${esc(mood)}</p>` : ''}
       
       <details class="fl-td-why"><summary>Vì sao?</summary> Bát tự, ngày ${esc(T.gz)} là ngày ${T.god} với nhật chủ ${esc(R.bazi.dayMaster)}${T.notes.length ? '; ' + esc(T.notes.join(', ')) : ''}. Chiêm tinh, Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ', nhà ' + T.moon.house : ''}. Lịch Việt, ngày ${T.dayThan}, giờ hoàng đạo theo 12 thần. Thần số, số ngày cá nhân ${T.pday.n}.</details>
+      <div class="fl-ck"></div>
       <div class="fl-ke"></div>`;
     const go = v => { renderToday(R, v); anim(todayBox, [{ opacity: .3, transform: 'perspective(900px) rotateX(8deg) translateY(6px)' }, { opacity: 1, transform: 'none' }], 380); };
     todayBox.querySelector('input[type=date]').onchange = e => e.target.value && go(e.target.value);
     todayBox.querySelectorAll('[data-step]').forEach(bt => bt.onclick = () => { const [y, m, d] = ymd.split('-').map(Number); go(localYmd(new Date(y, m - 1, d + +bt.dataset.step))); });
     const tb = todayBox.querySelector('[data-today]'); if (tb) tb.onclick = () => go(localYmd(new Date()));
     const dayTxt = `Ngày ${T.thu}, ${T.d}/${T.m}/${T.y} (${T.gz}${T.lunar ? ', ' + T.lunar : ''}): chủ đề "${T.theme}"; ngày ${T.god} với nhật chủ; ${T.hoang ? 'hoàng đạo' : 'hắc đạo'} ${T.dayThan}${T.notes.length ? '; ' + T.notes.join(', ') : ''}; nên: ${T.nen.join('; ')}; nên tránh: ${T.tranh.join('; ')}; giờ tốt: ${T.gio.map(g => g.gio).join(', ') || 'không'}; Mặt Trăng ở ${T.moon ? T.moon.sign : '?'}${T.moon && T.moon.house ? ' nhà ' + T.moon.house : ''}${mood ? ' (' + mood + ')' : ''}; số ngày cá nhân ${T.pday.n}.`;
-    lastYmd = ymd; renderKe(R, ymd, isToday, dayTxt); moodTip(T, ymd);
+    lastYmd = ymd; renderKe(R, ymd, isToday, dayTxt); moodTip(T, ymd); renderCheck(R, T, ymd, isToday);
   }
 
   /* ---------- Kể nghe: than riêng, chỉ lưu trên máy này ---------- */
@@ -375,6 +376,82 @@
   function popFrom(from) { const card = $('#sheet .sheet-card'); if (!card || !from || RM.matches) return; const a = from.getBoundingClientRect(), b = card.getBoundingClientRect();
     card.animate([{ transform: `translate(${a.left + a.width / 2 - (b.left + b.width / 2)}px,${a.top + a.height / 2 - (b.top + b.height / 2)}px) scale(${Math.max(.2, a.width / b.width)},${Math.max(.1, a.height / b.height)})`, opacity: .4 }, { transform: 'none', opacity: 1 }], { duration: vui() ? 380 : 340, easing: EASE() }); }
 
+  /* ---------- Tối chấm "Hôm nay có đúng không?" và "Đúng với bạn tới đâu?" ----------
+     Lưu trên máy: tuchieu:checkin = { <id lá số>: { <ngày>: { v: 'd'|'h'|'k', pick, said, tag } } } */
+  const CK_KEY = 'tuchieu:checkin', CK_NEED = 21;
+  const CK_LBL = { d: 'Đúng', h: 'Hơi đúng', k: 'Không' };
+  const FACE = { d: '<path d="M13 22 Q20 29 27 22"/>', h: '<path d="M13 24 L27 22"/>', k: '<path d="M13 26 Q20 20 27 26"/>' };
+  const face = v => `<svg viewBox="0 0 40 40" class="ck-face" aria-hidden="true"><circle cx="20" cy="20" r="16"/><circle cx="14.5" cy="16" r="1.8" class="f"/><circle cx="25.5" cy="16" r="1.8" class="f"/>${FACE[v]}</svg>`;
+  function ckAll() { try { return JSON.parse(localStorage.getItem(CK_KEY)) || {}; } catch (e) { return {}; } }
+  function ckMine(R) { return ckAll()[keId(R)] || {}; }
+  function ckPut(R, ymd, rec) { const all = ckAll(), id = keId(R); all[id] = all[id] || {}; all[id][ymd] = rec; try { localStorage.setItem(CK_KEY, JSON.stringify(all)); } catch (e) {}
+    document.dispatchEvent(new CustomEvent('tc:checkin', { detail: { id, ymd, rec } })); }
+  // ba ý sáng nay Tứ Chiếu đã nói, để người dùng nhớ lại khi chấm
+  function ckSaid(T) {
+    const out = [['theme', T.theme]];
+    if (T.moon && T.moon.hit) out.push(['mood', T.moon.hit.text]);
+    if (T.nen && T.nen[0]) out.push(['nen', 'Nên: ' + T.nen[0]]);
+    if (out.length < 3 && T.tranh && T.tranh[0]) out.push(['tranh', 'Tránh: ' + T.tranh[0]]);
+    return out.slice(0, 3);
+  }
+  const ckTag = T => ({ moon: T.moon && T.moon.hit ? T.moon.hit.kind : '', hoang: !!T.hoang, pday: T.pday ? T.pday.n : null });
+  function renderCheck(R, T, ymd, isToday) {
+    const box = todayBox.querySelector('.fl-ck'); if (!box) return;
+    const mine = ckMine(R), n = Object.keys(mine).length, now = new Date(), hr = now.getHours();
+    const yest = localYmd(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1));
+    // tối nay (từ 17h) chấm hôm nay; sáng hôm sau (trước 12h) còn chấm bù được hôm qua
+    let target = null, tT = T;
+    if (isToday && hr >= 17 && !mine[ymd]) target = ymd;
+    else if (isToday && hr < 12 && !mine[yest]) { target = yest; try { tT = TODAY.build(R, yest); } catch (e) { target = null; } }
+    const link = n ? `<button type="button" class="fl-link ck-open">Đúng với bạn tới đâu? <span class="muted">${n >= CK_NEED ? '' : n + '/' + CK_NEED + ' ngày'}</span> ›</button>` : '';
+    if (!target) { box.innerHTML = link ? `<div class="ck-line">${link}</div>` : ''; bindOpen(); return; }
+    const said = ckSaid(tT), isY = target !== ymd;
+    box.innerHTML = `<div class="ck-card"><span class="fl-lab">${isY ? 'Hôm qua' : 'Tối nay'}</span><h3 class="ck-h">${isY ? 'Hôm qua có đúng không?' : 'Hôm nay có đúng không?'}</h3>
+      <div class="ck-said"><b>${isY ? 'Hôm qua' : 'Sáng nay'} Tứ Chiếu nói:</b><ul>${said.map(([, t]) => `<li>${esc(t)}</li>`).join('')}</ul></div>
+      <div class="ck-three" role="group" aria-label="Chấm điểm">${['d', 'h', 'k'].map(v => `<button type="button" data-v="${v}">${face(v)}<span>${CK_LBL[v]}</span></button>`).join('')}</div>
+      <p class="small muted ck-foot">Chỉ cần một chạm. Lưu trên máy này.</p></div>`;
+    box.querySelectorAll('[data-v]').forEach(b => b.onclick = () => {
+      const rec = { v: b.dataset.v, said: said.map(x => x[0]), pick: [], tag: ckTag(tT), t: Date.now() };
+      ckPut(R, target, rec); const m = ckMine(R), c = Object.keys(m).length;
+      box.innerHTML = `<div class="ck-card done"><span class="fl-lab">Đã ghi</span><h3 class="ck-h">Cảm ơn, mai gặp lại.</h3>
+        ${c < CK_NEED ? `<div class="ck-prog"><div class="ck-bar"><i style="width:${Math.round(c / CK_NEED * 100)}%"></i></div><p><b>${c}/${CK_NEED} ngày.</b> Chấm thêm ${CK_NEED - c} ngày nữa là biết Tứ Chiếu đúng với bạn tới đâu.</p></div>` : `<p>Đủ ${CK_NEED} ngày rồi. <button type="button" class="fl-link ck-open">Xem đúng tới đâu ›</button></p>`}
+        ${rec.v !== 'k' ? `<div class="ck-said"><b>Ý nào đúng nhất?</b> <span class="small muted">(không bắt buộc)</span><div class="ck-chips">${said.map(([k, t]) => `<button type="button" data-k="${k}">${esc(t.replace(/^(Nên|Tránh): /, ''))}</button>`).join('')}</div></div>` : ''}</div>`;
+      anim(box.firstElementChild, [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], 320);
+      box.querySelectorAll('[data-k]').forEach(c2 => c2.onclick = () => { const on = c2.getAttribute('aria-pressed') !== 'true'; c2.setAttribute('aria-pressed', on);
+        const r2 = ckMine(R)[target]; r2.pick = [...box.querySelectorAll('[data-k][aria-pressed=true]')].map(x => x.dataset.k); ckPut(R, target, r2); });
+      bindOpen();
+    });
+    function bindOpen() { box.querySelectorAll('.ck-open').forEach(x => x.onclick = () => ckSheet(R, x)); }
+  }
+  function ckSheet(R, from) {
+    const mine = ckMine(R), days = Object.keys(mine).sort(), n = days.length;
+    const ok = r => r.v === 'd' || r.v === 'h', rate = arr => arr.length ? arr.filter(ok).length : 0;
+    const pct = n ? Math.round(rate(days.map(d => mine[d])) / n * 100) : 0;
+    // lịch 35 ngày gần nhất
+    const now = new Date(), cells = [];
+    for (let i = 34; i >= 0; i--) { const d = localYmd(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i)), r = mine[d];
+      cells.push(`<i class="ck-c ${r ? r.v : 'e'}" title="${d.split('-').reverse().join('/')}${r ? ': ' + CK_LBL[r.v] : ''}"></i>`); }
+    // điều rút ra: chỉ nói khi đủ số ngày, nói thật cả khi không đúng
+    const ins = [], recs = days.map(d => mine[d]);
+    const hard = recs.filter(r => r.tag && r.tag.moon === 'khó');
+    if (hard.length >= 3) { const k = rate(hard); ins.push(k / hard.length >= .65 ? [`Ngày báo dễ mệt, bạn thấy đúng`, `${k}/${hard.length} lần. Gặp ngày như vậy nên xếp việc nhẹ.`] : [`Ngày báo dễ mệt, chưa trúng lắm với bạn`, `Chỉ đúng ${k}/${hard.length} lần. Ngày đó cứ làm như thường.`]); }
+    const hd = recs.filter(r => r.tag && r.tag.hoang), hx = recs.filter(r => r.tag && !r.tag.hoang);
+    if (hd.length >= 4 && hx.length >= 4) { const a = rate(hd) / hd.length, b = rate(hx) / hx.length;
+      ins.push(Math.abs(a - b) < .15 ? ['Ngày tốt hay xấu không khác mấy với bạn', `Ngày hoàng đạo đúng ${rate(hd)}/${hd.length} lần, ngày thường ${rate(hx)}/${hx.length} lần. Việc nhỏ khỏi cần chờ ngày đẹp.`]
+        : a > b ? ['Ngày hoàng đạo bạn thấy suôn hơn', `Đúng ${Math.round(a * 100)}% so với ${Math.round(b * 100)}% ngày thường. Việc quan trọng nên xếp vào ngày hoàng đạo.`]
+        : ['Ngày hoàng đạo không suôn hơn với bạn', `Chỉ ${Math.round(a * 100)}%, ngày thường lại ${Math.round(b * 100)}%. Đừng chờ ngày đẹp mới làm.`]); }
+    const cnt = {}; recs.forEach(r => (r.pick || []).forEach(k => cnt[k] = (cnt[k] || 0) + 1));
+    const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0], NAME = { theme: 'Chủ đề trong ngày', mood: 'Tâm trạng', nen: 'Việc nên làm', tranh: 'Việc nên tránh' };
+    if (top && top[1] >= 3) ins.push([`${NAME[top[0]]} là phần trúng nhất`, `Bạn chọn phần này ${top[1]} lần.`]);
+    const enough = n >= CK_NEED;
+    UI.openSheet(`<div class="sh-top"><div><span class="fl-lab">${n} ngày đã chấm</span><h3 id="sheetTitle">Đúng với bạn tới đâu?</h3></div></div>
+      ${enough ? `<div class="ck-big"><b>${pct}%</b><span>số ngày bạn thấy Tứ Chiếu nói đúng hoặc hơi đúng</span></div>` : `<div class="ck-prog"><div class="ck-bar"><i style="width:${Math.round(n / CK_NEED * 100)}%"></i></div><p><b>${n}/${CK_NEED} ngày.</b> Chấm thêm ${CK_NEED - n} ngày nữa là thấy rõ. Hiện tạm ${pct}% đúng hoặc hơi đúng.</p></div>`}
+      <div class="ck-cal">${cells.join('')}</div>
+      <div class="ck-lg"><span><i class="ck-c d"></i>Đúng</span><span><i class="ck-c h"></i>Hơi đúng</span><span><i class="ck-c k"></i>Không</span><span><i class="ck-c e"></i>Chưa chấm</span></div>
+      ${enough && ins.length ? ins.map(([h, p]) => `<div class="ck-ins"><b>${esc(h)}</b><p>${esc(p)}</p></div>`).join('') : enough ? '<p class="small muted">Chưa đủ ngày giống nhau để so. Chấm thêm ít hôm nữa.</p>' : ''}
+      <p class="small muted" style="margin-top:12px">Rút ra từ những lần bạn chấm, chưa phải kết luận. Chỉ lưu trên máy này.</p>`, from);
+  }
+
   /* ---------- Gợi ý theo tâm trạng: ngày Mặt Trăng chiếu khó mà đang dùng Vui ---------- */
   function moodTip(T, ymd) {
     const box = todayBox.querySelector('.fl-mood'); if (!box) return;
@@ -388,6 +465,8 @@
     box.querySelector('.fl-mood-x').onclick = done;
   }
   document.addEventListener('tc:skin', () => { if (UI.R() && lastYmd) renderToday(UI.R(), lastYmd); });
+  function themeMeta() { const m = document.querySelector('meta[name=theme-color]'); if (m) m.content = document.documentElement.dataset.skin === 'vui' ? '#FFF6E9' : '#131110'; }
+  themeMeta(); document.addEventListener('tc:skin', themeMeta);
 
   let tm; new MutationObserver(() => { clearTimeout(tm); tm = setTimeout(tidy, 30); }).observe($('#result'), { childList: true, subtree: true });
   tidy();
