@@ -1,6 +1,6 @@
 /* Tứ Chiếu: mời cài web lên màn hình điện thoại (PWA).
    - Đã cài (mở dạng app) thì không mời.
-   - Mời từ ngày ghé thứ 2, chỉ khi đã có lá số. "Để sau" thì 7 ngày sau mới mời lại.
+   - Mời ngay sau khi đọc xong một chương luận giải, hoặc từ ngày ghé thứ 2. Chỉ khi đã có lá số. "Để sau" thì 7 ngày sau mới mời lại.
    - Android/Chrome: một nút Cài. iPhone: hướng dẫn 3 bước trong Safari. Mở trong Facebook, Zalo: nhắc mở bằng trình duyệt trước. */
 (() => {
   if ('serviceWorker' in navigator && location.protocol === 'https:') addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
@@ -40,9 +40,9 @@
   // khung mời ở đáy
   let bar = null;
   function hideBar() { if (bar) { bar.remove(); bar = null; } }
-  function maybeAsk() {
+  function maybeAsk(now) {
     if (standalone || !mobile || bar || ls.get('tuchieu:installed')) return;
-    if (+(ls.get('tuchieu:visit-days') || 0) < 2 || !UI.R()) return;
+    if (!UI.R() || (now !== true && +(ls.get('tuchieu:visit-days') || 0) < 2)) return;
     if (Date.now() < +(ls.get('tuchieu:install-snooze') || 0)) return;
     bar = document.createElement('div'); bar.className = 'in-bar'; bar.setAttribute('role', 'dialog'); bar.setAttribute('aria-label', 'Cài Tứ Chiếu lên điện thoại');
     bar.innerHTML = `<img src="/assets/icons/icon-192.png" alt="" width="40" height="40"><div><b>Cài Tứ Chiếu lên điện thoại</b><p>Mở bằng một chạm như app, khỏi phải tìm lại trang.</p></div>
@@ -60,5 +60,7 @@
   }
   paintFoot();
   setTimeout(maybeAsk, 4000);
+  // vừa đọc xong một chương luận giải (đóng khung chương): lúc đang thấy hay thì mời luôn, không đợi ngày ghé thứ hai
+  document.addEventListener('tc:chapter-read', () => setTimeout(() => { if (!document.body.classList.contains('asking') && !document.body.classList.contains('sheet-open')) maybeAsk(true); }, 500));
   document.getElementById('f') && document.getElementById('f').addEventListener('submit', () => setTimeout(maybeAsk, 6000));
 })();

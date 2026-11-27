@@ -430,10 +430,13 @@
     anim(say, [{ opacity: 0, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], 600);
     [...say.children].forEach((c, i) => anim(c, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], 500 + i * 120));
     revealChs();
-    const openCh = (c, from) => { UI.openSheet(`<div class="sh-top"><div><span class="fl-lab">Luận giải</span><h3 id="sheetTitle">${esc(c.title)}</h3></div></div><div class="ai-out">${c.body.innerHTML}</div>`, from); popFrom(from); };
+    const openCh = (c, from) => { UI.openSheet(`<div class="sh-top"><div><span class="fl-lab">Luận giải</span><h3 id="sheetTitle">${esc(c.title)}</h3></div></div><div class="ai-out">${c.body.innerHTML}</div>`, from); popFrom(from); chOpen = true; };
     chList.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => openCh(chs[+b.dataset.ch], b));
     const more = say.querySelector('[data-ch=main]'); if (more) more.onclick = () => openCh(main, more);
   }
+  // đọc xong một chương (đóng khung chương) thì báo cho install.js mời cài lên điện thoại
+  let chOpen = false;
+  { const sh = $('#sheet'); if (sh) new MutationObserver(() => { if (sh.hidden && chOpen) { chOpen = false; document.dispatchEvent(new CustomEvent('tc:chapter-read')); } }).observe(sh, { attributes: true, attributeFilter: ['hidden'] }); }
   function setView(v, flip) {
     const items = [...chList.children], before = flip && !RM.matches ? items.map(x => x.getBoundingClientRect()) : null;
     view = v; chList.classList.toggle('grid', v === 'grid'); chHead.querySelectorAll('[data-v]').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v)); try { localStorage.setItem('tuchieu:chview', v); } catch (e) {}
