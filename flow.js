@@ -36,6 +36,7 @@
   pick.innerHTML = SYS.map((s, i) => `${s.beta && !SYS[i - 1].beta ? '<span class="fl-beta">Beta</span>' : ''}<button type="button" data-sys="${s.k}">${s.name}</button>`).join('') + '<span class="fl-beta"></span><button type="button" data-hop>Hợp nhau</button>';
   const topRow = el('div', 'fl-head'); topRow.append(bar, nav); res.prepend(topRow, pick);
   const ind = el('span', 'fl-nav-ind'); nav.append(ind);
+  { const setH = () => document.documentElement.style.setProperty('--headH', (innerWidth >= 900 ? topRow.offsetHeight + 4 : 0) + 'px'); addEventListener('resize', setH); new ResizeObserver(setH).observe(topRow); }
   const bottom = nav.cloneNode(true); bottom.className = 'fl-bottom'; document.body.append(bottom);
   function el(t, c) { const e = document.createElement(t); e.className = c; return e; }
 
@@ -57,7 +58,7 @@
     else { cur = 'laso'; const S = SYS.find(x => x.tab === t && (!x.lab || x.lab === (document.querySelector('#labNav [aria-pressed=true]') || {}).dataset?.lab)); if (S) sys = S.k; }
     const navCur = cur === 'hop' ? 'laso' : cur;
     [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === navCur ? 'page' : 'false')));
-    document.body.dataset.sec = cur; moveInd(); if (SC && cur === 'ban') requestAnimationFrame(() => SC && SC.tick());
+    document.body.dataset.sec = cur; moveInd(); if (cur !== 'ban') document.body.classList.remove('in-scene'); if (SC && cur === 'ban') requestAnimationFrame(() => SC && SC.tick());
     pick.hidden = cur !== 'laso' && cur !== 'hop';
     pick.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', cur === 'laso' && b.dataset.sys === sys));
     pick.querySelector('[data-hop]').setAttribute('aria-pressed', cur === 'hop');
@@ -238,8 +239,10 @@
     const dir = az => ['Bắc', 'Đông Bắc', 'Đông', 'Đông Nam', 'Nam', 'Tây Nam', 'Tây', 'Tây Bắc'][Math.round(az / 45) % 8];
     const hi = a => a > 60 ? 'gần đỉnh đầu' : a > 30 ? 'trên cao' : 'thấp';
     const order = ['Moon', 'Venus', 'Jupiter', 'Mars', 'Saturn', 'Mercury'], shown = up.slice().sort((a, b) => order.indexOf(a.b) - order.indexOf(b.b));
-    const sunTxt = sun.altitude < -6 ? '' : sun.altitude < 0 ? 'Trời sắp sáng. ' : 'Trời đang sáng, đây là bầu trời nếu không có nắng. ';
-    root.querySelector('.sc-cap').textContent = sunTxt + (shown.length ? shown.slice(0, 2).map(x => `${PNAME[x.b]} ${hi(x.alt)} phía ${dir(x.az)}`).join(', ') + '.' : 'Không hành tinh sáng nào trên trời lúc đó.');
+    const pl = shown.slice(0, 2).map(x => `${PNAME[x.b]} ${hi(x.alt)} phía ${dir(x.az)}`).join(', ');
+    root.querySelector('.sc-cap').textContent = sun.altitude > 2 ? `Trời đang sáng, Mặt Trời ${hi(sun.altitude)} phía ${dir(sun.azimuth)}.` + (shown.length ? ` ${shown.slice(0, 2).map(x => PNAME[x.b]).join(', ')} cũng ở trên trời nhưng bị nắng che.` : '')
+      : sun.altitude > -6 ? (sun.azimuth < 180 ? 'Trời rạng sáng.' : 'Trời chạng vạng.') + (pl ? ' ' + pl + '.' : '')
+      : (pl ? pl + '.' : 'Không hành tinh sáng nào trên trời lúc đó.');
     const fmt = t => { const x = new Date(t.date.getTime() + (+i.tz || 7) * 3600e3); return `${x.getUTCHours()}:${String(x.getUTCMinutes()).padStart(2, '0')}`; };
     const gs = [], gr = [];
     hidden.forEach(b => { let rise = null, set = null; try { rise = Astronomy.SearchRiseSet(b, obs, +1, date, 1); set = Astronomy.SearchRiseSet(b, obs, -1, new Date(date.getTime() - 864e5), 1); } catch (e) {}
@@ -249,8 +252,13 @@
     const cv = root.querySelector('.sc-cv'), ctx = cv.getContext('2d'), sil = root.querySelector('.sc-sil'), pop = root.querySelector('.sc-pop');
     const vec = (alt, az) => [Math.cos(alt * D) * Math.sin(az * D), Math.cos(alt * D) * Math.cos(az * D), Math.sin(alt * D)];
     const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-    const focus = up.slice().sort((a, b) => b.alt - a.alt)[0] || { az: (sun.azimuth + 180) % 360 }, AZ0 = focus.az, hits = [];
-    const dark = (sun.altitude < -6), gTop = dark ? '#05081c' : '#0d1838', gMid = dark ? '#121a3d' : '#1d2c5e', gBot = dark ? '#2a2f5c' : '#3b4c86';
+    const focus = sun.altitude > 0 ? { az: sun.azimuth } : (up.slice().sort((a, b) => b.alt - a.alt)[0] || { az: (sun.azimuth + 180) % 360 }), AZ0 = focus.az, hits = [];
+    // màu trời theo độ cao Mặt Trời: đêm, chạng vạng / rạng đông, ban ngày
+    const sa = sun.altitude, mode = sa < -12 ? 'dem' : sa < -4 ? 'toi' : sa < 2 ? 'rang' : 'ngay';
+    const SKYC = { dem: ['#05081c', '#121a3d', '#2a2f5c'], toi: ['#0a1236', '#25306a', '#5a4a7e'], rang: ['#1d3270', '#6a6fa8', '#e7a27a'], ngay: ['#2f6fc4', '#5f9be0', '#a9d1f2'] }[mode];
+    const starA = { dem: 1, toi: .55, rang: .18, ngay: 0 }[mode];
+    root.classList.toggle('sc-day', mode === 'ngay' || mode === 'rang');
+    const [gTop, gMid, gBot] = SKYC;
     function draw(p) {
       const W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1); if (!W || !H) return;
       if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
@@ -261,18 +269,26 @@
       const u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]];
       const fov = W > 800 ? 100 : 115, K2 = Math.max(W, H * .75) / (2 * Math.tan(fov * D / 4));
       const P = (alt, az) => { const v = vec(alt, az), dd = dot(v, f); if (dd < -0.2) return null; return [W / 2 + dot(v, r) / (1 + dd) * K2, H * .62 - dot(v, u) / (1 + dd) * K2]; };
-      ctx.strokeStyle = 'rgba(200,215,255,.22)'; ctx.lineWidth = .8; ctx.beginPath();
-      lines.forEach(l => { let pen = false; l.forEach(pt => { const q = pt.alt > -2 && P(pt.alt, pt.az); if (!q) { pen = false; return; } pen ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); pen = true; }); }); ctx.stroke();
-      stars.forEach(s => { const q = P(s.alt, s.az); if (!q || q[0] < -5 || q[0] > W + 5 || q[1] < -5 || q[1] > H + 5) return; const rr = Math.max(.5, 2.3 - s.m * .38);
+      ctx.font = '600 12px Inter, system-ui, sans-serif';
+      const labs = [];
+      const labAt = (x, y, txt) => { const w = ctx.measureText(txt).width; let lx = x + 9, ly = y + 4; for (let k = 0; k < 4 && labs.some(r => lx < r[0] + r[2] && lx + w > r[0] && Math.abs(ly - r[1]) < 14); k++) { if (k === 0) { lx = x - 9 - w; } else { ly += 15; lx = x + 9; } } labs.push([lx, ly, w]); return [lx, ly]; };
+      if (starA > 0) { ctx.strokeStyle = `rgba(200,215,255,${(.22 * starA).toFixed(3)})`; ctx.lineWidth = .8; ctx.beginPath();
+      lines.forEach(l => { let pen = false; l.forEach(pt => { const q = pt.alt > -2 && P(pt.alt, pt.az); if (!q) { pen = false; return; } pen ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); pen = true; }); }); ctx.stroke(); }
+      if (starA > 0) stars.forEach(s => { const q = P(s.alt, s.az); if (!q || q[0] < -5 || q[0] > W + 5 || q[1] < -5 || q[1] > H + 5) return; const rr = Math.max(.5, 2.3 - s.m * .38);
         if (s.m < 1.6) { const gg = ctx.createRadialGradient(q[0], q[1], 0, q[0], q[1], rr * 6); gg.addColorStop(0, 'rgba(255,255,255,.45)'); gg.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(q[0], q[1], rr * 6, 0, 7); ctx.fill(); }
-        ctx.fillStyle = `rgba(255,255,255,${Math.min(1, 1.15 - s.m * .13)})`; ctx.beginPath(); ctx.arc(q[0], q[1], rr, 0, 7); ctx.fill(); });
+        ctx.fillStyle = `rgba(255,255,255,${(Math.min(1, 1.15 - s.m * .13) * starA).toFixed(3)})`; ctx.beginPath(); ctx.arc(q[0], q[1], rr, 0, 7); ctx.fill(); });
+      // Mặt Trời khi đã mọc
+      if (sun.altitude > -1) { const q = P(sun.altitude, sun.azimuth); if (q) { const gg = ctx.createRadialGradient(q[0], q[1], 0, q[0], q[1], 90); gg.addColorStop(0, 'rgba(255,250,230,1)'); gg.addColorStop(.12, 'rgba(255,240,200,.95)'); gg.addColorStop(.35, 'rgba(255,220,170,.35)'); gg.addColorStop(1, 'rgba(255,220,170,0)'); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(q[0], q[1], 90, 0, 7); ctx.fill();
+        ctx.font = '600 12px Inter, system-ui, sans-serif'; const [lx, ly] = labAt(q[0] + 7, q[1], 'Mặt Trời'); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(20,40,90,.6)'; ctx.strokeText('Mặt Trời', lx, ly); ctx.fillStyle = '#fff'; ctx.fillText('Mặt Trời', lx, ly); } }
       ctx.font = '600 12px Inter, system-ui, sans-serif'; hits.length = 0;
+      ctx.globalAlpha = mode === 'ngay' ? .75 : 1;
       up.forEach(x => { const q = P(x.alt, x.az); if (!q) return; hits.push({ b: x.b, x: q[0], y: q[1] });
         const moon = x.b === 'Moon', c = moon ? '246,238,220' : '240,128,90';
         const gg = ctx.createRadialGradient(q[0], q[1], 0, q[0], q[1], moon ? 22 : 16); gg.addColorStop(0, `rgba(${c},.6)`); gg.addColorStop(1, `rgba(${c},0)`); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(q[0], q[1], moon ? 22 : 16, 0, 7); ctx.fill();
         ctx.fillStyle = `rgb(${c})`; ctx.beginPath(); ctx.arc(q[0], q[1], moon ? 6 : 3.6, 0, 7); ctx.fill();
-        ctx.lineWidth = 3; ctx.strokeStyle = '#05081c'; ctx.strokeText(PNAME[x.b], q[0] + 9, q[1] + 4); ctx.fillStyle = '#F6EEDC'; ctx.fillText(PNAME[x.b], q[0] + 9, q[1] + 4); });
-      const hq = P(0, az0); if (hq) { const top = Math.min(hq[1], H) - 160, gl = ctx.createLinearGradient(0, top, 0, top + 160); gl.addColorStop(0, 'rgba(90,106,160,0)'); gl.addColorStop(1, 'rgba(90,106,160,.32)'); ctx.fillStyle = gl; ctx.fillRect(0, top, W, H - top); }
+        const [lx, ly] = labAt(q[0], q[1], PNAME[x.b]); ctx.lineWidth = 3; ctx.strokeStyle = '#05081c'; ctx.strokeText(PNAME[x.b], lx, ly); ctx.fillStyle = '#F6EEDC'; ctx.fillText(PNAME[x.b], lx, ly); });
+      ctx.globalAlpha = 1;
+      const hq = mode === 'dem' || mode === 'toi' ? P(0, az0) : null; if (hq) { const top = Math.min(hq[1], H) - 160, gl = ctx.createLinearGradient(0, top, 0, top + 160); gl.addColorStop(0, 'rgba(90,106,160,0)'); gl.addColorStop(1, 'rgba(90,106,160,.32)'); ctx.fillStyle = gl; ctx.fillRect(0, top, W, H - top); }
     }
     function tick() {
       const rc = root.getBoundingClientRect(), stage = root.firstElementChild, total = Math.max(1, root.offsetHeight - stage.offsetHeight), top0 = parseFloat(getComputedStyle(stage).top) || 0;
@@ -281,6 +297,7 @@
       const e = 1 - Math.pow(1 - Math.min(1, p / .85), 3);
       if (sil) sil.style.transform = `translateY(${((1 - e) * 100).toFixed(2)}%)`;
       root.style.setProperty('--p', p.toFixed(3));
+      document.body.classList.toggle('in-scene', rc.top <= top0 + 1 && p < .98);
       root.classList.toggle('s1', p > .1); root.classList.toggle('s2', p > .2 && p < .78); root.classList.toggle('s3', p > .78); root.classList.toggle('s0', p < .04);
       if (p >= .78) pop.hidden = true;
     }
@@ -382,7 +399,7 @@
         if (!res.ok) { let m = 'Máy chủ báo lỗi (' + res.status + ').'; try { m = (await res.json()).error || m; } catch (x) {} throw new Error(m); }
         const rd = res.body.getReader(), dec = new TextDecoder();
         for (;;) { const { done, value } = await rd.read(); if (done) break; text += dec.decode(value, { stream: true }); a.innerHTML = UI.md(text.split('\u0000ERR:')[0]); }
-        if (text.includes('\u0000ERR:')) throw new Error(text.split('\u0000ERR:')[1] || 'AI bị gián đoạn.');
+        if (text.includes('\u0000ERR:')) throw new Error(text.split('\u0000ERR:')[1] || 'Bị gián đoạn giữa chừng. Bấm Gửi lại.');
         kePut(R, ymd, [...list, { q, a: text, t: Date.now() }]);
         renderKe(R, ymd, isToday, dayTxt);
       } catch (err) {

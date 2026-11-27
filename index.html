@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="google-site-verification" content="fAnweTwCGprJ2CgRwipnQQ-zb1xK4JwEw9KTjSvaRY4" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Lập cùng lúc Bát tự, Bản đồ sao, Tử vi, Thần số học và để AI đối chiếu các trường phái.">
+<meta name="description" content="Lập cùng lúc Bát tự, Tử vi, Chiêm tinh, Thần số rồi đọc chéo: chỗ bốn lá số cùng nói, chỗ nói khác, và bạn nên làm gì.">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#131110">
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
@@ -827,9 +827,9 @@ tr.cur td{background:var(--seal-soft)}
   <section class="hero">
     <div class="container">
       <div>
-        <span class="eyebrow reveal"><b aria-hidden="true"></b>Bát tự · Bản đồ sao · Tử vi · Thần số học</span>
+        <span class="eyebrow reveal"><b aria-hidden="true"></b>Bát tự · Tử vi · Chiêm tinh · Thần số</span>
         <h1 class="reveal" style="--d:.05s">Một ngày sinh,<br><span>bốn góc nhìn.</span></h1>
-        <p class="lede reveal" style="--d:.1s">Lập cùng lúc bốn lá số rồi để AI đối chiếu: chỗ các trường phái cùng nói một điều, chỗ chúng khác nhau, và bạn nên làm gì tiếp theo.</p>
+        <p class="lede reveal" style="--d:.1s">Lập cùng lúc bốn lá số rồi đọc chéo: chỗ các trường phái cùng nói một điều, chỗ chúng khác nhau, và bạn nên làm gì tiếp theo.</p>
         <div class="hero-cta reveal" style="--d:.15s">
           <button class="btn-primary btn-lg" type="button" id="heroGo">Lập lá số</button>
           <button class="btn-ghost btn-lg" type="button" data-tab="t-ai">Đọc luận giải mẫu</button>
@@ -1750,7 +1750,7 @@ const PAL_LIFE = {
   'Phu Thê': { 'Vững': ['Chuyện tình cảm, vợ chồng tương đối êm, người bên cạnh là chỗ dựa thật.', 'Đừng coi sự êm là đương nhiên; vẫn cần chăm cho mối quan hệ.'],
     'Vừa': ['Tình cảm có lúc ngọt lúc lạt, hay vướng chuyện khác quan điểm hoặc thời điểm chưa hợp.', 'Nói thẳng điều mình cần thay vì chờ người kia tự hiểu.'],
     'Yếu': ['Đường tình dễ trắc trở: đến muộn, hay hiểu lầm, hoặc thấy mình cho nhiều mà nhận ít.', 'Đừng vội ràng buộc; tìm hiểu đủ lâu, và học cách nói ra khi buồn thay vì giữ trong lòng.'] },
-  'Tử Nữ': { 'Vững': ['Con cái, cấp dưới hoặc những thứ bạn làm ra thường mang lại niềm vui và thành quả.', 'Dành thời gian dạy dỗ, kèm cặp; công sức bỏ ra sẽ quay lại.'],
+  'Tử Nữ': { 'Vững': ['Con cái, cấp dưới hoặc những thứ bạn làm ra thường cho bạn niềm vui và thành quả.', 'Dành thời gian dạy dỗ, kèm cặp; công sức bỏ ra sẽ quay lại.'],
     'Vừa': ['Có lúc tự hào, có lúc mệt vì con cái hay cấp dưới; dự án của bạn thành bại đan xen.', 'Giao việc rõ ràng, kỳ vọng vừa phải.'],
     'Yếu': ['Lo cho con cái, cấp dưới hay dự án của mình tốn nhiều sức mà kết quả chưa như ý.', 'Bớt ôm đồm, chọn ít việc mà làm tới nơi; với con cái, kiên nhẫn hơn là ép.'] },
   'Tài Bạch': { 'Vững': ['Tiền vào khá đều, biết cách kiếm và giữ được tiền.', 'Tiền dư nên để vào chỗ an toàn, đừng vì thuận mà liều.'],
@@ -2080,7 +2080,7 @@ function renderHD(){
       <div class="label" style="margin-bottom:6px">Luận giải Human Design</div>
       ${HD.reading(c, vary)}
       <div class="hd-ai">
-        <div><b>Muốn đọc sâu hơn?</b><br><span class="small muted">AI viết một bài riêng dựa trên biểu đồ của bạn${readInput().ctx ? ' và bối cảnh bạn đã kể' : ''}, tốn 1 lượt AI.</span></div>
+        <div><b>Muốn đọc sâu hơn?</b><br><span class="small muted">Tứ Chiếu viết một bài riêng dựa trên biểu đồ của bạn${readInput().ctx ? ' và bối cảnh bạn đã kể' : ''}, tốn 1 lượt.</span></div>
         <button type="button" class="btn-primary" id="hdAiGo">Đọc kỹ hơn</button>
       </div>
       <div id="hdAiOut" class="ai-out"></div>
@@ -2154,7 +2154,7 @@ function renderQM(){
       <div class="panel hd-read"><div class="label" style="margin-bottom:6px">Đọc nhanh mệnh bàn</div>
         <p class="small muted" style="margin:0 0 8px">Máy chấm theo lối đọc phổ biến: cửa là chính, sao và thần thêm bớt. Trong ngoặc là căn cứ trên bàn, bấm vào chữ trên bàn để xem nghĩa.</p>
         ${qmQuick(c, roles)}
-        <div class="hd-ai"><div><b>Muốn đọc sâu hơn?</b><br><span class="small muted">AI đọc đúng bàn đã tính ở bên cạnh, không tự lập bàn. Tốn 1 lượt AI.</span></div><button type="button" class="btn-primary" id="qmAiGo">AI luận mệnh bàn</button></div>
+        <div class="hd-ai"><div><b>Muốn đọc sâu hơn?</b><br><span class="small muted">Đọc đúng bàn đã tính ở bên cạnh, không tự lập bàn. Tốn 1 lượt.</span></div><button type="button" class="btn-primary" id="qmAiGo">AI luận mệnh bàn</button></div>
         <div id="qmAiOut" class="ai-out"></div></div></div>`;
   }
   const topics = Object.entries(QM.TOPICS).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join('');
@@ -2231,7 +2231,7 @@ function qmChat(c, q, topic, firstAns, thread){
   go.onclick = send; inp.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
 }
 // Nút "Giải thích kỹ hơn": gọi lại AI với cùng bàn, bản dài (tốn thêm 1 lượt)
-function qmMore(box, fn){ const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-ghost btn-sm qa-more'; b.textContent = 'Giải thích kỹ hơn (thêm 1 lượt AI)'; b.onclick = () => { b.remove(); fn(); }; box.append(b); }
+function qmMore(box, fn){ const b = document.createElement('button'); b.type = 'button'; b.className = 'btn-ghost btn-sm qa-more'; b.textContent = 'Giải thích kỹ hơn (thêm 1 lượt)'; b.onclick = () => { b.remove(); fn(); }; box.append(b); }
 async function qmLong(c, q, topic, a){
   const more = document.createElement('div'); more.className = 'qm-long'; more.innerHTML = '<p class="muted">Đang viết bản giải thích kỹ…</p>'; a.append(more);
   ctl = new AbortController(); busy(true);
@@ -2372,7 +2372,7 @@ function renderHop(){
       <text x="48" y="48" text-anchor="middle" dominant-baseline="central" font-size="24" font-weight="700" fill="var(--ink)">${score}</text></svg>
       <div><b class="big">${label}</b><span class="muted small">Bạn và ${esc(nameB)} · ${esc(hopData.relType)} · điểm tham khảo, cộng trừ từ các điểm hợp và vênh bên dưới</span></div></div>
     ${secs.map(([t, li]) => `<div class="hop-sec"><h4>${t}</h4><ul>${li.map(([k, x]) => `<li class="${k}">${esc(x)}</li>`).join('')}</ul></div>`).join('')}
-    <div class="row-actions" style="margin-top:16px"><button class="btn-primary" type="button" id="hopAiGo">Đọc độ hợp của hai người</button><span class="hint">Tốn 1 lượt AI.</span></div>
+    <div class="row-actions" style="margin-top:16px"><button class="btn-primary" type="button" id="hopAiGo">Đọc độ hợp của hai người</button><span class="hint">Tốn 1 lượt.</span></div>
     <div class="ai-out" id="hopAi" style="margin-top:12px"></div></div>`;
   $('#hopAiGo').onclick = hopAI;
 }
@@ -2494,7 +2494,7 @@ async function callAI(payload, onText){
   try { lastOwner = decodeURIComponent(res.headers.get('X-AI-Owner') || ''); } catch(e) { lastOwner = ''; }
   const reader = res.body.getReader(); const dec = new TextDecoder(); let text = '';
   for (;;) { const { done, value } = await reader.read(); if (done) break; text += dec.decode(value, { stream:true }); onText(text); }
-  if (text.includes('\u0000ERR:')) { const [ok, err] = text.split('\u0000ERR:'); onText(ok); throw Object.assign(new Error(err || 'AI bị gián đoạn.'), { partial: ok }); }
+  if (text.includes('\u0000ERR:')) { const [ok, err] = text.split('\u0000ERR:'); onText(ok); throw Object.assign(new Error(err || 'Bị gián đoạn giữa chừng. Bấm lại để viết tiếp.'), { partial: ok }); }
   return text;
 }
 $('#aiGo').onclick = async () => {
@@ -2607,10 +2607,9 @@ addEventListener('scroll', onScroll, { passive: true }); onScroll();
 // Giao diện theo tâm trạng: Yên (tối) / Vui (sáng, nhiều màu)
 function setSkin(k, silent){
   const root = document.documentElement, f = () => { root.dataset.skin = k; root.dataset.theme = k === 'vui' ? 'light' : 'dark'; $('#skinName').textContent = k === 'vui' ? 'Vui' : 'Yên';
-    document.querySelectorAll('#skinPop [data-skin]').forEach(b => b.setAttribute('aria-pressed', b.dataset.skin === k)); };
+    document.querySelectorAll('#skinPop [data-skin]').forEach(b => b.setAttribute('aria-pressed', b.dataset.skin === k)); document.dispatchEvent(new CustomEvent('tc:skin', { detail: k })); };
   if (!silent && document.startViewTransition && !reduce()) document.startViewTransition(f); else f();
   try { localStorage.setItem('tuchieu:skin', k); } catch(e) {}
-  document.dispatchEvent(new CustomEvent('tc:skin', { detail: k }));
 }
 setSkin(document.documentElement.dataset.skin || 'yen', true);
 $('#skinBtn').onclick = e => { e.stopPropagation(); const p = $('#skinPop'); p.hidden = !p.hidden; $('#skinBtn').setAttribute('aria-expanded', !p.hidden); };

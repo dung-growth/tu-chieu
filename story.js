@@ -23,7 +23,7 @@ const STORY = (() => {
   };
   // tên thẻ: hiểu được ngay, không ẩn dụ (ẩn dụ chỉ nằm ở câu "như…")
   const TEN = {
-    'Nước': { ngoi: 'Người lắng nghe', di: 'Người âm thầm|bứt phá', dung: 'Người đáng tin', den: 'Người nói điều|khó nói', x: 'Người sâu lắng' },
+    'Nước': { ngoi: 'Người lắng nghe', di: 'Người âm thầm|bứt phá', dung: 'Người đáng tin', den: 'Người dám nói', x: 'Người sâu lắng' },
     'Lửa': { ngoi: 'Người nhanh mà|biết dừng', di: 'Người làm liền', dung: 'Người đứng mũi|chịu sào', den: 'Người truyền lửa', x: 'Người bộc trực' },
     'Kim': { ngoi: 'Người cẩn trọng', di: 'Người quyết nhanh', dung: 'Người giữ nguyên tắc', den: 'Người nói thẳng', x: 'Người rạch ròi' },
     'Đất': { ngoi: 'Người kiên nhẫn', di: 'Người bền bỉ', dung: 'Người làm chỗ dựa', den: 'Người dẫn đường', x: 'Người vững vàng' },

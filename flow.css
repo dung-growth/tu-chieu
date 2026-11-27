@@ -514,3 +514,24 @@ html,body.flow{overflow-x:clip}
 .sc-top > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;letter-spacing:.08em}
 .sc-top{gap:10px}
 @media (max-width:899px){ .sc-ttl{padding-bottom:84px} .sc-tap{bottom:84px} .sc-hint{bottom:84px} }
+/* sửa: hình người không bị cắt đầu, thanh tên không đè lên bầu trời trên máy tính */
+.sc-sil img{max-height:none;object-fit:initial}
+@media (min-width:900px){
+  .fl-stage{top:calc(60px + var(--headH,0px));height:calc(100dvh - 60px - var(--headH,0px))}
+  body.fl-down .fl-head{transform:none;opacity:1;pointer-events:auto}
+}
+.fl-scene.sc-day .sc-txt,.fl-scene.sc-day .sc-top{text-shadow:0 1px 6px rgba(20,40,90,.7)}
+.fl-scene.sc-day .sc-gone{color:rgba(255,255,255,.85)}
+/* hình người: không cao quá khung trời (khỏi mất đầu), hai bên mờ dần, dải đất kéo kín bề ngang */
+.sc-sil{display:flex;justify-content:center}
+.sc-sil img{width:min(100%,calc((100dvh - 60px - var(--headH,0px)) * 1.7));-webkit-mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(to right,transparent,#000 7%,#000 93%,transparent)}
+.sc-sil::before{content:"";position:absolute;left:0;right:0;bottom:0;height:13%;background:#05061a;z-index:-1}
+@media (max-width:899px){ .sc-sil img{width:100%;-webkit-mask-image:none;mask-image:none} }
+.sc-txt{top:60px}
+/* thanh chọn màn trên màn hẹp: không xuống hàng */
+.fl-nav button{white-space:nowrap}
+@media (max-width:380px){ .fl-nav button{padding:9px 4px;gap:5px;font-size:13px} .fl-nav svg{width:16px;height:16px} }
+/* khung mời cài: nằm trên thanh hỏi, không che */
+@media (max-width:899px){ body.flow.has-result .in-bar{bottom:calc(74px + env(safe-area-inset-bottom))} }
+/* đang ở trong bầu trời (điện thoại): ẩn thanh chọn màn cho khỏi che ngày giờ và nút chia sẻ */
+@media (max-width:899px){ body.in-scene .fl-nav{transform:translateY(-120%);opacity:0;pointer-events:none} }
