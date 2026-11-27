@@ -57,7 +57,7 @@
     else { cur = 'laso'; const S = SYS.find(x => x.tab === t && (!x.lab || x.lab === (document.querySelector('#labNav [aria-pressed=true]') || {}).dataset?.lab)); if (S) sys = S.k; }
     const navCur = cur === 'hop' ? 'laso' : cur;
     [nav, bottom].forEach(n => n.querySelectorAll('[data-sec]').forEach(b => b.setAttribute('aria-current', b.dataset.sec === navCur ? 'page' : 'false')));
-    document.body.dataset.sec = cur; moveInd();
+    document.body.dataset.sec = cur; moveInd(); if (SC && cur === 'ban') requestAnimationFrame(() => SC && SC.tick());
     pick.hidden = cur !== 'laso' && cur !== 'hop';
     pick.querySelectorAll('[data-sys]').forEach(b => b.setAttribute('aria-pressed', cur === 'laso' && b.dataset.sys === sys));
     pick.querySelector('[data-hop]').setAttribute('aria-pressed', cur === 'hop');
@@ -173,7 +173,9 @@
       .map(([x, yy, r, o]) => `<span class="fl-star" style="left:${x}%;top:${yy}%;width:${r}px;height:${r}px;--o:${o};animation-delay:${(x * 7 % 30) / 10}s"></span>`).join('');
     const moonSvg = K.moon ? `<svg width="26" height="26" viewBox="-23 -23 46 46" role="img" aria-label="${K.moon.name}, ngày ${K.lunarDay} âm"><circle r="18" fill="#fff" opacity=".1"/>${K.moon.dark ? '' : `<path d="${K.moon.path}" fill="#F6EEDC"/>`}</svg>` : '';
     const [g0, g1, g2] = K.sky.g, tint = K.main ? K.INK[K.main] : '#5a6aa0';
-    hero.innerHTML = `<div class="fl-card${S ? ' has-sil' : ''}" style="--g0:${g0};--g1:${g1};--g2:${g2};--tint:${tint}">
+    const SHAREBTN = typeof SHARE !== 'undefined' ? '<button type="button" class="fl-sharebtn" id="flShare" aria-label="Tạo ảnh story"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v13"/><path d="m7 8 5-5 5 5"/></svg></button>' : '';
+    if (sceneOk(R)) hero.innerHTML = sceneHtml(R, K, S, SHAREBTN, `${K.timeKnown ? esc(i.time) + ' · ' : ''}${d}.${mo}.${y}`);
+    else hero.innerHTML = `<div class="fl-card${S ? ' has-sil' : ''}" style="--g0:${g0};--g1:${g1};--g2:${g2};--tint:${tint}">
         <div class="fl-sky"><div class="fl-grain"></div>${stars}${S ? `<img class="fl-sil" src="${S.sil.replace('/bong/', '/bong-rong/')}" alt="" width="1440" height="720" decoding="async">` : ''}</div>
         <div class="fl-ctop"><span>${K.timeKnown ? esc(i.time) + ' · ' : ''}${d}.${mo}.${y}</span><span class="fl-ctop-r">${moonSvg}${typeof SHARE !== 'undefined' ? '<button type="button" class="fl-sharebtn" id="flShare" aria-label="Tạo ảnh story"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v13"/><path d="m7 8 5-5 5 5"/></svg></button>' : ''}</span></div>
         <svg class="fl-mark" width="200" height="200" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="flh"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
@@ -190,12 +192,110 @@
     tiles.innerHTML = `<div class="fl-four-h"><h2 class="fl-sec-h">Xem từng lá số</h2></div>
       <div class="fl-four">${four.map(([k, name, line, v]) => `<button type="button" class="fl-fc" data-open="${k}"><span class="fl-fc-n"><i style="background:${v ? K.INK[v.el] : '#C9A95A'}"></i>${name}${v ? ` <small>${v.el}${K.main && !v.agree ? ', nói khác' : ''}</small>` : ''}</span><span class="fl-fc-l">${esc(line)}</span><span class="fl-fc-go">Xem lá số →</span></button>`).join('')}</div>`;
     tiles.querySelectorAll('[data-open]').forEach(x => x.onclick = () => open('laso', x.dataset.open));
+    if (hero.querySelector('.fl-scene')) sceneStart(R);
     const stb = hero.querySelector('.fl-storyb'); if (stb) stb.onclick = () => { const x = hero.querySelector('.fl-storyx'); x.hidden = !x.hidden; stb.setAttribute('aria-expanded', !x.hidden); };
     const sb = hero.querySelector('#flShare');
     if (sb) sb.onclick = async () => { sb.disabled = true; const t = sb.innerHTML; UI.toast('Đang tạo ảnh story…');
       try { await SHARE.share(R, UI.openSheet); } catch (e) { console.error(e); UI.toast('Không tạo được ảnh, thử lại'); }
       sb.innerHTML = t; sb.disabled = false; };
   }
+
+  /* ---------- Bầu trời thật lúc sinh, trải kín màn: cuộn xuống thì trời hạ dần về chân trời, hình người trồi lên ----------
+     Sao và hành tinh tính bằng astronomy-engine theo giờ, nơi sinh. Không rõ giờ sinh thì dùng thẻ cũ. */
+  const PNAME = { Moon: 'Mặt Trăng', Mercury: 'Sao Thủy', Venus: 'Sao Kim', Mars: 'Sao Hỏa', Jupiter: 'Sao Mộc', Saturn: 'Sao Thổ' };
+  const PKW = { Moon: 'cảm xúc và nhu cầu được an tâm', Mercury: 'suy nghĩ và lời nói', Venus: 'tình cảm, cái đẹp và tiền bạc', Mars: 'hành động và sự hăng hái', Jupiter: 'mở rộng và cơ hội', Saturn: 'kỷ luật và trách nhiệm' };
+  const HAREA = ['', 'bản thân và cách người khác nhìn bạn', 'tiền bạc và những thứ bạn giữ', 'lời nói, học hành và anh chị em', 'nhà cửa và gia đình', 'vui chơi, sáng tạo và chuyện yêu', 'việc hằng ngày và sức khỏe', 'vợ chồng và người cùng làm', 'tiền chung và những thay đổi sâu', 'đi xa, học cao và niềm tin', 'việc làm và chỗ đứng ngoài xã hội', 'bạn bè, nhóm và điều bạn mong', 'phần riêng tư và lúc nghỉ ngơi'];
+  const sceneOk = R => R && R.input && R.input.timeMode !== 'unknown' && R.input.time && typeof Astronomy !== 'undefined' && typeof SKY !== 'undefined' && typeof SKYV !== 'undefined' && isFinite(R.input.lat) && isFinite(R.input.lon);
+  function sceneHtml(R, K, S, shareBtn, when) {
+    const i = R.input;
+    return `<section class="fl-scene" aria-label="Bầu trời lúc bạn sinh"><div class="fl-stage">
+      <canvas class="sc-cv" aria-hidden="true"></canvas>
+      <div class="sc-top"><span>${when}${i.place ? ' · ' + esc(String(i.place).split(/[,(]/)[0].trim()) : ''}</span>${shareBtn}</div>
+      <div class="sc-txt"><p class="sc-cap"></p><p class="sc-gone"></p><p class="sc-tap">Chạm vào chấm cam để xem nghĩa trong lá số</p></div>
+      <div class="sc-pop" role="dialog" hidden></div>
+      ${S ? `<div class="sc-sil"><img src="${S.sil.replace('/bong/', '/bong-rong/')}" alt="" width="1440" height="720" decoding="async"></div>` : ''}
+      <div class="sc-ttl fl-ct">${S ? `<span class="fl-k">${esc(i.name)} · ${esc(K.title)}</span><h2>${S.lines.map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' ')}</h2><p class="fl-nhu">${esc(S.nhu)}</p><button type="button" class="fl-link fl-storyb" aria-expanded="false">Câu chuyện lúc bạn sinh ›</button><div class="fl-storyx" hidden><p class="fl-story">${esc(S.story)}</p><p>${esc(S.trait)}</p></div>`
+        : `<span class="fl-k">${esc(i.name)}</span><h2>${esc(K.title)}</h2><p>${esc(K.body)}</p>`}
+        <p class="sc-note">Vẽ theo giờ sinh bạn nhập. Lệch một tiếng là trời lệch khá nhiều.</p></div>
+      <div class="sc-hint">Kéo xuống</div>
+    </div></section>`;
+  }
+  var SC = null;
+  function sceneStart(R) {
+    const root = hero.querySelector('.fl-scene'); if (!root) return;
+    const i = R.input, D = Math.PI / 180;
+    const [y, mo, d] = i.date.split('-').map(Number), [h, mi] = i.time.split(':').map(Number);
+    const date = new Date(Date.UTC(y, mo - 1, d, h, mi) - (+i.tz || 7) * 3600e3), lat = +i.lat, lon = +i.lon;
+    const lst = ((Astronomy.SiderealTime(date) * 15 + lon) % 360 + 360) % 360, obs = new Astronomy.Observer(lat, lon, 0);
+    const hz = b => { const e = Astronomy.Equator(b, date, obs, true, true); return Astronomy.Horizon(date, obs, e.ra, e.dec, 'normal'); };
+    const sun = hz('Sun');
+    const houses = Object.fromEntries((R.astro.points || []).map(p => [p.key, p.house]));
+    const up = [], hidden = [];
+    Object.keys(PNAME).forEach(b => { const p = hz(b); if (p.altitude > 0) up.push({ b, alt: p.altitude, az: p.azimuth }); else hidden.push(b); });
+    const stars = SKY.stars.filter(s => s[2] < 5.2).map(([ra, dec, m]) => { const [alt, az] = SKYV.altaz(ra, dec, lat, lst); return { alt, az, m }; }).filter(s => s.alt > -8);
+    const lines = SKY.west.map(l => l.map(([ra, dec]) => { const [alt, az] = SKYV.altaz(ra, dec, lat, lst); return { alt, az }; }));
+    // câu mô tả: tính từ số liệu, không để AI viết
+    const dir = az => ['Bắc', 'Đông Bắc', 'Đông', 'Đông Nam', 'Nam', 'Tây Nam', 'Tây', 'Tây Bắc'][Math.round(az / 45) % 8];
+    const hi = a => a > 60 ? 'gần đỉnh đầu' : a > 30 ? 'trên cao' : 'thấp';
+    const order = ['Moon', 'Venus', 'Jupiter', 'Mars', 'Saturn', 'Mercury'], shown = up.slice().sort((a, b) => order.indexOf(a.b) - order.indexOf(b.b));
+    const sunTxt = sun.altitude < -6 ? 'Mặt Trời còn khuất dưới chân trời.' : sun.altitude < 0 ? 'Trời sắp sáng.' : 'Lúc đó trời đang sáng, sao bị ánh Mặt Trời che. Nếu không có ánh nắng, bầu trời trông như thế này.';
+    root.querySelector('.sc-cap').textContent = `Bầu trời lúc bạn sinh. ${sunTxt} ` + (shown.length ? shown.slice(0, 2).map(x => `${PNAME[x.b]} ${hi(x.alt)} phía ${dir(x.az)}`).join(', ') + '.' : 'Không hành tinh sáng nào ở trên trời lúc đó.');
+    const fmt = t => { const x = new Date(t.date.getTime() + (+i.tz || 7) * 3600e3); return `${x.getUTCHours()}:${String(x.getUTCMinutes()).padStart(2, '0')}`; };
+    const gs = [], gr = [];
+    hidden.forEach(b => { let rise = null, set = null; try { rise = Astronomy.SearchRiseSet(b, obs, +1, date, 1); set = Astronomy.SearchRiseSet(b, obs, -1, new Date(date.getTime() - 864e5), 1); } catch (e) {}
+      if (rise && rise.date - date < 6 * 36e5) gr.push(PNAME[b]); else if (set && set.date < date) gs.push(PNAME[b]); });
+    root.querySelector('.sc-gone').textContent = [gs.length ? gs.join(', ') + ' đã lặn trước đó' : '', gr.length ? gr.join(', ') + ' chưa mọc' : ''].filter(Boolean).join('. ') + (gs.length || gr.length ? '.' : '');
+    if (!up.length) root.querySelector('.sc-tap').remove();
+    const cv = root.querySelector('.sc-cv'), ctx = cv.getContext('2d'), sil = root.querySelector('.sc-sil'), pop = root.querySelector('.sc-pop');
+    const vec = (alt, az) => [Math.cos(alt * D) * Math.sin(az * D), Math.cos(alt * D) * Math.cos(az * D), Math.sin(alt * D)];
+    const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const focus = up.slice().sort((a, b) => b.alt - a.alt)[0] || { az: (sun.azimuth + 180) % 360 }, AZ0 = focus.az, hits = [];
+    const dark = (sun.altitude < -6), gTop = dark ? '#05081c' : '#0d1838', gMid = dark ? '#121a3d' : '#1d2c5e', gBot = dark ? '#2a2f5c' : '#3b4c86';
+    function draw(p) {
+      const W = cv.clientWidth, H = cv.clientHeight, dpr = Math.min(2, devicePixelRatio || 1); if (!W || !H) return;
+      if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, gTop); g.addColorStop(.6, gMid); g.addColorStop(1, gBot); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      const alt0 = 62 - 42 * p, az0 = AZ0 - 12 + 12 * p;
+      const f = vec(alt0, az0), r = [f[1], -f[0], 0], rl = Math.hypot(r[0], r[1]) || 1; r[0] /= rl; r[1] /= rl;
+      const u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]];
+      const fov = W > 800 ? 100 : 115, K2 = Math.max(W, H * .75) / (2 * Math.tan(fov * D / 4));
+      const P = (alt, az) => { const v = vec(alt, az), dd = dot(v, f); if (dd < -0.2) return null; return [W / 2 + dot(v, r) / (1 + dd) * K2, H * .62 - dot(v, u) / (1 + dd) * K2]; };
+      ctx.strokeStyle = 'rgba(200,215,255,.22)'; ctx.lineWidth = .8; ctx.beginPath();
+      lines.forEach(l => { let pen = false; l.forEach(pt => { const q = pt.alt > -2 && P(pt.alt, pt.az); if (!q) { pen = false; return; } pen ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1]); pen = true; }); }); ctx.stroke();
+      stars.forEach(s => { const q = P(s.alt, s.az); if (!q || q[0] < -5 || q[0] > W + 5 || q[1] < -5 || q[1] > H + 5) return; const rr = Math.max(.5, 2.3 - s.m * .38);
+        if (s.m < 1.6) { const gg = ctx.createRadialGradient(q[0], q[1], 0, q[0], q[1], rr * 6); gg.addColorStop(0, 'rgba(255,255,255,.45)'); gg.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(q[0], q[1], rr * 6, 0, 7); ctx.fill(); }
+        ctx.fillStyle = `rgba(255,255,255,${Math.min(1, 1.15 - s.m * .13)})`; ctx.beginPath(); ctx.arc(q[0], q[1], rr, 0, 7); ctx.fill(); });
+      ctx.font = '600 12px Inter, system-ui, sans-serif'; hits.length = 0;
+      up.forEach(x => { const q = P(x.alt, x.az); if (!q) return; hits.push({ b: x.b, x: q[0], y: q[1] });
+        const moon = x.b === 'Moon', c = moon ? '246,238,220' : '240,128,90';
+        const gg = ctx.createRadialGradient(q[0], q[1], 0, q[0], q[1], moon ? 22 : 16); gg.addColorStop(0, `rgba(${c},.6)`); gg.addColorStop(1, `rgba(${c},0)`); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(q[0], q[1], moon ? 22 : 16, 0, 7); ctx.fill();
+        ctx.fillStyle = `rgb(${c})`; ctx.beginPath(); ctx.arc(q[0], q[1], moon ? 6 : 3.6, 0, 7); ctx.fill();
+        ctx.lineWidth = 3; ctx.strokeStyle = '#05081c'; ctx.strokeText(PNAME[x.b], q[0] + 9, q[1] + 4); ctx.fillStyle = '#F6EEDC'; ctx.fillText(PNAME[x.b], q[0] + 9, q[1] + 4); });
+      const hq = P(0, az0); if (hq) { const top = Math.min(hq[1], H) - 160, gl = ctx.createLinearGradient(0, top, 0, top + 160); gl.addColorStop(0, 'rgba(90,106,160,0)'); gl.addColorStop(1, 'rgba(90,106,160,.32)'); ctx.fillStyle = gl; ctx.fillRect(0, top, W, H - top); }
+    }
+    function tick() {
+      const rc = root.getBoundingClientRect(), stage = root.firstElementChild, total = Math.max(1, root.offsetHeight - stage.offsetHeight), top0 = parseFloat(getComputedStyle(stage).top) || 0;
+      const p = Math.min(1, Math.max(0, (top0 - rc.top) / total));
+      draw(p);
+      const e = 1 - Math.pow(1 - Math.min(1, p / .85), 3);
+      if (sil) sil.style.transform = `translateY(${((1 - e) * 100).toFixed(2)}%)`;
+      root.style.setProperty('--p', p.toFixed(3));
+      root.classList.toggle('s1', p > .1); root.classList.toggle('s2', p > .2 && p < .78); root.classList.toggle('s3', p > .78); root.classList.toggle('s0', p < .04);
+      if (p >= .78) pop.hidden = true;
+    }
+    cv.addEventListener('click', e => { const rc = cv.getBoundingClientRect(), x = e.clientX - rc.left, yy = e.clientY - rc.top, hh = hits.find(t => Math.hypot(t.x - x, t.y - yy) < 28);
+      if (!hh) { pop.hidden = true; return; } const hs = houses[hh.b];
+      pop.innerHTML = `<b>${PNAME[hh.b]}${hs ? ` · nhà ${hs} trong lá số của bạn` : ''}</b>${hh.b === 'Moon' ? 'Mặt Trăng' : 'Sao'} của ${PKW[hh.b]}${hs ? `, nằm ở mảng ${HAREA[hs]}` : ''}. <button type="button" class="fl-link sc-more">Xem trong lá số chiêm tinh ›</button>`;
+      pop.hidden = false; const pw = Math.min(260, rc.width - 20), below = hh.y + 20 + 130 < rc.height;
+      pop.style.width = pw + 'px'; pop.style.left = Math.min(rc.width - pw - 10, Math.max(10, hh.x - 40)) + 'px'; pop.style.top = (below ? hh.y + 20 : Math.max(10, hh.y - 150)) + 'px';
+      pop.querySelector('.sc-more').onclick = () => open('laso', 'as'); });
+    SC = { tick };
+    tick();
+  }
+  { let raf = 0; const run = () => { raf = 0; if (SC && !hero.hidden) SC.tick(); };
+    addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(run); }, { passive: true }); addEventListener('resize', () => { if (!raf) raf = requestAnimationFrame(run); });
+    document.addEventListener('tc:skin', () => setTimeout(run, 50)); }
 
   /* ---------- Hôm nay của bạn: tính bằng công thức (today.js), chọn được ngày khác ---------- */
   function localYmd(dt) { return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`; }
