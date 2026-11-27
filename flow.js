@@ -211,7 +211,7 @@
     return `<section class="fl-scene" aria-label="Bầu trời lúc bạn sinh"><div class="fl-stage">
       <canvas class="sc-cv" aria-hidden="true"></canvas>
       <div class="sc-top"><span>${when}${i.place ? ' · ' + esc(String(i.place).split(/[,(]/)[0].trim()) : ''}</span>${shareBtn}</div>
-      <div class="sc-txt"><p class="sc-cap"></p><p class="sc-gone"></p><p class="sc-tap">Chạm vào chấm cam để xem nghĩa trong lá số</p></div>
+      <div class="sc-txt"><p class="sc-cap"></p><p class="sc-gone"></p></div><p class="sc-tap">Chạm chấm cam để xem nghĩa</p>
       <div class="sc-pop" role="dialog" hidden></div>
       ${S ? `<div class="sc-sil"><img src="${S.sil.replace('/bong/', '/bong-rong/')}" alt="" width="1440" height="720" decoding="async"></div>` : ''}
       <div class="sc-ttl fl-ct">${S ? `<span class="fl-k">${esc(i.name)} · ${esc(K.title)}</span><h2>${S.lines.map(x => `<span style="white-space:nowrap">${esc(x)}</span>`).join(' ')}</h2><p class="fl-nhu">${esc(S.nhu)}</p><button type="button" class="fl-link fl-storyb" aria-expanded="false">Câu chuyện lúc bạn sinh ›</button><div class="fl-storyx" hidden><p class="fl-story">${esc(S.story)}</p><p>${esc(S.trait)}</p></div>`
@@ -238,13 +238,13 @@
     const dir = az => ['Bắc', 'Đông Bắc', 'Đông', 'Đông Nam', 'Nam', 'Tây Nam', 'Tây', 'Tây Bắc'][Math.round(az / 45) % 8];
     const hi = a => a > 60 ? 'gần đỉnh đầu' : a > 30 ? 'trên cao' : 'thấp';
     const order = ['Moon', 'Venus', 'Jupiter', 'Mars', 'Saturn', 'Mercury'], shown = up.slice().sort((a, b) => order.indexOf(a.b) - order.indexOf(b.b));
-    const sunTxt = sun.altitude < -6 ? 'Mặt Trời còn khuất dưới chân trời.' : sun.altitude < 0 ? 'Trời sắp sáng.' : 'Lúc đó trời đang sáng, sao bị ánh Mặt Trời che. Nếu không có ánh nắng, bầu trời trông như thế này.';
-    root.querySelector('.sc-cap').textContent = `Bầu trời lúc bạn sinh. ${sunTxt} ` + (shown.length ? shown.slice(0, 2).map(x => `${PNAME[x.b]} ${hi(x.alt)} phía ${dir(x.az)}`).join(', ') + '.' : 'Không hành tinh sáng nào ở trên trời lúc đó.');
+    const sunTxt = sun.altitude < -6 ? '' : sun.altitude < 0 ? 'Trời sắp sáng. ' : 'Trời đang sáng, đây là bầu trời nếu không có nắng. ';
+    root.querySelector('.sc-cap').textContent = sunTxt + (shown.length ? shown.slice(0, 2).map(x => `${PNAME[x.b]} ${hi(x.alt)} phía ${dir(x.az)}`).join(', ') + '.' : 'Không hành tinh sáng nào trên trời lúc đó.');
     const fmt = t => { const x = new Date(t.date.getTime() + (+i.tz || 7) * 3600e3); return `${x.getUTCHours()}:${String(x.getUTCMinutes()).padStart(2, '0')}`; };
     const gs = [], gr = [];
     hidden.forEach(b => { let rise = null, set = null; try { rise = Astronomy.SearchRiseSet(b, obs, +1, date, 1); set = Astronomy.SearchRiseSet(b, obs, -1, new Date(date.getTime() - 864e5), 1); } catch (e) {}
       if (rise && rise.date - date < 6 * 36e5) gr.push(PNAME[b]); else if (set && set.date < date) gs.push(PNAME[b]); });
-    root.querySelector('.sc-gone').textContent = [gs.length ? gs.join(', ') + ' đã lặn trước đó' : '', gr.length ? gr.join(', ') + ' chưa mọc' : ''].filter(Boolean).join('. ') + (gs.length || gr.length ? '.' : '');
+    root.querySelector('.sc-gone').textContent = [gs.length ? gs.join(', ') + ' đã lặn' : '', gr.length ? gr.join(', ') + ' chưa mọc' : ''].filter(Boolean).join(' · ');
     if (!up.length) root.querySelector('.sc-tap').remove();
     const cv = root.querySelector('.sc-cv'), ctx = cv.getContext('2d'), sil = root.querySelector('.sc-sil'), pop = root.querySelector('.sc-pop');
     const vec = (alt, az) => [Math.cos(alt * D) * Math.sin(az * D), Math.cos(alt * D) * Math.cos(az * D), Math.sin(alt * D)];
@@ -285,7 +285,7 @@
       if (p >= .78) pop.hidden = true;
     }
     cv.addEventListener('click', e => { const rc = cv.getBoundingClientRect(), x = e.clientX - rc.left, yy = e.clientY - rc.top, hh = hits.find(t => Math.hypot(t.x - x, t.y - yy) < 28);
-      if (!hh) { pop.hidden = true; return; } const hs = houses[hh.b];
+      if (!hh) { pop.hidden = true; return; } root.classList.add('tapped'); const hs = houses[hh.b];
       pop.innerHTML = `<b>${PNAME[hh.b]}${hs ? ` · nhà ${hs} trong lá số của bạn` : ''}</b>${hh.b === 'Moon' ? 'Mặt Trăng' : 'Sao'} của ${PKW[hh.b]}${hs ? `, nằm ở mảng ${HAREA[hs]}` : ''}. <button type="button" class="fl-link sc-more">Xem trong lá số chiêm tinh ›</button>`;
       pop.hidden = false; const pw = Math.min(260, rc.width - 20), below = hh.y + 20 + 130 < rc.height;
       pop.style.width = pw + 'px'; pop.style.left = Math.min(rc.width - pw - 10, Math.max(10, hh.x - 40)) + 'px'; pop.style.top = (below ? hh.y + 20 : Math.max(10, hh.y - 150)) + 'px';
